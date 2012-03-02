@@ -3,7 +3,8 @@
 
 #include "commonheaders.h"
 
-class QTestWindow : public QWidget {
+class QTestWindow : public QWidget
+{
 	Q_OBJECT
 private:
 	QLabel*			output;
@@ -12,6 +13,8 @@ protected:
 	//Elise*			parent;
 	//virtual void	contextMenuEvent(QContextMenuEvent* e);
 public slots:
+	//-- Utils
+	void			uuidCreate();
 	//-- Services
 	void			buttonExit();
 	void			createService();

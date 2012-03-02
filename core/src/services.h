@@ -1,11 +1,8 @@
-#ifndef SERVICES_H
-#define SERVICES_H
+#ifndef SERVICES_H__
+#define SERVICES_H__
 
 #include <QMutex>
 #include <QMap>
-#include <QWidget>
-class QTestWindow;
-#include "tests.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //-- Constants definitions --///////////////////////////////////////////////////////////////////////
@@ -77,7 +74,6 @@ typedef struct
 	//ModuleLable name;
 	//int  id;
 	int  subscriberCount;
-	//THookSubscriber* subscriber;
 	QMap<int, THookSubscriber*>* qmapSubscribers;
 	//ELISEHOOK pfnHook;
 	QMutex* qmutexHook;
@@ -152,7 +148,7 @@ int NotifyEventHooks(const QString* name, uintptr_t wParam, uintptr_t lParam );
   Returns -2 if name is empty, -1 if name not found in events list. If the hook created
   successfully, returns its personal number that must be used by call UnhookEvent() as hook.num .
 */
-int HookEventInt(const QString* name, ELISEHOOK hookProc);
+int HookEvent(const QString* name, ELISEHOOK hookProc);
 
 /* UnhookEvent
   Removes a hook from its event chain. It will no longer receive any events.
@@ -199,7 +195,7 @@ intptr_t CallService(const QString* name, uintptr_t wParam, uintptr_t lParam);
   service's name.
   Returns 0 on success, -1 if 'name' is empty and 1 if name not found in services list.
 */
-int DestroyServiceFunction(QString* name);
+int DestroyServiceFunction(const QString* name);
 
 
-#endif // MODULES_H
+#endif // SERVICES_H__
