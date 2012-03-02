@@ -6,6 +6,7 @@
 
 
 #include "services.h"
+#include "../../api/pluginapi.h"
 #include "modules.h"
 #include "modules/tray.h"
 

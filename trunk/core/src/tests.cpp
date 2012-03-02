@@ -11,15 +11,23 @@ QTestWindow::QTestWindow()
 	this->setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowTitleHint);
 	QVBoxLayout* layoutV = new QVBoxLayout(this);
 	QHBoxLayout* layoutH = new QHBoxLayout(this);
+	QVBoxLayout* layoutUtil = new QVBoxLayout(this);
 	QVBoxLayout* layoutServ = new QVBoxLayout(this);
 	QVBoxLayout* layoutHook = new QVBoxLayout(this);
 	QVBoxLayout* layoutTest = new QVBoxLayout(this);
 	layoutV->addLayout(layoutH);
+	layoutH->addLayout(layoutUtil);
 	layoutH->addLayout(layoutServ);
 	layoutH->addLayout(layoutHook);
 	layoutH->addLayout(layoutTest);
 
 	QLabel* lbl = new QLabel(this);
+	layoutUtil->addWidget(lbl);
+	lbl->setText("Utils");
+	lbl->setMaximumHeight(15);
+	layoutUtil->setAlignment(lbl, Qt::AlignTop | Qt::AlignHCenter);
+
+	lbl = new QLabel(this);
 	layoutServ->addWidget(lbl);
 	lbl->setText("Services");
 	lbl->setMaximumHeight(15);
@@ -44,12 +52,21 @@ QTestWindow::QTestWindow()
 	output = new QLabel(this);
 	layoutV->addWidget(output);
 	layoutV->setAlignment(output, Qt::AlignHCenter);
-
+	output->setTextInteractionFlags(output->textInteractionFlags() | Qt::TextSelectableByMouse);
 
 	this->resize(100, 200);
 
-	//-- Services
+	//-- Utils
 	QPushButton* button = new QPushButton(this);
+	button->setText("Create UUID");
+	connect(button, SIGNAL(clicked()), this, SLOT(uuidCreate()));
+	layoutUtil->addWidget(button);
+	button->setMinimumWidth(100);
+
+	layoutUtil->setAlignment(button, Qt::AlignTop);
+
+	//-- Services
+	button = new QPushButton(this);
 	button->setText("Add service");
 	connect(button, SIGNAL(clicked()), this, SLOT(createService()));
 	layoutServ->addWidget(button);
@@ -132,7 +149,7 @@ QTestWindow::QTestWindow()
 	layoutV->setAlignment(button, Qt::AlignBottom);
 
 	//-- Work with tray
-	HookEventInt(&TRAY_SINGLECLICK, (ELISEHOOK)hideMainWindow);
+	HookEvent(&TRAY_SINGLECLICK, (ELISEHOOK)hideMainWindow);
 
 	wii = this;
 	this->show();
@@ -170,6 +187,13 @@ void QTestWindow::setBarValue(int val)
 	QApplication::processEvents();
 }
 
+//-- Utils
+
+void QTestWindow::uuidCreate()
+{
+	setOutput(QUuid::createUuid().toString());
+}
+
 static QString name = "TEST_SERVISE";
 static QString hkevName = "TEST_HOOKABLE_EVENT";
 static THook hookEv;
@@ -194,7 +218,7 @@ void QTestWindow::createHookblEvent()
 
 void QTestWindow::hookEvent()
 {
-	hookEv.num = HookEventInt(&hkevName, (ELISEHOOK)testHook);
+	hookEv.num = HookEvent(&hkevName, (ELISEHOOK)testHook);
 	hookEv.name = &hkevName;
 	if (hookEv.num != -1)
 		setOutput("Hook event success, num is " + QString::number(hookEv.num));

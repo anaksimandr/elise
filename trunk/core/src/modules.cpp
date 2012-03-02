@@ -27,3 +27,24 @@ int UnloadDefaultModules()
 
 	return 0;
 }
+
+PluginLoader::PluginLoader()
+{
+
+}
+
+PluginLoader::~PluginLoader()
+{
+
+}
+
+int PluginLoader::getPluginsList()
+{
+
+	return 0;
+}
+
+int PluginLoader::loadPlugins()
+{
+	return 0;
+}

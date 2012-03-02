@@ -215,6 +215,11 @@ int HookEventInt(const QString* name, ELISEHOOK hookProc)
 	return p->subscriberCount++;
 }
 
+int HookEvent(const QString* name, ELISEHOOK hookProc)
+{
+	return HookEventInt(name, hookProc);
+}
+
 int UnhookEvent(const THook hook)
 {
 	if (hook.name == NULL || hook.name->isEmpty())
@@ -335,7 +340,7 @@ intptr_t CallService(const QString* name, uintptr_t wParam, uintptr_t lParam)
 	//return qmapServices.value(*name)->pfnService(wParam, lParam);
 }
 
-int DestroyServiceFunction(QString* name)
+int DestroyServiceFunction(const QString *name)
 {
 	if (name->isEmpty())
 		return -1;

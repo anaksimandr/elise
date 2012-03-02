@@ -6,18 +6,28 @@
 int LoadDefaultModules();
 int UnloadDefaultModules();
 
-class PluginInterface
+class IPlugin
 {
 public:
-	virtual ~PluginInterface() {}
+	virtual						~IPlugin() {}
 
-	virtual QStringList brushes() const = 0;
-	virtual QRect mousePress(const QString &brush, QPainter &painter,
-							 const QPoint &pos) = 0;
-	virtual QRect mouseMove(const QString &brush, QPainter &painter,
-							const QPoint &oldPos, const QPoint &newPos) = 0;
-	virtual QRect mouseRelease(const QString &brush, QPainter &painter,
-							   const QPoint &pos) = 0;
+	virtual	PLUGININFO*			ElisePluginInfo(EVersion) = 0;
+	virtual	const QUuid*		ElisePluginInterfaces(void) = 0;
+	virtual	int					Load(PLUGINLINK*) = 0;
+	virtual	int					Unload(void) = 0;
+};
+
+Q_DECLARE_INTERFACE(IPlugin, "Elise.basicPluginInterface/1.0")
+
+class PluginLoader
+{
+private:
+
+public:
+						PluginLoader();
+						~PluginLoader();
+	static int			getPluginsList();
+	static int			loadPlugins();
 };
 
 
