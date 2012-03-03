@@ -1,13 +1,13 @@
 
 
-QT  += core gui
+QT			+=	core gui
 
-TARGET  = Elise
+TARGET		=	Elise
 
-TEMPLATE    = app
+TEMPLATE	=	app
 
-VERSION = 0.0.0.1
-DEFINES += UNICODE
+VERSION		=	0.0.0.1
+DEFINES		+=	UNICODE
 
 SOURCES += \
     src/elise.cpp \
