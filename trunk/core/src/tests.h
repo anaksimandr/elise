@@ -15,6 +15,7 @@ protected:
 public slots:
 	//-- Utils
 	void			uuidCreate();
+	void			testNewPlugin();
 	//-- Services
 	void			buttonExit();
 	void			createService();

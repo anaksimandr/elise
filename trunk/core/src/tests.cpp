@@ -63,6 +63,11 @@ QTestWindow::QTestWindow()
 	layoutUtil->addWidget(button);
 	button->setMinimumWidth(100);
 
+	button = new QPushButton(this);
+	button->setText("Test plugin");
+	connect(button, SIGNAL(clicked()), this, SLOT(testNewPlugin()));
+	layoutUtil->addWidget(button);
+
 	layoutUtil->setAlignment(button, Qt::AlignTop);
 
 	//-- Services
@@ -192,6 +197,11 @@ void QTestWindow::setBarValue(int val)
 void QTestWindow::uuidCreate()
 {
 	setOutput(QUuid::createUuid().toString());
+}
+
+void QTestWindow::testNewPlugin()
+{
+	CallService(&(QString)"TESTPLUGIN_SERVICE", 0, 0);
 }
 
 static QString name = "TEST_SERVISE";
