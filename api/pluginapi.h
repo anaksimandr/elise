@@ -8,8 +8,8 @@
 typedef struct {
 	union
 	{
-		int value;               // [3] - major version, [2] - minor version
-		unsigned char chars[4];  // [1] - release num, [0] - build num
+		unsigned char chars[4];		// [3] - major version, [2] - minor version
+		int value;					// [1] - release num, [0] - build num
 	};
 } EVersion;
 
@@ -54,7 +54,7 @@ typedef struct {
 
 #ifndef SERVICES_H__
 	//relies on a global variable 'pluginLink' in the plugins
-	extern PLUGINLINK* pluginLink;
+	extern const PLUGINLINK* pluginLink;
 	#define CreateHookableEvent(a)                    pluginLink->CreateHookableEvent(a)
 	#define DestroyHookableEvent(a)                   pluginLink->DestroyHookableEvent(a)
 	#define NotifyEventHooks(a,b,c)                   pluginLink->NotifyEventHooks(a,b,c)
@@ -73,7 +73,7 @@ public:
 
 	virtual	PLUGININFO*			ElisePluginInfo(EVersion) = 0;
 	virtual	const QUuid*		ElisePluginInterfaces(void) = 0;
-	virtual	int					Load(PLUGINLINK*) = 0;
+	virtual	int					Load(const PLUGINLINK*) = 0;
 	virtual	int					Unload(void) = 0;
 };
 

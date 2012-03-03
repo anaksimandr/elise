@@ -5,7 +5,6 @@ TEMPLATE	=	lib
 
 CONFIG		+=	plugin
 
-VERSION		=	0.0.0.1
 DEFINES		+=	UNICODE
 
 SOURCES += \
@@ -21,13 +20,18 @@ HEADERS += \
 #sources.files = $$SOURCES $$HEADERS $$RESOURCES $$FORMS plugin.pro
 #sources.path = $$[QT_INSTALL_EXAMPLES]/tools/echoplugin/plugin
 #INSTALLS += target sources
-	
+#CONFIG (debug, debug|release) {
+#	target.path = ../Elise-build-debug/plugins/
+#}else{
+#	#target.path = ../Elise-build-release/plugins/
+#}
+
 CONFIG (debug, debug|release) {
-	OBJECTS_DIR = ../Elise-build/debug/plugins/newplugin
-	DESTDIR = ../Elise-build-bin/debug/plugins
+#	OBJECTS_DIR = ../Elise-build/debug/plugins/newplugin
+	DESTDIR = ../../../Elise-build-debug/plugins
 }else{
-	OBJECTS_DIR = ../Elise-build/release/plugins/newplugin
-	DESTDIR = ../Elise-build-bin/release/plugins
+#	OBJECTS_DIR = ../Elise-build/release/plugins/newplugin
+	DESTDIR = ../../../Elise-build-release/plugins
 }
 
 

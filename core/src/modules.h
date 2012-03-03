@@ -9,12 +9,9 @@ int UnloadDefaultModules();
 class PluginLoader
 {
 private:
-	//QStringList*			loadablePlugins;
-	QMap<QString, IPlugin*>*	loadablePlugins;
+	static QMap<QString, IPlugin*>*	loadablePlugins;
 
 public:
-						PluginLoader();
-						~PluginLoader();
 	static int			getPluginsList();
 	static int			loadPlugins();
 };

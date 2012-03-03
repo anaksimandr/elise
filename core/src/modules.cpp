@@ -1,5 +1,20 @@
 #include "commonheaders.h"
 
+const EVersion eliseVersion = {0,0,0,1};
+const PLUGINLINK pluginLink = {
+		&CreateHookableEvent,
+		&DestroyHookableEvent,
+		&NotifyEventHooks,
+		&HookEvent,
+		&UnhookEvent,
+		&CreateServiceFunction,
+		&DestroyServiceFunction,
+		&CallService,
+		&ServiceExists
+};
+
+QMap<QString, IPlugin*>* PluginLoader::loadablePlugins;
+
 /*int LoadSystemModule()
 {
 	//if (CreateHookableEvent(&hkevName))
@@ -16,6 +31,17 @@ int LoadDefaultModules()
 	if (LoadTrayModule())
 		return 1;
 
+	//-- Loading plugins.
+	//-- Note: trying access loadPlugins() without getPluginsList() cause a crash.
+	if (!PluginLoader::getPluginsList()) {
+		PluginLoader::loadPlugins();
+	}
+	else {
+		//-- TODO: Fix this
+		QMessageBox qmes;
+		qmes.setText("getPluginsList FAILED!");
+		qmes.exec();
+	}
 	return 0;
 }
 
@@ -28,15 +54,15 @@ int UnloadDefaultModules()
 	return 0;
 }
 
-PluginLoader::PluginLoader()
-{
+//PluginLoader::PluginLoader()
+//{
+//	loadablePlugins = NULL;
+//}
 
-}
-
-PluginLoader::~PluginLoader()
-{
-
-}
+//PluginLoader::~PluginLoader()
+//{
+//
+//}
 
 int PluginLoader::getPluginsList()
 {
@@ -44,7 +70,7 @@ int PluginLoader::getPluginsList()
 	//foreach (QObject *plugin, QPluginLoader::staticInstances())
 	//	populateMenus(plugin);
 
-	loadablePlugins = new QStringList();
+	loadablePlugins = new QMap<QString,IPlugin*>();
 
 	QDir pluginsDir = QDir(qApp->applicationDirPath());
 
@@ -70,9 +96,8 @@ int PluginLoader::getPluginsList()
 		if (plugin) {
 			IPlugin* validPlugin = qobject_cast<IPlugin*>(plugin);
 			if (validPlugin) {
-				if (validPlugin->ElisePluginInfo() != NULL) {
-					loadablePlugins[fileName] = plugin;
-				}
+				if (validPlugin->ElisePluginInfo(eliseVersion) != NULL)
+					loadablePlugins->insert(fileName, validPlugin);
 			} //if validPlugin
 		} //if plugin
 	} //foreach
@@ -82,9 +107,15 @@ int PluginLoader::getPluginsList()
 
 int PluginLoader::loadPlugins()
 {
-	foreach(IPlugin* plugin, loadablePlugins) {
-		plugin->Load();
+	QMapIterator<QString,IPlugin*> iter(*loadablePlugins);
+	IPlugin* p;
+	while (iter.hasNext()) {
+		iter.next();
+		p = iter.value();
+		p->Load(&pluginLink);
 	}
+
+	loadablePlugins->~QMap();
 
 	return 0;
 }

@@ -29,14 +29,17 @@ RESOURCES += \
 	res/resources.qrc
 
 CONFIG (debug, debug|release) {
-	OBJECTS_DIR = ../Elise-build/debug
-	DESTDIR = ../Elise-build-bin/debug
+#	OBJECTS_DIR = ../Elise-build/debug
+	DESTDIR = ../../Elise-build-debug
 
 }else{
-	OBJECTS_DIR = ../Elise-build/release
-	DESTDIR = ../Elise-build-bin/release
+#	OBJECTS_DIR = ../Elise-build/release
+	DESTDIR = ../../Elise-build-release
 }
 
+#target.path = F:/Sources/Elise-build-release/
+
+#INSTALLS += target
 
 
 

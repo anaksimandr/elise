@@ -3,7 +3,6 @@
 
 #include "commonheaders.h"
 
-
 class NewPlugin : public QObject, IPlugin
  {
 	 Q_OBJECT
@@ -12,7 +11,7 @@ class NewPlugin : public QObject, IPlugin
 public:
 	PLUGININFO*			ElisePluginInfo(EVersion);
 	const QUuid*		ElisePluginInterfaces(void);
-	int					Load(PLUGINLINK*);
+	int					Load(const PLUGINLINK* link);
 	int					Unload(void);
 };
 
