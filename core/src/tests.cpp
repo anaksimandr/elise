@@ -2,6 +2,8 @@
 
 void hideMainWindow(uintptr_t wParam, uintptr_t lParam);
 
+#include <QtSql>
+
 QTestWindow* wii;
 
 QTestWindow::QTestWindow()
@@ -66,6 +68,11 @@ QTestWindow::QTestWindow()
 	button = new QPushButton(this);
 	button->setText("Test plugin");
 	connect(button, SIGNAL(clicked()), this, SLOT(testNewPlugin()));
+	layoutUtil->addWidget(button);
+
+	button = new QPushButton(this);
+	button->setText("Test crypted DB");
+	connect(button, SIGNAL(clicked()), this, SLOT(testDB()));
 	layoutUtil->addWidget(button);
 
 	layoutUtil->setAlignment(button, Qt::AlignTop);
@@ -204,6 +211,78 @@ void QTestWindow::testNewPlugin()
 {
 	CallService(&testplugin_service, 0, 0);
 }
+
+void QTestWindow::testDB()
+{
+	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLCIPHER");
+
+	if (!QFile::exists("test.db")) {
+		db.setDatabaseName("test.db");
+		if (!db.open()) {
+			QMessageBox::critical(0, tr("Cannot open database"),
+								  tr("Unable to establish a database connection.\n"
+									 "This example needs SQLCipher support."),
+								  QMessageBox::Cancel);
+			return;
+		}
+
+		QSqlQuery query;
+		query.exec("pragma key = '12345';");
+		query.exec("create table person (id int primary key, "
+				   "name varchar(20), address varchar(200), typeid int)");
+		query.exec("insert into person values(1, 'Alice', "
+				   "'<qt>123 Main Street<br/>Market Town</qt>', 101)");
+		query.exec("insert into person values(2, 'Bob', "
+				   "'<qt>PO Box 32<br/>Mail Handling Service"
+				   "<br/>Service City</qt>', 102)");
+		query.exec("insert into person values(3, 'Carol', "
+				   "'<qt>The Lighthouse<br/>Remote Island</qt>', 103)");
+		query.exec("insert into person values(4, 'Donald', "
+				   "'<qt>47338 Park Avenue<br/>Big City</qt>', 101)");
+		query.exec("insert into person values(5, 'Emma', "
+				   "'<qt>Research Station<br/>Base Camp<br/>"
+				   "Big Mountain</qt>', 103)");
+		//! [Set up the main table]
+
+		//! [Set up the address type table]
+		query.exec("create table addresstype (id int, description varchar(20))");
+		query.exec("insert into addresstype values(101, 'Home')");
+		query.exec("insert into addresstype values(102, 'Work')");
+		query.exec("insert into addresstype values(103, 'Other')");
+	} else {
+		db.setDatabaseName("test.db");
+		if (!db.open()) {
+			QMessageBox::critical(0, tr("Cannot open database"),
+								  tr("Unable to establish a database connection.\n"
+									 "This example needs SQLCipher support."),
+								  QMessageBox::Cancel);
+			return;
+		}
+
+		QSqlQuery query;
+		query.exec("pragma key = '12345';");
+
+		{//===-Test-===
+			query.exec("select * from addresstype;");
+			if (query.lastError().type() != QSqlError::NoError) {
+				QMessageBox::critical(0, tr("Cannot open database"),
+									  tr("%1").arg(query.lastError().text()), QMessageBox::Cancel);
+				return;
+			}
+		}
+	}
+/*
+	model = new QSqlRelationalTableModel(this);
+	model->setTable("person");
+	model->setEditStrategy(QSqlTableModel::OnManualSubmit);
+
+	typeIndex = model->fieldIndex("typeid");
+
+	model->setRelation(typeIndex,
+					   QSqlRelation("addresstype", "id", "description"));
+	model->select();*/
+}
+
 
 static QString name = "TEST_SERVISE";
 static QString hkevName = "TEST_HOOKABLE_EVENT";
