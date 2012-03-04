@@ -199,9 +199,10 @@ void QTestWindow::uuidCreate()
 	setOutput(QUuid::createUuid().toString());
 }
 
+const QString testplugin_service = "TESTPLUGIN_SERVICE";
 void QTestWindow::testNewPlugin()
 {
-	CallService(&(QString)"TESTPLUGIN_SERVICE", 0, 0);
+	CallService(&testplugin_service, 0, 0);
 }
 
 static QString name = "TEST_SERVISE";

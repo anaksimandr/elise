@@ -1,5 +1,7 @@
 #include "commonheaders.h"
 
+extern int shutDown(intptr_t, intptr_t);
+
 const EVersion eliseVersion = {0,0,0,1};
 const PLUGINLINK pluginLink = {
 		&CreateHookableEvent,
@@ -15,19 +17,21 @@ const PLUGINLINK pluginLink = {
 
 QMap<QString, IPlugin*>* PluginLoader::loadablePlugins;
 
-/*int LoadSystemModule()
+int LoadSystemModule()
 {
+	if (CreateServiceFunction(&SHUTDOWN_SERVICE, (ELISESERVICE)shutDown))
+		return 1;
 	//if (CreateHookableEvent(&hkevName))
 		//return 1;
 
 	return 0;
-}*/
+}
 
 
 int LoadDefaultModules()
 {
-	//if (LoadSystemModule())
-		//return 1;
+	if (LoadSystemModule())
+		return 1;
 	if (LoadTrayModule())
 		return 1;
 
@@ -54,16 +58,6 @@ int UnloadDefaultModules()
 	return 0;
 }
 
-//PluginLoader::PluginLoader()
-//{
-//	loadablePlugins = NULL;
-//}
-
-//PluginLoader::~PluginLoader()
-//{
-//
-//}
-
 int PluginLoader::getPluginsList()
 {
 	//-- Static plugins? not intresting
@@ -86,7 +80,8 @@ int PluginLoader::getPluginsList()
 	//}
 	//#endif
 
-	pluginsDir.cd("Plugins");
+	pluginsDir.cd("plugins");
+
 	QPluginLoader loader;
 	QObject* plugin = NULL;
 	//-- Trying loading each file in dir as plugin
