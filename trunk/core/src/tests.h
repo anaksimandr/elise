@@ -16,6 +16,7 @@ public slots:
 	//-- Utils
 	void			uuidCreate();
 	void			testNewPlugin();
+	void			testDB();
 	//-- Services
 	void			buttonExit();
 	void			createService();
