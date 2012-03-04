@@ -60,7 +60,7 @@ int main(int argc, char* argv[]) {
 	if (LoadDefaultModules())
 		shutDown(-1, 0);
 
-    CreateServiceFunction(&SHUTDOWN_SERVICE, (ELISESERVICE)shutDown);
+	//CreateServiceFunction(&SHUTDOWN_SERVICE, (ELISESERVICE)shutDown);
 
 	//-- Notify about success loading
 	//NotifyEventHooks(hModulesLoadedEvent,0,0);
