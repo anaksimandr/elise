@@ -1,5 +1,5 @@
 
-TARGET		=	NewPlugin
+TARGET		=	BDPlugin
 
 TEMPLATE	=	lib
 
@@ -8,12 +8,14 @@ CONFIG		+=	plugin
 DEFINES		+=	UNICODE
 
 SOURCES += \
-	src/newplugin.cpp
+	src/dbplugin.cpp
 
 HEADERS += \
 	src/commonheaders.h \
 	../../api/pluginapi.h \
-    src/newplugin.h
+	../../api/dbapi.h \
+	src/dbplugin.h \
+    src/dbkey.h
 
 # install
 #target.path = $$[QT_INSTALL_EXAMPLES]/tools/echoplugin/plugin

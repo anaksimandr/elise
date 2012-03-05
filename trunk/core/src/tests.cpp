@@ -71,6 +71,11 @@ QTestWindow::QTestWindow()
 	layoutUtil->addWidget(button);
 
 	button = new QPushButton(this);
+	button->setText("Test DB plugin");
+	connect(button, SIGNAL(clicked()), this, SLOT(testDBPlugin()));
+	layoutUtil->addWidget(button);
+
+	button = new QPushButton(this);
 	button->setText("Test crypted DB");
 	connect(button, SIGNAL(clicked()), this, SLOT(testDB()));
 	layoutUtil->addWidget(button);
@@ -212,12 +217,18 @@ void QTestWindow::testNewPlugin()
 	CallService(&testplugin_service, 0, 0);
 }
 
-void QTestWindow::testDB()
+const QString testdbplugin_service = "TESTDBPLUGIN_SERVICE";
+void QTestWindow::testDBPlugin()
+{
+	CallService(&testdbplugin_service, 0, 0);
+}
+
+/*void QTestWindow::testDB()
 {
 	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLCIPHER");
 
-	if (!QFile::exists("test.db")) {
-		db.setDatabaseName("test.db");
+	if (!QFile::exists("test")) {
+		db.setDatabaseName("test");
 		if (!db.open()) {
 			QMessageBox::critical(0, tr("Cannot open database"),
 								  tr("Unable to establish a database connection.\n"
@@ -271,7 +282,7 @@ void QTestWindow::testDB()
 			}
 		}
 	}
-/*
+
 	model = new QSqlRelationalTableModel(this);
 	model->setTable("person");
 	model->setEditStrategy(QSqlTableModel::OnManualSubmit);
@@ -280,7 +291,42 @@ void QTestWindow::testDB()
 
 	model->setRelation(typeIndex,
 					   QSqlRelation("addresstype", "id", "description"));
-	model->select();*/
+	model->select();
+}*/
+
+void QTestWindow::testDB()
+{
+	//-- Switch to profiles directory
+	QDir curDir = QDir(qApp->applicationDirPath());
+	if (!curDir.exists("Profiles"))
+		curDir.mkdir("Profiles");
+	curDir.cd("Profiles");
+	QDir::setCurrent(curDir.path());
+
+
+	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLCIPHER");
+
+	if (!QFile::exists("elisesys")) {
+		db.setDatabaseName("elisesys");
+
+		if (!db.open()) {
+			QMessageBox::critical(0, tr("Cannot open database"),
+								  tr("Unable to establish a database connection.\n"
+									 "SQLCipher not found."),
+								  QMessageBox::Cancel);
+			return;
+		}
+
+		QSqlQuery query;
+		query.exec("pragma key = '12345';");
+
+	}
+	else {
+
+	}
+
+	//-- Switch backward to main directory
+	QDir::current().cdUp();
 }
 
 

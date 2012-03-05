@@ -1,1 +1,1 @@
-﻿coming soon
+﻿To compile dbplugin you must define DBKEY in "./plugins/dbplugin/src/dbkey.h" file.
