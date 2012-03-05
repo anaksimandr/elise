@@ -1,3 +1,4 @@
+QT			+=	sql
 
 TARGET		=	BDPlugin
 
@@ -8,14 +9,18 @@ CONFIG		+=	plugin
 DEFINES		+=	UNICODE
 
 SOURCES += \
-	src/dbplugin.cpp
+	src/dbplugin.cpp \
+    src/elsiedb.cpp \
+    src/createacc.cpp
 
 HEADERS += \
 	src/commonheaders.h \
 	../../api/pluginapi.h \
 	../../api/dbapi.h \
 	src/dbplugin.h \
-    src/dbkey.h
+    src/dbkey.h \
+    src/elisedb.h \
+    src/createacc.h
 
 # install
 #target.path = $$[QT_INSTALL_EXAMPLES]/tools/echoplugin/plugin
