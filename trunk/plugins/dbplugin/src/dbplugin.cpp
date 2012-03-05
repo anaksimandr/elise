@@ -1,7 +1,6 @@
 
 #include "commonheaders.h"
 
-const QString	TESTDBPLUGIN_SERVICE	=	"TESTDBPLUGIN_SERVICE";
 const PLUGINLINK* pluginLink;
 
 PLUGININFO pluginInfo = {
@@ -21,19 +20,32 @@ const QUuid* DBPlugin::ElisePluginInterfaces(void)
 }
 
 
-const QString tttemp = QUuid::createUuid();
-int testPluginFunction(intptr_t result, intptr_t lParam)
-{
-	QMessageBox qmes;
-	qmes.setText("Call test plugin success! uuid db is\n" + tttemp);
-	qmes.exec();
-	return 0;
-}
-
 int DBPlugin::Load(const PLUGINLINK* link)
 {
 	pluginLink = link;
-	CreateServiceFunction(&TESTDBPLUGIN_SERVICE, (ELISESERVICE)testPluginFunction);
+
+	//-- Switch to profiles directory
+	QDir curDir = QDir(qApp->applicationDirPath());
+	if (!curDir.exists("Profiles"))
+		curDir.mkdir("Profiles");
+	curDir.cd("Profiles");
+	QDir::setCurrent(curDir.path());
+
+	if (!QFile::exists(elisesys)) {
+		if (EliseDB::createSysDB())
+			return -1;
+		if (EliseDB::createNewAcc())
+				return -1;
+	}
+	else {
+		EliseDB::selectAcc();
+		EliseDB::loadProfile();
+	}
+
+
+	//-- Switch backward to main directory
+	QDir::current().cdUp();
+
 	return 0;
 }
 
