@@ -30,7 +30,7 @@ void EliseTray::trayActivationNotify(QSystemTrayIcon::ActivationReason reason)
 
 int addToContextMenu(uintptr_t wParam,uintptr_t lParam)
 {
-	QAction* action = (QAction*) wParam;
+	QAction* action = (QAction*)wParam;
 	trayElise->addToMenu(action);
 	return 0;
 }

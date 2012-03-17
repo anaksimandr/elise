@@ -41,7 +41,8 @@ int CreateHookableEvent(const QString* name)
 
 	THookEvent* newEvent;
 
-	newEvent = (THookEvent*)malloc(sizeof(THookEvent));
+	//newEvent = (THookEvent*)malloc(sizeof(THookEvent));
+	newEvent = new THookEvent;
 	newEvent->subscriberCount = 0;
 	newEvent->qmapSubscribers = NULL;
 	//newEvent->pfnHook = hokableSig;
@@ -78,7 +79,7 @@ int DestroyHookableEvent(const QString* name)
 			s->num = 0;
 			s->type = 0;
 			s->pfnHook = NULL;
-			free(s);
+			delete s;
 		}
 		p->qmapSubscribers->~QMap();
 		p->qmapSubscribers = NULL;
@@ -87,7 +88,7 @@ int DestroyHookableEvent(const QString* name)
 
 	p->qmutexHook->~QMutex();
 	qmapHooks.remove(*name);
-	free(p);
+	delete p;
 	qmutexHooks.unlock();
 	return 0;
 }
@@ -197,7 +198,8 @@ int HookEventInt(const QString* name, ELISEHOOK hookProc)
 	p = qmapHooks[*name];
 
 	//-- Create new subscriber
-	newSubscr = (THookSubscriber*)malloc(sizeof(THookSubscriber));
+	//newSubscr = (THookSubscriber*)malloc(sizeof(THookSubscriber));
+	newSubscr = new THookSubscriber;
 	newSubscr->num = p->subscriberCount;
 	newSubscr->type = 1;
 	newSubscr->pfnHook = hookProc;
@@ -210,7 +212,6 @@ int HookEventInt(const QString* name, ELISEHOOK hookProc)
 
 	p->qmapSubscribers->insert(newSubscr->num, newSubscr);
 
-	//ret = (void*)(( p->id << 16 ) | p->subscriberCount );
 	qmutexHooks.unlock();
 	return p->subscriberCount++;
 }
@@ -243,7 +244,7 @@ int UnhookEvent(const THook hook)
 	s->num = 0;
 	s->type = 0;
 	s->pfnHook = NULL;
-	free(s);
+	delete s;
 	p->qmapSubscribers->remove(hook.num);
 	//-- If there is no more subscribers - destroy map and reset subscriberCount
 	if (p->qmapSubscribers->isEmpty()) {
@@ -273,7 +274,8 @@ int CreateServiceFunctionInt(const QString *name, ELISESERVICE serviceProc, int 
 
 	TService* newSer;
 
-	newSer = (TService*)malloc(sizeof(TService));
+	//newSer = (TService*)malloc(sizeof(TService));
+	newSer = new TService;
 	newSer->type = type;
 	switch (type)
 	{
@@ -360,7 +362,7 @@ int DestroyServiceFunction(const QString *name)
 		default:
 			ser->pfnService = NULL;
 	}
-	free(ser);
+	delete ser;
 	qmapServices.remove(*name);
 	qmutexServices.unlock();
 	return 0;

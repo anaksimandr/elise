@@ -45,9 +45,9 @@ int EliseDB::createSysDB()
 
 int EliseDB::createNewAcc()
 {
-
-
-	return 0;
+	AccountManager* manager =  new AccountManager();
+	return manager->exec();
+	//return 0;
 }
 
 int EliseDB::selectAcc()

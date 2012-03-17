@@ -11,7 +11,7 @@ DEFINES		+=	UNICODE
 SOURCES += \
 	src/dbplugin.cpp \
     src/elsiedb.cpp \
-    src/createacc.cpp
+    src/accounts.cpp
 
 HEADERS += \
 	src/commonheaders.h \
@@ -20,7 +20,7 @@ HEADERS += \
 	src/dbplugin.h \
     src/dbkey.h \
     src/elisedb.h \
-    src/createacc.h
+    src/accounts.h
 
 # install
 #target.path = $$[QT_INSTALL_EXAMPLES]/tools/echoplugin/plugin

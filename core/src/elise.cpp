@@ -7,7 +7,7 @@
 
 int InitialiseModularEngine(void);
 
-
+QTestWindow* window;
 
 int shutDown(intptr_t result, intptr_t lParam)
 {
@@ -35,6 +35,7 @@ int shutDown(intptr_t result, intptr_t lParam)
 
 	//if (bufferedPaintUninit) bufferedPaintUninit();
 
+	window->~QTestWindow();
 	UnloadDefaultModules();
 
 	QApplication::exit(result);
@@ -80,7 +81,8 @@ int main(int argc, char* argv[]) {
 	//myPid=GetCurrentProcessId();
 
 	//-- For test
-	QTestWindow* window = new QTestWindow();
+	//QTestWindow* window = new QTestWindow();
+	window = new QTestWindow();
 
 	return app.exec();
 }

@@ -14,7 +14,8 @@ SOURCES += \
     src/tests.cpp \
     src/services.cpp \
     src/modules.cpp \
-    src/modules/tray.cpp
+    src/modules/tray.cpp \
+    src/modules/logon.cpp
 
 
 HEADERS += \
@@ -23,7 +24,8 @@ HEADERS += \
     src/tests.h \
     src/services.h \
     src/modules.h \
-    src/modules/tray.h
+    src/modules/tray.h \
+    src/modules/logon.h
 
 RESOURCES += \
 	res/resources.qrc
