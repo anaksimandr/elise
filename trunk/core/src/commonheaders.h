@@ -9,6 +9,7 @@
 #include "../../api/pluginapi.h"
 #include "modules.h"
 #include "modules/tray.h"
+#include "modules/logon.h"
 
 //-- Some stuff from windows
 //typedef void* HANDLE;

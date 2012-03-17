@@ -17,6 +17,7 @@ public:
 					EliseTray();
 					~EliseTray();
     int				addToMenu(QAction* action);
+	int				delFromMenu(QAction* action);
 	//int				addToContextMenu();
 };
 

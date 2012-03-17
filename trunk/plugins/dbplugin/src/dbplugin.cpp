@@ -31,17 +31,18 @@ int DBPlugin::Load(const PLUGINLINK* link)
 	curDir.cd("Profiles");
 	QDir::setCurrent(curDir.path());
 
-	if (!QFile::exists(elisesys)) {
+	/*if (!QFile::exists(elisesys)) {
 		if (EliseDB::createSysDB())
-			return -1;
+			return 1;
 		if (EliseDB::createNewAcc())
-				return -1;
+			//--Abort loading and exit Elise
+				return 1;
 	}
 	else {
 		EliseDB::selectAcc();
 		EliseDB::loadProfile();
 	}
-
+*/
 
 	//-- Switch backward to main directory
 	QDir::current().cdUp();

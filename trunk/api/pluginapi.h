@@ -77,6 +77,18 @@ public:
 	virtual	int					Unload(void) = 0;
 };
 
+class IDBPlugin
+{
+public:
+	virtual						~IDBPlugin() {}
+
+	virtual	PLUGININFO*			ElisePluginInfo(EVersion) = 0;
+	virtual	const QUuid*		ElisePluginInterfaces(void) = 0;
+	virtual	int					Load(const PLUGINLINK*) = 0;
+	virtual	int					Unload(void) = 0;
+};
+
 Q_DECLARE_INTERFACE(IPlugin, "Elise.basicPluginInterface/1.0")
+Q_DECLARE_INTERFACE(IDBPlugin, "Elise.basicDBPluginInterface/1.0")
 
 #endif // PLUGINAPI_H

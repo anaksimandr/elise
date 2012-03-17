@@ -8,6 +8,7 @@
 #include "../../api/dbapi.h"
 #include "dbplugin.h"
 #include "dbkey.h"
+#include "accounts.h"
 #include "elisedb.h"
 
 #endif // COMMONHEADERS_H
