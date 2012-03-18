@@ -56,7 +56,6 @@ int LoadDefaultModules()
 		return 1;
 	}
 
-
 	//-- Loading plugins.
 	//-- Note: trying access loadPlugins() without getPluginsList() cause a crash.
 

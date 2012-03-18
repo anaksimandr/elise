@@ -4,7 +4,7 @@
 AccountManager::AccountManager(QMap<QString, IDBPlugin *>* dbPlugins)
 {
 	this->setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowTitleHint);
-	//this->setWindowModality(Qt::ApplicationModal);
+	this->setWindowModality(Qt::ApplicationModal);
 
 	QGridLayout* layout = new QGridLayout(this);
 
