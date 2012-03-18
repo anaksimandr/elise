@@ -7,8 +7,6 @@
 
 int InitialiseModularEngine(void);
 
-QTestWindow* window;
-
 int shutDown(intptr_t result, intptr_t lParam)
 {
 	//-- PreShut down stage
@@ -35,7 +33,7 @@ int shutDown(intptr_t result, intptr_t lParam)
 
 	//if (bufferedPaintUninit) bufferedPaintUninit();
 
-	window->~QTestWindow();
+	//window->~QTestWindow();
 	UnloadDefaultModules();
 
 	QApplication::exit(result);
@@ -49,6 +47,8 @@ int main(int argc, char* argv[]) {
 	QTextCodec::setCodecForTr(QTextCodec::codecForName("utf-8"));
 	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
 
+	bool failed = false;
+
 	//-- Initialise random number generator
 	qsrand(uint(std::time(0)) ^ (qHash(&app)));
 	//-- It looks like Qt doesn't always use srand as backend of qsrand
@@ -59,7 +59,7 @@ int main(int argc, char* argv[]) {
 
 	//-- Load default modules; shut down if failed
 	if (LoadDefaultModules())
-		shutDown(-1, 0);
+		failed = true;
 
 	//CreateServiceFunction(&SHUTDOWN_SERVICE, (ELISESERVICE)shutDown);
 
@@ -82,7 +82,10 @@ int main(int argc, char* argv[]) {
 
 	//-- For test
 	//QTestWindow* window = new QTestWindow();
-	window = new QTestWindow();
+	if (failed)
+		shutDown(-1, 0);
+	else
+		new QTestWindow();
 
 	return app.exec();
 }
