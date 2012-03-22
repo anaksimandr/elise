@@ -3,7 +3,7 @@
 
 #include <QtCore>
 #include <QtGui>
-#include "../../api/pluginapi.h"
+#include "../../api/e_pluginapi.h"
 #include "newplugin.h"
 
 #endif // COMMONHEADERS_H

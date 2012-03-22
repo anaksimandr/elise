@@ -20,6 +20,7 @@
 
 //-- Services
 const QString	SHUTDOWN_SERVICE	=	"SHUTDOWN_SERVICE";	/* Call this method to close Elise. */
+const QString	CHANGEACC_SERVICE	=	"CHANGEACC_SERVICE";/* Calls unload plugins and calls login window. */
 const QString	TRAY_ADD_MENUITEM	=	"TRAY_ADD_MENUITEM";/* Adds item to tray context menu. */
 
 //-- Hookable events

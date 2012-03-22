@@ -3,16 +3,20 @@
 
 #include "commonheaders.h"
 
-class DBPlugin : public QObject, IPlugin
+class DBPlugin : public QObject, IDBPlugin
  {
 	 Q_OBJECT
-	 Q_INTERFACES(IPlugin)
+	 Q_INTERFACES(IDBPlugin)
 
 public:
-	PLUGININFO*			ElisePluginInfo(EVersion);
-	const QUuid*		ElisePluginInterfaces(void);
-	int					Load(const PLUGINLINK* link);
-	int					Unload(void);
+	PLUGININFO*					ElisePluginInfo(EVersion);
+	const QUuid*				ElisePluginInterfaces(void);
+	int							Load(const PLUGINLINK* link);
+	int							Unload(void);
+	QMap<QString, ACCOUNT*>*	GetAccounts();
+	int							Login(const QString& name, const QString& password,
+									  bool savePassword, bool loginDefault);
+	int							CreateAccount(const QString& name, const QString& password);
 };
 
 

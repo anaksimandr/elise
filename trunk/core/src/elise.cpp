@@ -37,7 +37,7 @@ int shutDown(intptr_t result, intptr_t lParam)
 	UnloadDefaultModules();
 
 	QApplication::exit(result);
-	return 0;
+	return result;
 }
 
 int main(int argc, char* argv[]) {
@@ -46,8 +46,6 @@ int main(int argc, char* argv[]) {
 	app.setQuitOnLastWindowClosed(false);
 	QTextCodec::setCodecForTr(QTextCodec::codecForName("utf-8"));
 	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
-
-	bool failed = false;
 
 	//-- Initialise random number generator
 	qsrand(uint(std::time(0)) ^ (qHash(&app)));
@@ -59,7 +57,7 @@ int main(int argc, char* argv[]) {
 
 	//-- Load default modules; shut down if failed
 	if (LoadDefaultModules())
-		failed = true;
+		return shutDown(-1, 0);
 
 	//CreateServiceFunction(&SHUTDOWN_SERVICE, (ELISESERVICE)shutDown);
 
@@ -82,10 +80,8 @@ int main(int argc, char* argv[]) {
 
 	//-- For test
 	//QTestWindow* window = new QTestWindow();
-	if (failed)
-		shutDown(-1, 0);
-	else
-		new QTestWindow();
+
+	new QTestWindow();
 
 	return app.exec();
 }

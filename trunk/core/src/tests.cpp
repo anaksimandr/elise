@@ -220,7 +220,8 @@ void QTestWindow::testNewPlugin()
 const QString testdbplugin_service = "TESTDBPLUGIN_SERVICE";
 void QTestWindow::testDBPlugin()
 {
-	CallService(&testdbplugin_service, 0, 0);
+	if (CallService(&CHANGEACC_SERVICE, 0, 0) == SERVICE_NOTFOUND)
+		QMessageBox::critical(this, "Error", "Service not found.", QMessageBox::Ok);
 }
 
 /*void QTestWindow::testDB()

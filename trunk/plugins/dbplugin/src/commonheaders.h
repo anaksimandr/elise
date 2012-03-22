@@ -4,11 +4,10 @@
 #include <QtCore>
 #include <QtGui>
 #include <QtSql>
-#include "../../api/pluginapi.h"
+#include "../../api/e_dbpluginapi.h"
 #include "../../api/dbapi.h"
 #include "dbplugin.h"
 #include "dbkey.h"
-#include "accounts.h"
 #include "elisedb.h"
 
 #endif // COMMONHEADERS_H
