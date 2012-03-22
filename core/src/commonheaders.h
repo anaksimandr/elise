@@ -6,7 +6,8 @@
 
 
 #include "services.h"
-#include "../../api/pluginapi.h"
+#include "../../api/e_pluginapi.h"
+#include "../../api/e_dbpluginapi.h"
 #include "modules.h"
 #include "modules/tray.h"
 #include "modules/logon.h"

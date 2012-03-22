@@ -5,6 +5,7 @@ const QString	TESTPLUGIN_SERVICE	=	"TESTPLUGIN_SERVICE";
 const PLUGINLINK* pluginLink;
 
 PLUGININFO pluginInfo = {
+	"NewPlugin",
 	{0,0,0,1},
 	"{ca0ae4d0-ea7c-4743-b34e-1a2c9c61991d}"
 };
@@ -37,6 +38,7 @@ int NewPlugin::Load(const PLUGINLINK* link)
 
 int NewPlugin::Unload(void)
 {
+	DestroyServiceFunction(&TESTPLUGIN_SERVICE);
 	return 0;
 }
 

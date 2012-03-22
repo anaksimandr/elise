@@ -50,6 +50,50 @@ int EliseDB::createNewAcc()
 	//return 0;
 }
 
+QMap<QString, ACCOUNT*>* EliseDB::getAccounts()
+{
+	QMap<QString, ACCOUNT*>* list = new QMap<QString, ACCOUNT*>();
+	ACCOUNT* item;
+	for (int i = 0; i < 2; i++) {
+		item = new ACCOUNT;
+		item->savePassword = i;
+		item->defaultAccount = i;
+		if (item->savePassword)
+			item->password = "test";
+		else
+			item->password = "";
+		list->insert("test" + QString::number(i), item);
+	}
+	return list;
+}
+
+int EliseDB::Login(const QString& name, const QString& password,
+				   bool savePassword, bool loginDefault)
+{
+	QMessageBox qmes;
+	qmes.setText("You are trying to login now, but something going wrong =(\n"
+				 + name
+				 + " - "
+				 + password
+				 + ", "
+				 + QString::number(savePassword)
+				 + ", "
+				 + QString::number(loginDefault));
+	qmes.exec();
+	return 0;
+}
+
+int EliseDB::CreateAccount(const QString& name, const QString& password)
+{
+	QMessageBox qmes;
+	qmes.setText("You are trying to create account now, but something going wrong =(\n"
+				 + name
+				 + " - "
+				 + password);
+	qmes.exec();
+	return 0;
+}
+
 int EliseDB::selectAcc()
 {
 	return 0;

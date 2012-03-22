@@ -20,12 +20,13 @@ SOURCES += \
 
 HEADERS += \
     src/commonheaders.h \
-	../api/pluginapi.h \
     src/tests.h \
     src/services.h \
     src/modules.h \
     src/modules/tray.h \
-    src/modules/logon.h
+    src/modules/logon.h \
+	../api/e_pluginapi.h \
+	../api/e_dbpluginapi.h
 
 RESOURCES += \
 	res/resources.qrc

@@ -4,6 +4,7 @@
 const PLUGINLINK* pluginLink;
 
 PLUGININFO pluginInfo = {
+	"DBPlugin",
 	{0,0,0,1},
 	"{ca0ae4d0-ea7c-4743-b34e-1a2c9c61991d}"
 };
@@ -19,6 +20,21 @@ const QUuid* DBPlugin::ElisePluginInterfaces(void)
 	return &pluginInfo.uuid;
 }
 
+QMap<QString, ACCOUNT*>* DBPlugin::GetAccounts()
+{
+	return EliseDB::getAccounts();
+}
+
+int DBPlugin::Login(const QString& name, const QString& password,
+					bool savePassword, bool loginDefault)
+{
+	return EliseDB::Login(name, password, savePassword, loginDefault);
+}
+
+int DBPlugin::CreateAccount(const QString& name, const QString& password)
+{
+	return EliseDB::CreateAccount(name, password);
+}
 
 int DBPlugin::Load(const PLUGINLINK* link)
 {
@@ -43,6 +59,10 @@ int DBPlugin::Load(const PLUGINLINK* link)
 		EliseDB::loadProfile();
 	}
 */
+
+	/*QMessageBox::information(0, "Information",
+							 DBKEY,
+							 QMessageBox::Ok);*/
 
 	//-- Switch backward to main directory
 	QDir::current().cdUp();

@@ -5,6 +5,6 @@
 const QString DBKEY = "";
 
 //-- DB name constants for internal use
-const QString elisesys = "elisesys";
+const QString elisesys = "sys.edb";
 
 #endif // DBKEY_H

@@ -12,7 +12,7 @@ SOURCES += \
 
 HEADERS += \
 	src/commonheaders.h \
-	../../api/pluginapi.h \
+	../../api/e_pluginapi.h \
     src/newplugin.h
 
 # install

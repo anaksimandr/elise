@@ -1,6 +1,7 @@
 #include "commonheaders.h"
 
 extern int shutDown(intptr_t, intptr_t);
+int ChangeAccount(intptr_t, intptr_t);
 
 const EVersion eliseVersion = {0,0,0,1};
 const PLUGINLINK pluginLink = {
@@ -15,13 +16,15 @@ const PLUGINLINK pluginLink = {
 		&ServiceExists
 };
 
-//QMap<QString, IPlugin*>* PluginLoader::loadablePlugins;
-//QMap<QString, IDBPlugin*>*	PluginLoader::dbPlugins;
-QMap<QString, IPlugin*>*	PluginLoader::plugins;
+QMap<QString, IPlugin*>*	PluginLoader::plugins = 0;
+
+LOADEDDBPLUGIN PluginLoader::loadedDBPlugin;
 
 int LoadSystemModule()
 {
 	if (CreateServiceFunction(&SHUTDOWN_SERVICE, (ELISESERVICE)shutDown))
+		return 1;
+	if (CreateServiceFunction(&CHANGEACC_SERVICE, (ELISESERVICE)ChangeAccount))
 		return 1;
 	//if (CreateHookableEvent(&hkevName))
 		//return 1;
@@ -39,34 +42,85 @@ int LoadDefaultModules()
 
 	//-- Now we will load the profile, do it befor loading plugins, because we must know which
 	//-- plugins must be loaded for this profile.
-	//-- First, we must get list of all available plugins to know which db plugins are exist.
 	QMap<QString, IPlugin*>* loadablePlugins = new QMap<QString, IPlugin*>();
-	QMap<QString, IDBPlugin*>* dbPlugins	= new QMap<QString, IDBPlugin*>();
-	if (PluginLoader::getPluginsList(dbPlugins, loadablePlugins)) {
-		QMessageBox qmes;
-		qmes.setWindowTitle("getPluginsList error");
-		qmes.setText("Failed to get plugins list or no one plugin was found.");
-		qmes.exec();
-		return 1;
-	}
-	AccountManager* manager =  new AccountManager(dbPlugins);
-	if (manager->exec()) {
+	if (PluginLoader::callLoginWindow(loadablePlugins, 1)) {
 		loadablePlugins->~QMap();
-		dbPlugins->~QMap();
 		return 1;
 	}
 
 	//-- Loading plugins.
-	//-- Note: trying access loadPlugins() without getPluginsList() cause a crash.
+	int res = PluginLoader::loadPlugins(loadablePlugins);
 
-	//-- Try to load DB plugin
-	if (PluginLoader::loadDBPlugin())
-		return 1;
-	return PluginLoader::loadPlugins(loadablePlugins);
-
-	//-- Destroy temporary elements
 	loadablePlugins->~QMap();
+	if (res)
+		return 1;
+
+	return 0;
+}
+
+int PluginLoader::callLoginWindow(QMap<QString, IPlugin*>* loadablePlugins, bool first)
+{
+	//-- First, we must get list of all available plugins to know which db plugins are exist.
+	QMap<QString, IDBPlugin*>* dbPlugins	= new QMap<QString, IDBPlugin*>();
+	if (PluginLoader::getAvailablePlugins(dbPlugins, loadablePlugins)
+			|| loadablePlugins == 0
+			|| loadablePlugins->count() == 0)
+	{
+		QMessageBox::critical(0, "getAvailablePlugins error",
+							  "Failed to get plugins list or no one plugin was found.",
+							  QMessageBox::Cancel);
+		dbPlugins->~QMap();
+		return 1;
+	}
+	//-- Check for DB plugins
+	if (dbPlugins == 0 || dbPlugins->count() == 0) {
+		QMessageBox::critical(0, "Error",
+							  "No one DB plugin was found.",
+							  QMessageBox::Cancel);
+		dbPlugins->~QMap();
+		return 1;
+	}
+	AccountManager* manager =  new AccountManager(dbPlugins);
+	if (first) {
+		//-- Startup
+		if (manager->loadDefault()) {
+			//-- If load default fails then show login window
+			if (manager->exec()) {
+				dbPlugins->~QMap();
+				return 1;
+			}
+		}
+	}
+	else
+		//-- Change account
+		if (manager->exec()) {
+			dbPlugins->~QMap();
+			return 1;
+		}
+
 	dbPlugins->~QMap();
+	return 0;
+}
+
+int ChangeAccount(intptr_t, intptr_t)
+{
+	//-- First, unload all plugins
+	PluginLoader::unloadPlugins();
+
+	//-- New login
+	QMap<QString, IPlugin*>* loadablePlugins = new QMap<QString, IPlugin*>();
+	if (PluginLoader::callLoginWindow(loadablePlugins, 0)) {
+		loadablePlugins->~QMap();
+		return 1;
+	}
+
+	//-- Loading plugins.
+	int res = PluginLoader::loadPlugins(loadablePlugins);
+
+	loadablePlugins->~QMap();
+
+	if (res)
+		return 1;
 
 	return 0;
 }
@@ -80,8 +134,7 @@ int UnloadDefaultModules()
 	return 0;
 }
 
-int PluginLoader::getPluginsList(QMap<QString, IDBPlugin *>* dbPlugins,
-								 QMap<QString, IPlugin *>* loadablePlugins)
+QDir PluginLoader::getPluginsDir()
 {
 	QDir pluginsDir = QDir(qApp->applicationDirPath());
 
@@ -99,6 +152,13 @@ int PluginLoader::getPluginsList(QMap<QString, IDBPlugin *>* dbPlugins,
 
 	pluginsDir.cd("Plugins");
 
+	return pluginsDir;
+}
+
+int PluginLoader::getAvailablePlugins(QMap<QString, IDBPlugin*>* dbPlugins,
+									  QMap<QString, IPlugin*>* loadablePlugins)
+{
+	QDir pluginsDir = getPluginsDir();
 	QPluginLoader loader;
 	QObject* plugin = NULL;
 	//-- Trying to load each file in dir as plugin
@@ -107,39 +167,74 @@ int PluginLoader::getPluginsList(QMap<QString, IDBPlugin *>* dbPlugins,
 		plugin = loader.instance();
 		if (plugin) {
 			IPlugin* validPlugin = qobject_cast<IPlugin*>(plugin);
+			//-- Elise plugin
 			if (validPlugin) {
 				if (validPlugin->ElisePluginInfo(eliseVersion) != NULL)
 					loadablePlugins->insert(fileName, validPlugin);
 			}
+			//-- Elise DB plugin
 			else {
 				IDBPlugin* validDBPlugin = qobject_cast<IDBPlugin*>(plugin);
 				if (validDBPlugin) {
-					if (validPlugin->ElisePluginInfo(eliseVersion) != NULL)
+					if (validDBPlugin->ElisePluginInfo(eliseVersion) != NULL)
 						dbPlugins->insert(fileName, validDBPlugin);
 				}
 			}
 		} //if plugin
 	} //foreach
-
 	return 0;
 }
 
-int PluginLoader::loadDBPlugin()
+int PluginLoader::loadDBPlugin(QString pluginName, IDBPlugin* dbPlugin)
 {
-	//if (loadablePlugins->contains())
-	//return 0;
+	loadedDBPlugin.name = pluginName;
+	loadedDBPlugin.plugin = dbPlugin;
+	//QMessageBox::information(0, "Debug", loadedDBPlugin.name, QMessageBox::Ok);
+	return dbPlugin->Load(&pluginLink);
 }
 
 int PluginLoader::loadPlugins(QMap<QString, IPlugin *>* loadablePlugins)
 {
-	QMapIterator<QString,IPlugin*> iter(*loadablePlugins);
+	if (plugins == 0)
+		plugins = new QMap<QString, IPlugin*>();
+	QMapIterator<QString, IPlugin*> iter(*loadablePlugins);
 	IPlugin* p;
 	while (iter.hasNext()) {
 		iter.next();
 		p = iter.value();
 		if (p->Load(&pluginLink))
 			return 1;
+		plugins->insert(iter.key(), p);
 	}
+	return 0;
+}
 
+int PluginLoader::unloadPlugins()
+{
+	//-- NOTE: we are not destroying QMap plugins here because we need it for new loading and
+	//-- it will be automatically destroyed on fully exit
+	QDir pluginsDir = getPluginsDir();
+	QPluginLoader loader;
+	QMapIterator<QString, IPlugin*> iter(*plugins);
+	while (iter.hasNext()) {
+		iter.next();
+		//-- Call Elise plugin api unload
+		if (iter.value()->Unload())
+			QMessageBox::critical(0, "unloadPlugins error",
+								  "Error while unloading plugin " + iter.key() + ".",
+								  QMessageBox::Ok);
+		loader.setFileName(pluginsDir.absoluteFilePath(iter.key()));
+		//-- Free plugin
+		loader.unload();
+		//-- Remove it from list
+		plugins->remove(iter.key());
+	} //while
+	//-- Unload DB plugin
+	if (loadedDBPlugin.plugin->Unload())
+		QMessageBox::critical(0, "unloadPlugins error",
+							 "Error while unloading DB plugin" + loadedDBPlugin.name + ".",
+							  QMessageBox::Ok);
+	loader.setFileName(pluginsDir.absoluteFilePath(loadedDBPlugin.name));
+	loader.unload();
 	return 0;
 }
