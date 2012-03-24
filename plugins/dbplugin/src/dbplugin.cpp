@@ -64,9 +64,6 @@ int DBPlugin::Load(const PLUGINLINK* link)
 							 DBKEY,
 							 QMessageBox::Ok);*/
 
-	//-- Switch backward to main directory
-	QDir::current().cdUp();
-
 	return 0;
 }
 

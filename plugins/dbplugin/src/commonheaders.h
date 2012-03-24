@@ -10,4 +10,6 @@
 #include "dbkey.h"
 #include "elisedb.h"
 
+extern PLUGININFO pluginInfo;
+
 #endif // COMMONHEADERS_H

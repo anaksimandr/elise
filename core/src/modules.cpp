@@ -1,5 +1,8 @@
 #include "commonheaders.h"
 
+//-- Temporary module for tests
+#include "tests.h"
+
 extern int shutDown(intptr_t, intptr_t);
 int ChangeAccount(intptr_t, intptr_t);
 
@@ -111,7 +114,7 @@ int ChangeAccount(intptr_t, intptr_t)
 	QMap<QString, IPlugin*>* loadablePlugins = new QMap<QString, IPlugin*>();
 	if (PluginLoader::callLoginWindow(loadablePlugins, 0)) {
 		loadablePlugins->~QMap();
-		return 1;
+		return shutDown(-1, 0);
 	}
 
 	//-- Loading plugins.
@@ -120,8 +123,10 @@ int ChangeAccount(intptr_t, intptr_t)
 	loadablePlugins->~QMap();
 
 	if (res)
-		return 1;
+		return shutDown(-1, 0);
 
+	//-- For test
+	new QTestWindow();
 	return 0;
 }
 

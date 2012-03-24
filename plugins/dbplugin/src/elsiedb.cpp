@@ -10,7 +10,7 @@ int EliseDB::createSysDB()
 	//QSqlDatabase db = QSqlDatabase::addDatabase("QSQLCIPHER");
 	sysdb = QSqlDatabase::addDatabase("QSQLCIPHER");
 
-	sysdb.setDatabaseName(elisesys);
+	sysdb.setDatabaseName(getProfileDir(0).absoluteFilePath(eliseSys));
 
 	if (!sysdb.open()) {
 		QMessageBox::critical(0,
@@ -41,13 +41,6 @@ int EliseDB::createSysDB()
 
 
 	return 0;
-}
-
-int EliseDB::createNewAcc()
-{
-	//AccountManager* manager =  new AccountManager();
-	//return manager->exec();
-	//return 0;
 }
 
 QMap<QString, ACCOUNT*>* EliseDB::getAccounts()
@@ -94,12 +87,16 @@ int EliseDB::CreateAccount(const QString& name, const QString& password)
 	return 0;
 }
 
-int EliseDB::selectAcc()
+QDir EliseDB::getProfileDir(const QString& name)
 {
-	return 0;
+	//-- All profiles must be stored in "Profiles"
+	QDir curDir = QDir(qApp->applicationDirPath());
+	if (!curDir.exists("Profiles"))
+		curDir.mkdir("Profiles");
+	curDir.cd("Profiles");
+//TODO: check this
+	if (!name.isEmpty())
+		curDir.cd(name);
+	return curDir;
 }
 
-int EliseDB::loadProfile()
-{
-	return 0;
-}

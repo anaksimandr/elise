@@ -5,12 +5,10 @@
 
 class EliseDB {
 private:
-	static QSqlDatabase		sysdb;
-public:
+	static QSqlDatabase			sysdb;
 	static int						createSysDB();
-	static int						createNewAcc();
-	static int						selectAcc();
-	static int						loadProfile();
+	static QDir						getProfileDir(const QString& name);
+public:
 	static QMap<QString, ACCOUNT*>*	getAccounts();
 	static int						Login(const QString& name, const QString& password,
 										  bool savePassword, bool loginDefault);
