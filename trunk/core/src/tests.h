@@ -18,6 +18,7 @@ public slots:
 	void			testNewPlugin();
 	void			testDBPlugin();
 	void			testDB();
+	void			changeAcc();
 	//-- Services
 	void			buttonExit();
 	void			createService();

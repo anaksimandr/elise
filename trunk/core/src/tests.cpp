@@ -80,6 +80,11 @@ QTestWindow::QTestWindow()
 	connect(button, SIGNAL(clicked()), this, SLOT(testDB()));
 	layoutUtil->addWidget(button);
 
+	button = new QPushButton(this);
+	button->setText("Change account");
+	connect(button, SIGNAL(clicked()), this, SLOT(changeAcc()));
+	layoutUtil->addWidget(button);
+
 	layoutUtil->setAlignment(button, Qt::AlignTop);
 
 	//-- Services
@@ -220,6 +225,11 @@ void QTestWindow::testNewPlugin()
 const QString testdbplugin_service = "TESTDBPLUGIN_SERVICE";
 void QTestWindow::testDBPlugin()
 {
+}
+
+void QTestWindow::changeAcc()
+{
+	this->~QTestWindow();
 	if (CallService(&CHANGEACC_SERVICE, 0, 0) == SERVICE_NOTFOUND)
 		QMessageBox::critical(this, "Error", "Service not found.", QMessageBox::Ok);
 }
