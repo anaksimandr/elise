@@ -3,16 +3,9 @@
 
 #include "commonheaders.h"
 
-class EliseDB {
-private:
-	static QSqlDatabase			sysdb;
-	static int						createSysDB();
-	static QDir						getProfileDir(const QString& name);
-public:
-	static QMap<QString, ACCOUNT*>*	getAccounts();
-	static int						Login(const QString& name, const QString& password,
-										  bool savePassword, bool loginDefault);
-	static int						CreateAccount(const QString& name, const QString& password);
-};
+extern QString qsProfile;
+
+extern int WriteSettingToBase(uintptr_t  wParam, uintptr_t lParam);
+extern int ReadSettingFromBase(uintptr_t  wParam, uintptr_t lParam);
 
 #endif // ELISEDB_H

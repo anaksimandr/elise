@@ -81,6 +81,7 @@ typedef struct
 } THookEvent;
 
 //-- Use this to store information about your hooks and to call UnhookEvent function
+//-- See UnhookEvent function description for more details
 typedef struct
 {
 	QString* name;
@@ -153,8 +154,8 @@ int HookEvent(const QString* name, ELISEHOOK hookProc);
 
 /* UnhookEvent
   Removes a hook from its event chain. It will no longer receive any events.
-  hook.num in Thook is personal number of destroying hook that was returned by HookEvent().
-  hook.name in Thook is name of chain of events from which the remove is.
+  hook.num in THook is personal number of destroying hook that was returned by HookEvent().
+  hook.name in THook is name of chain of events from which the remove is.
   Returns 0 on success, -1 if name is empty, 1 if name is not found in the list of events and -2
   if there is no hooks in chain 'name'.
 */
