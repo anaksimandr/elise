@@ -170,6 +170,8 @@ void AccountManager::loadAccountDetails(const QString& name)
 		cbDefaultAcc->setCheckState((Qt::CheckState)tmp);
 		if (p->savePassword)
 			lePassword->setText(p->password);
+		else
+			lePassword->setText("");
 	}
 }
 

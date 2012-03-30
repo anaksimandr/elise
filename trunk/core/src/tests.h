@@ -9,6 +9,7 @@ class QTestWindow : public QWidget
 private:
 	QLabel*			output;
 	QProgressBar*	bar;
+	THook			thTray;
 protected:
 	//Elise*			parent;
 	//virtual void	contextMenuEvent(QContextMenuEvent* e);

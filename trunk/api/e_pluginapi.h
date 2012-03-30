@@ -1,6 +1,9 @@
 #ifndef E_PLUGINAPI_H
 #define E_PLUGINAPI_H
 
+////////////////////////////////////////////////////////////////////////////////////////////////////
+//-- See services.h for more details --/////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 
 //-- Store information about version here
 typedef struct {
@@ -13,6 +16,7 @@ typedef struct {
 
 #ifndef SERVICES_H__
 //-- Use this to store information about your hooks and to call UnhookEvent() function
+//-- See UnhookEvent() function description for more details
 typedef struct
 {
 	QString* name;

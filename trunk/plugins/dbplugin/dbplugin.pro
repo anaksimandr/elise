@@ -15,10 +15,10 @@ SOURCES += \
 HEADERS += \
 	src/commonheaders.h \
 	../../api/e_dbpluginapi.h \
-	../../api/dbapi.h \
 	src/dbplugin.h \
     src/dbkey.h \
-	src/elisedb.h
+	src/elisedb.h \
+    ../../api/e_database.h
 
 # install
 #target.path = $$[QT_INSTALL_EXAMPLES]/tools/echoplugin/plugin

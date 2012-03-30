@@ -4,10 +4,14 @@
 #include "commonheaders.h"
 
 class DBPlugin : public QObject, IDBPlugin
- {
-	 Q_OBJECT
-	 Q_INTERFACES(IDBPlugin)
-
+{
+	Q_OBJECT
+	Q_INTERFACES(IDBPlugin)
+private:
+	int							openSysDB();
+	QDir						getProfileDir();
+	QDir						getProfileDir(const QString& name);
+	int							loadProfile(const QString& name, const QString& passwd);
 public:
 	PLUGININFO*					ElisePluginInfo(EVersion);
 	const QUuid*				ElisePluginInterfaces(void);
