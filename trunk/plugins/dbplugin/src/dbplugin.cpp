@@ -53,7 +53,7 @@ int DBPlugin::openSysDB()
 			QMessageBox::critical(0,
 								  "Cannot open system database",
 								  "Unable to establish a database connection.\n"
-								  "SQLCipher not found?",
+								  + sysdb.lastError().text(),
 								  QMessageBox::Cancel);
 			//-- Restore current dir
 			QDir::setCurrent(qdCurrent.path());
@@ -90,7 +90,7 @@ int DBPlugin::openSysDB()
 			QMessageBox::critical(0,
 								  "Cannot open system database",
 								  "Unable to establish a database connection.\n"
-								  "SQLCipher not found?",
+								  + sysdb.lastError().text(),
 								  QMessageBox::Cancel);
 			//-- Restore current dir
 			QDir::setCurrent(qdCurrent.path());
