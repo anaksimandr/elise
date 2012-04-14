@@ -18,15 +18,17 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //-- Names of system services and events --/////////////////////////////////////////////////////////
 
+const QString	E_SKIN_MODULE		=	"Skins";
+
 //-- Services
-const QString	SHUTDOWN_SERVICE	=	"SHUTDOWN_SERVICE";	/* Call this method to close Elise. */
-const QString	CHANGEACC_SERVICE	=	"CHANGEACC_SERVICE";/* Calls unload plugins and calls login window. */
-const QString	TRAY_ADD_MENUITEM	=	"TRAY_ADD_MENUITEM";/* Adds item to tray context menu. */
+const QString	SHUTDOWN_SERVICE	=	"System/Shutdown";	/* Call this method to close Elise. */
+const QString	CHANGEACC_SERVICE	=	"System/ChangeAcc";	/* Calls unload plugins and calls login window. */
+const QString	TRAY_ADD_MENUITEM	=	"Tray/AddMenuItem";	/* Adds item to tray context menu. */
 
 //-- Hookable events
-const QString	TRAY_SINGLECLICK	=	"TRAY_SINGLECLICK";	/* The system tray entry was clicked. */
-const QString	TRAY_DOUBLECLICK	=	"TRAY_DOUBLECLICK";	/* The system tray entry was double clicked. */
-const QString	TRAY_MIDDLECLICK	=	"TRAY_MIDDLECLICK";	/* The system tray entry was clicked with the middle mouse button. */
+const QString	TRAY_SINGLECLICK	=	"Tray/SingleClick";	/* The system tray entry was clicked. */
+const QString	TRAY_DOUBLECLICK	=	"Tray/DoubleClick";	/* The system tray entry was double clicked. */
+const QString	TRAY_MIDDLECLICK	=	"Tray/MiddleClick";	/* The system tray entry was clicked with the middle mouse button. */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //-- Service and hook definitions --////////////////////////////////////////////////////////////////

@@ -10,7 +10,7 @@ typedef struct {
 	union
 	{
 		unsigned char chars[4];		// [3] - major version, [2] - minor version
-		int value;					// [1] - release num, [0] - build num
+		qint32 value;				// [1] - release num, [0] - build num
 	};
 } EVersion;
 

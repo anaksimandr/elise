@@ -10,12 +10,13 @@ VERSION		=	0.0.0.1
 DEFINES		+=	UNICODE
 
 SOURCES += \
-    src/elise.cpp \
-    src/tests.cpp \
-    src/services.cpp \
-    src/modules.cpp \
-    src/modules/tray.cpp \
-    src/modules/logon.cpp
+	src/elise.cpp \
+	src/tests.cpp \
+	src/services.cpp \
+	src/modules.cpp \
+	src/modules/tray.cpp \
+	src/modules/logon.cpp \
+	src/modules/options.cpp
 
 
 HEADERS += \
@@ -26,7 +27,10 @@ HEADERS += \
     src/modules/tray.h \
     src/modules/logon.h \
 	../api/e_pluginapi.h \
-	../api/e_dbpluginapi.h
+	../api/e_dbpluginapi.h \
+	../api/e_database.h \
+	../api/e_options.h \
+	src/modules/options.h
 
 RESOURCES += \
 	res/resources.qrc

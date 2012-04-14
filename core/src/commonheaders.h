@@ -11,6 +11,9 @@
 #include "modules.h"
 #include "modules/tray.h"
 #include "modules/logon.h"
+#include "../../api/e_database.h"
+#include "../../api/e_options.h"
+#include "modules/options.h"
 
 //-- Some stuff from windows
 //typedef void* HANDLE;

@@ -391,6 +391,7 @@ int DBPlugin::Load(const PLUGINLINK* link)
 
 	CreateServiceFunction(&DB_WRITESETTING, (ELISESERVICE)WriteSettingToBase);
 	CreateServiceFunction(&DB_READSETTING, (ELISESERVICE)ReadSettingFromBase);
+	CreateServiceFunction(&DB_DELSETTING, (ELISESERVICE)DelteSettingFromBase);
 
 	return 0;
 }

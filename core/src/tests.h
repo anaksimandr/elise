@@ -9,6 +9,11 @@ class QTestWindow : public QWidget
 private:
 	QLabel*			output;
 	QProgressBar*	bar;
+	QLineEdit*		v1;
+	QLineEdit*		v2;
+	QLineEdit*		v3;
+	QLineEdit*		v4;
+	QLineEdit*		v5;
 	THook			thTray;
 protected:
 	//Elise*			parent;
@@ -17,9 +22,13 @@ public slots:
 	//-- Utils
 	void			uuidCreate();
 	void			testNewPlugin();
-	void			testDBPlugin();
-	void			testDB();
+	void			showOptions();
+	//void			testDB();
 	void			changeAcc();
+	//-- Database
+	void			saveSetting();
+	void			readSetting();
+	void			delSetting();
 	//-- Services
 	void			buttonExit();
 	void			createService();
