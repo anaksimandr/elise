@@ -3,7 +3,8 @@
 
 //-- Services
 const QString	DB_WRITESETTING	=	"DB/WriteSetting";	/* Call this method to write setting to DB. */
-const QString	DB_READSETTING	=	"DB/ReadSetting";	/* Call this method to write setting to DB. */
+const QString	DB_READSETTING	=	"DB/ReadSetting";	/* ... to read setting from DB. */
+const QString	DB_DELSETTING	=	"DB/DelteSetting";	/* ... to delete setting from DB.*/
 
 //-- Types of settings
 const unsigned char intType		=	0;	//-- int
@@ -23,10 +24,11 @@ typedef struct {
 
 //-- Used in calls of functions WriteSettingToBase() and ReadSettingFromBase()
 //-- And at some other places
+//-- Note: you must delete SETTING and its DBVARIANT when it becomes not necessary
 typedef struct {
 	int			contact;
-	QString&	qsModule;
-	QString&	qsSetting;
+	QString*	qsModule;
+	QString*	qsSetting;
 	DBVARIANT*	var;
 } SETTING;
 

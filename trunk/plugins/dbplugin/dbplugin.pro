@@ -34,6 +34,7 @@ HEADERS += \
 CONFIG (debug, debug|release) {
 #	OBJECTS_DIR = ../Elise-build/debug/plugins/newplugin
 	DESTDIR = ../../../Elise-build-debug/Plugins
+	#DEFINES		+=	_DEBUG
 }else{
 #	OBJECTS_DIR = ../Elise-build/release/plugins/newplugin
 	DESTDIR = ../../../Elise-build-release/Plugins

@@ -14,20 +14,29 @@ QTestWindow::QTestWindow()
 	QVBoxLayout* layoutV = new QVBoxLayout(this);
 	QHBoxLayout* layoutH = new QHBoxLayout(this);
 	QVBoxLayout* layoutUtil = new QVBoxLayout(this);
+	QVBoxLayout* layoutDB = new QVBoxLayout(this);
 	QVBoxLayout* layoutServ = new QVBoxLayout(this);
 	QVBoxLayout* layoutHook = new QVBoxLayout(this);
 	QVBoxLayout* layoutTest = new QVBoxLayout(this);
 	layoutV->addLayout(layoutH);
 	layoutH->addLayout(layoutUtil);
+	layoutH->addLayout(layoutDB);
 	layoutH->addLayout(layoutServ);
 	layoutH->addLayout(layoutHook);
 	layoutH->addLayout(layoutTest);
+	QHBoxLayout* layoutHInput = new QHBoxLayout(this);
 
 	QLabel* lbl = new QLabel(this);
 	layoutUtil->addWidget(lbl);
 	lbl->setText("Utils");
 	lbl->setMaximumHeight(15);
 	layoutUtil->setAlignment(lbl, Qt::AlignTop | Qt::AlignHCenter);
+
+	lbl = new QLabel(this);
+	layoutDB->addWidget(lbl);
+	lbl->setText("Database");
+	lbl->setMaximumHeight(15);
+	layoutDB->setAlignment(lbl, Qt::AlignTop | Qt::AlignHCenter);
 
 	lbl = new QLabel(this);
 	layoutServ->addWidget(lbl);
@@ -51,6 +60,24 @@ QTestWindow::QTestWindow()
 	layoutV->addWidget(bar);
 	bar->setRange(0, 1000000);
 
+	layoutV->addLayout(layoutHInput);
+	v1 = new QLineEdit(this);
+	layoutHInput->addWidget(v1);
+	v2 = new QLineEdit(this);
+	layoutHInput->addWidget(v2);
+	v3 = new QLineEdit(this);
+	layoutHInput->addWidget(v3);
+	v4 = new QLineEdit(this);
+	layoutHInput->addWidget(v4);
+	v5 = new QLineEdit(this);
+	layoutHInput->addWidget(v5);
+
+	v1->setPlaceholderText("module");
+	v2->setPlaceholderText("setting");
+	v3->setPlaceholderText("value");
+	v4->setPlaceholderText("type");
+	v5->setPlaceholderText("");
+
 	output = new QLabel(this);
 	layoutV->addWidget(output);
 	layoutV->setAlignment(output, Qt::AlignHCenter);
@@ -71,13 +98,13 @@ QTestWindow::QTestWindow()
 	layoutUtil->addWidget(button);
 
 	button = new QPushButton(this);
-	button->setText("Test DB plugin");
-	connect(button, SIGNAL(clicked()), this, SLOT(testDBPlugin()));
+	button->setText("Options");
+	connect(button, SIGNAL(clicked()), this, SLOT(showOptions()));
 	layoutUtil->addWidget(button);
 
 	button = new QPushButton(this);
-	button->setText("Test crypted DB");
-	connect(button, SIGNAL(clicked()), this, SLOT(testDB()));
+	button->setText("none");
+	//connect(button, SIGNAL(clicked()), this, SLOT(testDB()));
 	layoutUtil->addWidget(button);
 
 	button = new QPushButton(this);
@@ -86,6 +113,25 @@ QTestWindow::QTestWindow()
 	layoutUtil->addWidget(button);
 
 	layoutUtil->setAlignment(button, Qt::AlignTop);
+
+	//-- Database
+	button = new QPushButton(this);
+	button->setText("Save setting");
+	connect(button, SIGNAL(clicked()), this, SLOT(saveSetting()));
+	layoutDB->addWidget(button);
+	button->setMinimumWidth(100);
+
+	button = new QPushButton(this);
+	button->setText("Read setting");
+	connect(button, SIGNAL(clicked()), this, SLOT(readSetting()));
+	layoutDB->addWidget(button);
+
+	button = new QPushButton(this);
+	button->setText("Delete setting");
+	connect(button, SIGNAL(clicked()), this, SLOT(delSetting()));
+	layoutDB->addWidget(button);
+
+	layoutDB->setAlignment(button, Qt::AlignTop);
 
 	//-- Services
 	button = new QPushButton(this);
@@ -223,11 +269,6 @@ void QTestWindow::testNewPlugin()
 	CallService(&testplugin_service, 0, 0);
 }
 
-const QString testdbplugin_service = "TESTDBPLUGIN_SERVICE";
-void QTestWindow::testDBPlugin()
-{
-}
-
 void QTestWindow::changeAcc()
 {
 	this->~QTestWindow();
@@ -235,41 +276,110 @@ void QTestWindow::changeAcc()
 		QMessageBox::critical(this, "Error", "Service not found.", QMessageBox::Ok);
 }
 
-void QTestWindow::testDB()
+void QTestWindow::showOptions()
 {
-	//-- Switch to profiles directory
-	QDir curDir = QDir(qApp->applicationDirPath());
-	if (!curDir.exists("Profiles"))
-		curDir.mkdir("Profiles");
-	//curDir.cd("Profiles");
-	//QDir::setCurrent(curDir.path());
-
-
-	QSqlDatabase db = QSqlDatabase::addDatabase("QSQLCIPHER");
-
-	if (!QFile::exists("elisesys")) {
-		db.setDatabaseName("elisesys");
-
-		if (!db.open()) {
-			QMessageBox::critical(0, tr("Cannot open database"),
-								  tr("Unable to establish a database connection.\n"
-									 "SQLCipher not found."),
-								  QMessageBox::Cancel);
-			return;
-		}
-
-		QSqlQuery query;
-		query.exec("pragma key = '12345';");
-
-	}
-	else {
-
-	}
-
-	//-- Switch backward to main directory
-	QDir::current().cdUp();
+	CallService(&OPTIONS_SHOW, 0, 0);
 }
 
+//-- Database
+
+void QTestWindow::saveSetting()
+{
+	QString module = v1->text();
+	QString setting = v2->text();
+	SETTING* set = new SETTING;
+	set->contact = 0;
+	set->qsModule = &module;
+	set->qsSetting = &setting;
+	set->var = new DBVARIANT;
+	set->var->type = (unsigned char)v4->text().toInt();
+	QString value;
+	switch (set->var->type) {
+		case intType:
+			set->var->intValue = v3->text().toInt();
+			break;
+		case realType:
+			set->var->realValue = v3->text().toDouble();
+			break;
+		case textType:
+		{
+			value = v3->text();
+			set->var->textValue = &value;
+		}
+			break;
+		case blobType:
+		{
+			value = v3->text();
+			set->var->textValue = &value;
+		}
+			break;
+	}
+
+	CallService(&DB_WRITESETTING, 0, (uintptr_t)set);
+
+	delete set->var;
+	delete set;
+}
+
+void QTestWindow::readSetting()
+{
+	QString module = v1->text();
+	QString setting = v2->text();
+	SETTING* set = new SETTING;
+	set->contact = 0;
+	set->qsModule = &module;
+	set->qsSetting = &setting;
+	set->var = new DBVARIANT;
+	set->var->type = (unsigned char)v4->text().toInt();
+	QString value;
+	if (!CallService(&DB_READSETTING, 0, (uintptr_t)set)) {
+		switch (set->var->type) {
+			case intType:
+				setOutput(QString::number(set->var->intValue));
+				break;
+			case realType:
+				setOutput(QString::number(set->var->realValue));
+				break;
+			case textType:
+			{
+				value = *set->var->textValue;
+				setOutput(value);
+			}
+				break;
+			case blobType:
+			{
+				value = *set->var->textValue;
+				setOutput(value);
+			}
+				break;
+		}
+	}
+	else
+		setOutput("Error");
+
+	delete set->var;
+	delete set;
+}
+
+void QTestWindow::delSetting()
+{
+	QString module = v1->text();
+	QString setting = v2->text();
+	SETTING* set = new SETTING;
+	set->contact = 0;
+	set->qsModule = &module;
+	set->qsSetting = &setting;
+	set->var = new DBVARIANT;
+	set->var->type = (unsigned char)v4->text().toInt();
+
+	if (!CallService(&DB_DELSETTING, 0, (uintptr_t)set))
+		setOutput("Setting deleted");
+	else
+		setOutput("Error");
+
+	delete set->var;
+	delete set;
+}
 
 static QString name = "TEST_SERVISE";
 static QString hkevName = "TEST_HOOKABLE_EVENT";

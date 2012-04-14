@@ -42,6 +42,8 @@ int LoadDefaultModules()
 		return 1;
 	if (LoadTrayModule())
 		return 1;
+	if (LoadOptionsModule())
+		return 1;
 
 	//-- Now we will load the profile, do it befor loading plugins, because we must know which
 	//-- plugins must be loaded for this profile.
@@ -55,6 +57,7 @@ int LoadDefaultModules()
 	int res = PluginLoader::loadPlugins(loadablePlugins);
 
 	loadablePlugins->~QMap();
+
 	if (res)
 		return 1;
 
