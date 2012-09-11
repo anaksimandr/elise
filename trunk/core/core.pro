@@ -1,6 +1,6 @@
 
 
-QT			+=	core gui sql
+QT += widgets sql
 
 TARGET		=	Elise
 

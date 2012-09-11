@@ -1,4 +1,4 @@
-QT			+=	sql
+QT			+=	sql widgets
 
 TARGET		=	BDPlugin
 
@@ -19,6 +19,9 @@ HEADERS += \
     src/dbkey.h \
 	src/elisedb.h \
     ../../api/e_database.h
+
+OTHER_FILES += \
+	dbplugin.json
 
 # install
 #target.path = $$[QT_INSTALL_EXAMPLES]/tools/echoplugin/plugin

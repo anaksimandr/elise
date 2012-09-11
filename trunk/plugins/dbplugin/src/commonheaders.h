@@ -3,11 +3,12 @@
 
 //#define USE_SQLCIPHER
 
-#include <QtCore>
-#include <QtGui>
+//#include <QtCore>
+//#include <QtGui>
+#include <QtWidgets/QtWidgets>
 #include <QtSql>
-#include "../../api/e_dbpluginapi.h"
-#include "../../api/e_database.h"
+#include "../../../api/e_dbpluginapi.h"
+#include "../../../api/e_database.h"
 #include "dbplugin.h"
 #include "dbkey.h"
 #include "elisedb.h"

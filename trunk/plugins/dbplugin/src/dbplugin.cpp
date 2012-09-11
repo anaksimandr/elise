@@ -407,4 +407,4 @@ int DBPlugin::Unload(void)
 	return 0;
 }
 
-Q_EXPORT_PLUGIN2(dbplugin, DBPlugin)
+//Q_EXPORT_PLUGIN2(dbplugin, DBPlugin)

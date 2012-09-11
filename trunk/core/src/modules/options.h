@@ -9,7 +9,7 @@
 #include "../commonheaders.h"
 
 class OptionsDialog;
-class TreeModel;
+/*class TreeModel;
 class TreeItem;
 
 class TreeItem
@@ -64,7 +64,7 @@ public:
 								  const QModelIndex& parent = QModelIndex());
 	bool			insertRows(int position, int rows, const QModelIndex& parent = QModelIndex());
 	bool			removeRows(int position, int rows, const QModelIndex& parent = QModelIndex());
-};
+};*/
 
 class OptionsDialog : public QWidget
 {

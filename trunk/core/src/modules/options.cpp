@@ -75,7 +75,7 @@ int UnloadOptionsModule()
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //-- class TreeModel --/////////////////////////////////////////////////////////////////////////////
-
+/*
 TreeModel::TreeModel(const QString& header, QObject* parent)
 	: QAbstractItemModel(parent)
 {
@@ -111,7 +111,7 @@ Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
 	return Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
-int TreeModel::columnCount(const QModelIndex& /* parent */) const
+int TreeModel::columnCount(const QModelIndex& /* parent /) const
 {
 	return rootItem->columnCount();
 }
@@ -313,6 +313,6 @@ bool TreeItem::setData(int column, const QVariant& value)
 	itemData = value;
 	return true;
 }
-
+*/
 //-- class TreeItem --//////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////

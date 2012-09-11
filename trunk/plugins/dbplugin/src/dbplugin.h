@@ -7,6 +7,8 @@ class DBPlugin : public QObject, IDBPlugin
 {
 	Q_OBJECT
 	Q_INTERFACES(IDBPlugin)
+	Q_PLUGIN_METADATA(IID "elise.IDBPlugin" FILE "../dbplugin.json")
+	//Q_PLUGIN_METADATA(IID "DBPlugin")
 private:
 	int							openSysDB();
 	QDir						getProfileDir();
