@@ -3,7 +3,7 @@
 
 #include <QtCore>
 #include <QtGui>
-
+#include <QtWidgets/QtWidgets>
 
 #include "services.h"
 #include "../../api/e_pluginapi.h"

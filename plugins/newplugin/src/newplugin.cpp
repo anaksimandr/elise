@@ -24,7 +24,7 @@ const QUuid* NewPlugin::ElisePluginInterfaces(void)
 int testPluginFunction(intptr_t result, intptr_t lParam)
 {
 	QMessageBox qmes;
-	qmes.setText("Call test plugin success! uuid is\n" + pluginInfo.uuid);
+	qmes.setText("Call test plugin success! uuid is\n" + pluginInfo.uuid.toString());
 	qmes.exec();
 	return 0;
 }
@@ -42,4 +42,5 @@ int NewPlugin::Unload(void)
 	return 0;
 }
 
-Q_EXPORT_PLUGIN2(newplugin, NewPlugin)
+//Q_EXPORT_PLUGIN2(newplugin, NewPlugin)
+

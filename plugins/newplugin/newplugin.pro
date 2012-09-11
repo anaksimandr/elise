@@ -1,3 +1,4 @@
+QT			+=	widgets
 
 TARGET		=	NewPlugin
 
@@ -13,7 +14,10 @@ SOURCES += \
 HEADERS += \
 	src/commonheaders.h \
 	../../api/e_pluginapi.h \
-    src/newplugin.h
+	src/newplugin.h
+
+OTHER_FILES += \
+	plugin.json
 
 # install
 #target.path = $$[QT_INSTALL_EXAMPLES]/tools/echoplugin/plugin

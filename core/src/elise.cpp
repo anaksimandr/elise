@@ -44,8 +44,8 @@ int main(int argc, char* argv[]) {
 
 	QApplication app(argc, argv);
 	app.setQuitOnLastWindowClosed(false);
-	QTextCodec::setCodecForTr(QTextCodec::codecForName("utf-8"));
-	QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
+	//QTextCodec::setCodecForTr(QTextCodec::codecForName("utf-8"));
+	//QTextCodec::setCodecForCStrings(QTextCodec::codecForName("utf-8"));
 
 	//-- Initialise random number generator
 	qsrand(uint(std::time(0)) ^ (qHash(&app)));
