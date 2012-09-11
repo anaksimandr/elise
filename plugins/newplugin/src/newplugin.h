@@ -7,7 +7,8 @@ class NewPlugin : public QObject, IPlugin
  {
 	Q_OBJECT
 	Q_INTERFACES(IPlugin)
-	Q_PLUGIN_METADATA(IID "elise.IPlugin" FILE "../plugin.json")
+	//Q_PLUGIN_METADATA(IID "elise.IPlugin" FILE "../plugin.json")
+	Q_PLUGIN_METADATA(IID "elise.IPlugin")
 
 public:
 	PLUGININFO*			ElisePluginInfo(EVersion);

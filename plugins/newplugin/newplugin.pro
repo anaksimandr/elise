@@ -16,8 +16,8 @@ HEADERS += \
 	../../api/e_pluginapi.h \
 	src/newplugin.h
 
-OTHER_FILES += \
-	plugin.json
+#OTHER_FILES += \
+#	plugin.json
 
 # install
 #target.path = $$[QT_INSTALL_EXAMPLES]/tools/echoplugin/plugin
