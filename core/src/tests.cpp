@@ -331,7 +331,10 @@ void QTestWindow::readSetting()
 	set->qsSetting = &setting;
 	set->var = new DBVARIANT;
 	set->var->type = (unsigned char)v4->text().toInt();
-	QString value;
+	if (set->var->type == textType)
+		set->var->textValue = new QString;
+	else if (set->var->type == blobType)
+		set->var->blobValue = new QByteArray;
 	if (!CallService(&DB_READSETTING, 0, (uintptr_t)set)) {
 		switch (set->var->type) {
 			case intType:
@@ -340,16 +343,12 @@ void QTestWindow::readSetting()
 			case realType:
 				setOutput(QString::number(set->var->realValue));
 				break;
-			case textType:
-			{
-				value = *set->var->textValue;
-				setOutput(value);
-			}
+			case textType:			
+				setOutput(*set->var->textValue);
 				break;
 			case blobType:
 			{
-				value = *set->var->textValue;
-				setOutput(value);
+				setOutput(*set->var->blobValue);
 			}
 				break;
 		}
