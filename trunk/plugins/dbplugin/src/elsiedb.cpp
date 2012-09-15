@@ -132,7 +132,7 @@ int ReadSettingFromBase(uintptr_t  wParam, uintptr_t lParam)
 	query.exec();
 #else
 	if (!query.exec())
-		QMessageBox::critical(0, "Debug WriteSettingToBase", query.lastError().text() + "\n"
+		QMessageBox::critical(0, "Debug ReadSettingFromBase", query.lastError().text() + "\n"
 							  + query.executedQuery(), QMessageBox::Ok);
 #endif
 	query.next();
@@ -143,7 +143,7 @@ int ReadSettingFromBase(uintptr_t  wParam, uintptr_t lParam)
 		case realType:
 			set->var->realValue = query.value(0).toDouble();
 			break;
-		case textType:
+		case textType:		
 			*set->var->textValue = query.value(0).toString();
 			break;
 		case blobType:
