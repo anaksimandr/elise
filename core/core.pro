@@ -37,19 +37,11 @@ RESOURCES += \
 
 CONFIG (debug, debug|release) {
 #	OBJECTS_DIR = ../Elise-build/debug
-<<<<<<< .mine
 	DESTDIR = ../../Elise-debug
-=======
-        DESTDIR = ../../Elise-debug
->>>>>>> .r37
 
 }else{
 #	OBJECTS_DIR = ../Elise-build/release
-<<<<<<< .mine
 	DESTDIR = ../../Elise-release
-=======
-        DESTDIR = ../../Elise-release
->>>>>>> .r37
 }
 
 #target.path = F:/Sources/Elise-build-release/
