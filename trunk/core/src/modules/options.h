@@ -9,74 +9,84 @@
 #include "../commonheaders.h"
 
 class OptionsDialog;
-/*class TreeModel;
+class TreeModel;
 class TreeItem;
 
 class TreeItem
 {
 private:
 	QList<TreeItem*>	childItems;
-	QString				itemTitle;
 	QVariant			itemData;
+	QString				itemInfo;
 	TreeItem*			parentItem;
 public:
-	TreeItem(const QString& title, const QVariant& data, TreeItem* parent = 0);
+	TreeItem(const QVariant &data, const QString& header, TreeItem* parent = 0);
 	~TreeItem();
 
-	TreeItem*			child(int number);
-	int					childCount() const;
-	//int					columnCount() const;
-	QVariant			data(int column) const;
-	bool				insertChildren(int position, int count, int columns);
-	//bool				insertColumns(int position, int columns);
-	TreeItem*			parent();
-	bool				removeChildren(int position, int count);
-	//bool				removeColumns(int position, int columns);
-	int					childNumber() const;
-	bool				setData(int column, const QVariant& value);
+	TreeItem*	parent();
+	TreeItem*	child(int number);
+	int			childCount() const;
+	int			columnCount() const;
+	int			childNumber() const;
+	QVariant	data() const;
+	QString		info() const;
+	bool		insertChildren(int position, int count);
+	bool		removeChildren(int position, int count);
+	bool		setData(const QVariant& value);
+	bool		setInfo(const QString& value);
 };
 
 class TreeModel : public QAbstractItemModel
 {
 	Q_OBJECT
 private:
-	TreeItem*	getItem(const QModelIndex& index) const;
 	TreeItem*	rootItem;
+
+	TreeItem*	getItem(const QModelIndex &index) const;
+
 public:
-	TreeModel(const QString& header, QObject* parent = 0);
+	TreeModel(const QString &header, const QString& data, QObject *parent = 0);
 	~TreeModel();
 
-	QVariant		data(const QModelIndex& index, int role) const;
-	QVariant		headerData(int section, Qt::Orientation orientation,
-							   int role = Qt::DisplayRole) const;
-	QModelIndex		index(int row, int column, const QModelIndex& parent = QModelIndex()) const;
-	QModelIndex		parent(const QModelIndex& index) const;
-	int				rowCount(const QModelIndex& parent = QModelIndex()) const;
-	int				columnCount(const QModelIndex& parent = QModelIndex()) const;
-	Qt::ItemFlags	flags(const QModelIndex& index) const;
-	bool			setData(const QModelIndex& index, const QVariant& value,
-							int role = Qt::EditRole);
-	bool			setHeaderData(int section, Qt::Orientation orientation,
-								  const QVariant& value, int role = Qt::EditRole);
-	bool			insertColumns(int position, int columns,
-								  const QModelIndex& parent = QModelIndex());
-	bool			removeColumns(int position, int columns,
-								  const QModelIndex& parent = QModelIndex());
-	bool			insertRows(int position, int rows, const QModelIndex& parent = QModelIndex());
-	bool			removeRows(int position, int rows, const QModelIndex& parent = QModelIndex());
-};*/
+	QModelIndex match(const QModelIndex& start, const QString& value) const;
+
+	QVariant data(const QModelIndex& index, int role) const;
+	QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
+	QString info(const QModelIndex& index) const;
+
+	QModelIndex index(int row, int column = 1, const QModelIndex &parent = QModelIndex()) const;
+	QModelIndex parent(const QModelIndex& index) const;
+
+	int rowCount(const QModelIndex& parent = QModelIndex()) const;
+	int columnCount(const QModelIndex& parent = QModelIndex()) const;
+
+	Qt::ItemFlags flags(const QModelIndex& index) const;
+	bool setInfo(const QModelIndex& index, const QString& value);
+	bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
+	//bool setHeaderData(int section, Qt::Orientation orientation,
+					   //const QVariant &value, int role = Qt::EditRole);
+
+	bool insert(int position, const QModelIndex& parent = QModelIndex());
+	bool remove(int position, const QModelIndex& parent = QModelIndex());
+
+};
 
 class OptionsDialog : public QWidget
 {
 	Q_OBJECT
 private:
-	QTreeView*				optionsTree;
+	QTreeView*				treeView;
 	QGroupBox*				widgetClientArea;
+
+	QLineEdit*				edit;
 public:
 	static OptionsDialog*	options;
 	OptionsDialog();
 	~OptionsDialog();
 
+	//int						insertItem();
+	bool					addChild();
+	bool					findItem();
 };
 
 int LoadOptionsModule();
