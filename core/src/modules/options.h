@@ -16,24 +16,21 @@ class TreeItem
 {
 private:
 	QList<TreeItem*>	childItems;
-	QVariant			itemData;
-	QString				itemInfo;
+	QString				header;
 	TreeItem*			parentItem;
 public:
-	TreeItem(const QVariant &data, const QString& header, TreeItem* parent = 0);
+	TreeItem(const QString& header, TreeItem* parent = 0);
 	~TreeItem();
 
 	TreeItem*	parent();
 	TreeItem*	child(int number);
 	int			childCount() const;
-	int			columnCount() const;
 	int			childNumber() const;
-	QVariant	data() const;
-	QString		info() const;
-	bool		insertChildren(int position, int count);
-	bool		removeChildren(int position, int count);
-	bool		setData(const QVariant& value);
-	bool		setInfo(const QString& value);
+	QString		getHeader() const;
+	bool		insertChild(QString& header);
+	bool		removeChild(int position);
+	void		setHeader(const QString& value);
+	void		sortChildren();
 };
 
 class TreeModel : public QAbstractItemModel
@@ -42,33 +39,39 @@ class TreeModel : public QAbstractItemModel
 private:
 	TreeItem*	rootItem;
 
-	TreeItem*	getItem(const QModelIndex &index) const;
+	TreeItem*	getItem(const QModelIndex& index) const;
 
 public:
-	TreeModel(const QString &header, const QString& data, QObject *parent = 0);
+	TreeModel(const QString& header, QObject *parent = 0);
 	~TreeModel();
 
-	QModelIndex match(const QModelIndex& start, const QString& value) const;
+	QModelIndex match(const QModelIndex& startIndex, const QString& header) const;
+	QModelIndex index(int row, int column, const QModelIndex& parentIndex = QModelIndex()) const;
+	QModelIndex parent(const QModelIndex& itemIndex) const;
 
-	QVariant data(const QModelIndex& index, int role) const;
-	QVariant headerData(int section, Qt::Orientation orientation, int role = Qt::DisplayRole) const;
-	QString info(const QModelIndex& index) const;
+	QVariant data(const QModelIndex& itemIndex, int role) const;
 
-	QModelIndex index(int row, int column = 1, const QModelIndex &parent = QModelIndex()) const;
-	QModelIndex parent(const QModelIndex& index) const;
+	int rowCount(const QModelIndex& parentIndex = QModelIndex()) const;
+	int columnCount(const QModelIndex& parentIndex = QModelIndex()) const;
 
-	int rowCount(const QModelIndex& parent = QModelIndex()) const;
-	int columnCount(const QModelIndex& parent = QModelIndex()) const;
+	Qt::ItemFlags flags(const QModelIndex& itemIndex) const;
 
-	Qt::ItemFlags flags(const QModelIndex& index) const;
-	bool setInfo(const QModelIndex& index, const QString& value);
-	bool setData(const QModelIndex& index, const QVariant& value, int role = Qt::EditRole);
-	//bool setHeaderData(int section, Qt::Orientation orientation,
-					   //const QVariant &value, int role = Qt::EditRole);
+	bool setData(const QModelIndex& itemIndex, const QVariant& value, int role = Qt::EditRole);
+	bool insert(const QModelIndex& parentIndex = QModelIndex(), QString& header = QString());
+	bool remove(const QModelIndex& itemIndex = QModelIndex());
 
-	bool insert(int position, const QModelIndex& parent = QModelIndex());
-	bool remove(int position, const QModelIndex& parent = QModelIndex());
+	void sortChildren(const QModelIndex& parentIndex);
+};
 
+class TreeItemDelegate : public QStyledItemDelegate
+{
+public:
+	TreeItemDelegate()
+	{}
+
+	QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const;
+	void paint(QPainter* painter,
+			   const QStyleOptionViewItem& option, const QModelIndex& index ) const;
 };
 
 class OptionsDialog : public QWidget
@@ -86,7 +89,9 @@ public:
 
 	//int						insertItem();
 	bool					addChild();
+	bool					deleteChild();
 	bool					findItem();
+	bool					sort();
 };
 
 int LoadOptionsModule();
