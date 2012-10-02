@@ -40,8 +40,34 @@ int shutDown(intptr_t result, intptr_t lParam)
 	return result;
 }
 
-int main(int argc, char* argv[]) {
+#include <QFile>
 
+void myMessageOutput(QtMsgType type, const char *msg)
+{
+	QFile file("log.txt");
+	file.open(QIODevice::Append | QIODevice::Text);
+	QTextStream log(&file);
+	switch (type) {
+		case QtDebugMsg:
+			log << "Debug: " << msg << "\n";
+			break;
+		case QtWarningMsg:
+			log << "Warning: " << msg << "\n";
+			break;
+		case QtCriticalMsg:
+			log << "Critical: " << msg << "\n";
+			break;
+		case QtFatalMsg:
+			log << "Fatal: " << msg << "\n";
+			//abort();
+	}
+	log << "\n";
+	file.close();
+}
+
+int main(int argc, char* argv[])
+{
+	qInstallMsgHandler(myMessageOutput);
 	QApplication app(argc, argv);
 	app.setQuitOnLastWindowClosed(false);
 	//QTextCodec::setCodecForTr(QTextCodec::codecForName("utf-8"));

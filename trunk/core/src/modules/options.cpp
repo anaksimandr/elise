@@ -17,49 +17,34 @@ OptionsDialog* OptionsDialog::options = 0;
 
 OptionsDialog::OptionsDialog()
 {
+	this->setAttribute(Qt::WA_DeleteOnClose);
 	this->setFixedSize(700, 500);
 	//-- Options tree
 	treeView = new QTreeView(this);
-	treeView->move(0, 0);
-	treeView->resize(200, this->height());
+	treeView->move(-1, -1);
+	treeView->resize(200, this->height() + 2);
 
-	QString headers = "11";
-	TreeModel* model1 = new TreeModel(headers, "test\ttest2\ntest3\ttest4", this);
-	//TreeModel* model = new TreeModel("Test", 0);
-	//model->appendRow(new QStandardItem("test"));
-	//model->insertRows(1, 1);
-	treeView->setModel(model1);
+	QString header = "11";
+	TreeModel* model = new TreeModel(header, this);
+
+	TreeItemDelegate* delegate = new TreeItemDelegate();
+	treeView->setModel(model);
+	treeView->setItemDelegate(delegate);
 	treeView->setHeaderHidden(true);
-
-	QModelIndex index = treeView->selectionModel()->currentIndex();
-	QAbstractItemModel* model = treeView->model();
-
-	if (!model->insertRow(0, index))
-		QMessageBox::critical(0, "deb", "insert row failed", QMessageBox::Ok);
-
-	QModelIndex child = model->index(0, 1, index);
-	model->setData(child, QVariant("122222"), Qt::EditRole);
-
-	dynamic_cast<TreeModel*>(model)->setInfo(child, "hhh");
-
-	//treeView->selectionModel()->setCurrentIndex(model->index(0, 0, index),
-		//									QItemSelectionModel::ClearAndSelect);
-
-	QModelIndex index2 = model->index(0, 0);
-	//dynamic_cast<TreeModel*>(model)->info(model->match(index2, 0, "hhh", 0, 0)[0]);
-	QMessageBox::critical(0, "Debug",
-						 dynamic_cast<TreeModel*>(model)->info(model->match(index2, 0, "hhh", 0, 0)[0]),
-						  QMessageBox::Ok);
-
-
-	//QModelIndex index = optionsTree->selectionModel()->currentIndex();
-	//model->insertRow(index.row()+1, index.parent());
+	//treeView->setRootIsDecorated(true);
+	//this->setStyleSheet("QTreeView { show-decoration-selected: 1;}"
+		//				"QTreeView::item { border: 5px solid #d9d9d9; }");
+	/*this->setStyleSheet(
+						"QTreeView::branch:has-siblings:adjoins-item {background: red;}"
+				"QTreeView::branch:!has-children:!has-siblings:adjoins-item {background: blue;}"
+				"QTreeView::branch:closed:has-children:has-siblings {background: pink;}");*/
 
 	//-- Client area for current settings
 	widgetClientArea = new QGroupBox(this);
 	widgetClientArea->move(treeView->width() + 10, 10);
 	widgetClientArea->resize(this->width() - treeView->width() - 10 - 10,
 							 this->height() - 10 - 40);
+
 	edit = new QLineEdit(widgetClientArea);
 	edit->move(20, 20);
 
@@ -71,12 +56,20 @@ OptionsDialog::OptionsDialog()
 	btn->move(130, 200);
 	connect(btn, &QPushButton::clicked, this, &OptionsDialog::findItem);
 
+	btn = new QPushButton("sort selected", widgetClientArea);
+	btn->move(50, 240);
+	connect(btn, &QPushButton::clicked, this, &OptionsDialog::sort);
+
+	btn = new QPushButton("delete", widgetClientArea);
+	btn->move(130, 240);
+	connect(btn, &QPushButton::clicked, this, &OptionsDialog::deleteChild);
+
 	QPalette p = widgetClientArea->palette();
 	p.setColor(QPalette::Window, Qt::red);
-	//p.setColor(QPalette::WindowText, Qt::red);
+	p.setColor(QPalette::WindowText, Qt::red);
 	//p.setColor(QPalette::Base, Qt::red);
 	//p.setColor(QPalette::AlternateBase, Qt::red);
-	//p.setColor(QPalette::Text, Qt::red);
+	p.setColor(QPalette::Text, Qt::red);
 	widgetClientArea->setPalette(p);
 	//if (widgetClientArea->palette(). == QPalette::NoRole)
 		//QMessageBox::critical(0, "Debug", "bingo nahui", QMessageBox::Ok);
@@ -88,7 +81,7 @@ OptionsDialog::OptionsDialog()
 OptionsDialog::~OptionsDialog()
 {
 	OptionsDialog::options = 0;
-	QMessageBox::critical(0, "Debug", "Destroy", QMessageBox::Ok);
+	//QMessageBox::critical(0, "Debug", "Destroy", QMessageBox::Ok);
 }
 
 bool OptionsDialog::addChild()
@@ -96,21 +89,49 @@ bool OptionsDialog::addChild()
 	QModelIndex index = treeView->selectionModel()->currentIndex();
 	TreeModel* model = dynamic_cast<TreeModel*>(treeView->model());
 
-	if (!model->insertRow(0, index))
+	if (!model->insert(index, edit->text()))
 		return false;
 
-	QModelIndex child = model->index(0, 1, index);
+	//QModelIndex child = model->index(0, 1, index);
 
-	model->setData(child, QVariant(edit->text()), 0);
+	return true;
+}
 
-	model->setInfo(child, edit->text());
+bool OptionsDialog::deleteChild()
+{
+	QModelIndex index = treeView->selectionModel()->currentIndex();
+	TreeModel* model = dynamic_cast<TreeModel*>(treeView->model());
+
+	if (!model->remove(index))
+		return false;
+
+	//QModelIndex child = model->index(0, 1, index);
+
 	return true;
 }
 
 bool OptionsDialog::findItem()
 {
-	QMessageBox::critical(0, "Debug", "find!", QMessageBox::Ok);
-	return false;
+	TreeModel* model = dynamic_cast<TreeModel*>(treeView->model());
+	QModelIndex index = model->index(0, 0);
+	QModelIndex result = model->match(index, edit->text());
+	if (result.isValid()) {
+		//QMessageBox::critical(0, "Debug", model->info(result), QMessageBox::Ok);
+		treeView->setCurrentIndex(result);
+	}
+	else
+		return false;
+
+	return true;
+}
+
+bool OptionsDialog::sort()
+{
+	QModelIndex index = treeView->selectionModel()->currentIndex();
+	TreeModel* model = dynamic_cast<TreeModel*>(treeView->model());
+	model->sortChildren(index);
+
+	return true;
 }
 
 int ShowOptions(uintptr_t wParam,uintptr_t lParam)
@@ -137,12 +158,34 @@ int UnloadOptionsModule()
 }
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
+//-- class TreeItemDelegate --//////////////////////////////////////////////////////////////////////
+
+QSize TreeItemDelegate::sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index ) const
+{
+	return QSize(20,20);
+}
+
+void TreeItemDelegate::paint(QPainter* painter,
+							 const QStyleOptionViewItem& option, const QModelIndex& index ) const
+{
+	QStyleOptionViewItem opt = option;
+	if ((index.isValid()) && (index.column() == 0)) {
+		//opt.displayAlignment = Qt::AlignCenter;
+		opt.backgroundBrush = Qt::red;
+	}
+
+	QStyledItemDelegate::paint(painter, opt, index);
+}
+
+//-- class TreeItemDelegate --//////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
+////////////////////////////////////////////////////////////////////////////////////////////////////
 //-- class TreeModel --/////////////////////////////////////////////////////////////////////////////
 
-TreeModel::TreeModel(const QString& header, const QString& data, QObject *parent)
+TreeModel::TreeModel(const QString& header, QObject* parent)
 	: QAbstractItemModel(parent)
 {
-	rootItem = new TreeItem(header, "HHH");
+	rootItem = new TreeItem(header);
 }
 
 TreeModel::~TreeModel()
@@ -150,195 +193,176 @@ TreeModel::~TreeModel()
 	delete rootItem;
 }
 
-int TreeModel::columnCount(const QModelIndex & /* parent */) const
+int TreeModel::rowCount(const QModelIndex& parentIndex) const
 {
-	return rootItem->columnCount();
+	TreeItem* parent = getItem(parentIndex);
+
+	return parent->childCount();
 }
 
-QVariant TreeModel::data(const QModelIndex &index, int role) const
+int TreeModel::columnCount(const QModelIndex & /* parentIndex */) const
 {
-	if (!index.isValid())
+	return 1;
+}
+
+QVariant TreeModel::data(const QModelIndex& itemIndex, int role) const
+{
+	if (!itemIndex.isValid())
 		return QVariant();
 
 	if (role != Qt::DisplayRole && role != Qt::EditRole)
 		return QVariant();
 
-	TreeItem* item = getItem(index);
+	TreeItem* item = getItem(itemIndex);
 
-	return item->data();
+	return item->getHeader();
 }
 
-QString TreeModel::info(const QModelIndex &index) const
+Qt::ItemFlags TreeModel::flags(const QModelIndex& itemIndex) const
 {
-	if (!index.isValid())
-		return QString();
-
-	TreeItem* item = getItem(index);
-
-	return item->info();
-}
-
-Qt::ItemFlags TreeModel::flags(const QModelIndex &index) const
-{
-	if (!index.isValid())
+	if (!itemIndex.isValid())
 		return 0;
 
-	return Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+	//return Qt::ItemIsEditable | Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+	return Qt::ItemIsEnabled | Qt::ItemIsSelectable;
 }
 
-TreeItem *TreeModel::getItem(const QModelIndex &index) const
+TreeItem* TreeModel::getItem(const QModelIndex& itemIndex) const
 {
-	if (index.isValid()) {
-		TreeItem *item = static_cast<TreeItem*>(index.internalPointer());
-		if (item) return item;
+	if (itemIndex.isValid()) {
+		TreeItem* item = static_cast<TreeItem*>(itemIndex.internalPointer());
+		if (item)
+			return item;
 	}
 	return rootItem;
 }
 
-QVariant TreeModel::headerData(int section, Qt::Orientation orientation,
-							   int role) const
+QModelIndex TreeModel::match(const QModelIndex& startIndex, const QString& header) const
 {
-	if (orientation == Qt::Horizontal && role == Qt::DisplayRole)
-		return rootItem->data();
+	QModelIndex resultIndex;
+	QModelIndex p = parent(startIndex);
+	int from = startIndex.row();
+	int to = rowCount(p);
 
-	return QVariant();
+	for (int r = from; r < to; ++r) {
+		resultIndex = index(r, 0, p);
+
+		if (!resultIndex.isValid())
+			continue;
+
+		QString s = data(resultIndex, Qt::DisplayRole).toString();
+
+		if (header == s) {
+			//QMessageBox::critical(0, "Debug", "Found!", QMessageBox::Ok);
+			return resultIndex;
+		}
+
+		if (hasChildren(resultIndex)) { // search the hierarchy
+			//QMessageBox::critical(0, "Debug", "Check children!", QMessageBox::Ok);
+			resultIndex = match(index(0, resultIndex.column(), resultIndex), header);
+			if (resultIndex.isValid())
+				return resultIndex;
+		}
+	}
+
+	return QModelIndex();
 }
 
-QModelIndex TreeModel::index(int row, int column, const QModelIndex &parent) const
+QModelIndex TreeModel::index(int row, int column, const QModelIndex& parentIndex) const
 {
-	if (parent.isValid() && parent.column() != 0)
+	if (parentIndex.isValid() && parentIndex.column() != 0)
 		return QModelIndex();
 
-	TreeItem* parentItem = getItem(parent);
+	TreeItem* parent = getItem(parentIndex);
 
-	TreeItem* childItem = parentItem->child(row);
-	if (childItem)
-		return createIndex(row, column, childItem);
+	TreeItem* child = parent->child(row);
+	if (child)
+		return createIndex(row, column, child);
 	else
 		return QModelIndex();
 }
 
-bool TreeModel::insertRows(int position, int rows, const QModelIndex &parent)
+QModelIndex TreeModel::parent(const QModelIndex& itemIndex) const
 {
-	TreeItem* parentItem = getItem(parent);
+	if (!itemIndex.isValid())
+		return QModelIndex();
+
+	TreeItem* child = getItem(itemIndex);
+	TreeItem* parent = child->parent();
+
+	if (parent == rootItem)
+		return QModelIndex();
+
+	return createIndex(parent->childNumber(), 0, parent);
+}
+
+bool TreeModel::insert(const QModelIndex& parentIndex, QString& header)
+{	
+	if (header.isEmpty())
+		return false;
+
+	TreeItem* parent = getItem(parentIndex);
 	bool success;
 
-	beginInsertRows(parent, position, position + rows - 1);
-	success = parentItem->insertChildren(position, rows);
+	beginInsertRows(parentIndex, 0, 0);
+	success = parent->insertChild(header);
 	endInsertRows();
+	//sortChildren(parentIndex);
 
 	return success;
 }
 
-QModelIndex TreeModel::parent(const QModelIndex& index) const
+bool TreeModel::remove(const QModelIndex& itemIndex)
 {
-	if (!index.isValid())
-		return QModelIndex();
+	if (!itemIndex.isValid())
+		return false;
 
-	TreeItem* childItem = getItem(index);
-	TreeItem* parentItem = childItem->parent();
+	TreeItem* item = getItem(itemIndex);
+	TreeItem* parent = item->parent();
 
-	if (parentItem == rootItem)
-		return QModelIndex();
+	QModelIndex parentIndex = this->parent(itemIndex);
 
-	return createIndex(parentItem->childNumber(), 0, parentItem);
-}
+	bool success;
+	int pos = item->childNumber();
 
-bool TreeModel::removeRows(int position, int rows, const QModelIndex &parent)
-{
-	TreeItem *parentItem = getItem(parent);
-	bool success = true;
-
-	beginRemoveRows(parent, position, position + rows - 1);
-	success = parentItem->removeChildren(position, rows);
+	beginRemoveRows(parentIndex, pos, pos);
+	success = parent->removeChild(pos);
 	endRemoveRows();
 
 	return success;
 }
 
-int TreeModel::rowCount(const QModelIndex &parent) const
-{
-	TreeItem* parentItem = getItem(parent);
-
-	return parentItem->childCount();
-}
-
-bool TreeModel::setInfo(const QModelIndex& index, const QString& value)
-{
-	TreeItem* item = getItem(index);
-	bool result = item->setInfo(value);
-
-	if (result)
-		emit dataChanged(index, index);
-
-	return result;
-}
-
-bool TreeModel::setData(const QModelIndex& index, const QVariant& value,
-						int role)
+bool TreeModel::setData(const QModelIndex& itemIndex, const QVariant& value, int role)
 {
 	if (role != Qt::EditRole)
 		return false;
 
-	TreeItem* item = getItem(index);
-	bool result = item->setData(value);
+	TreeItem* item = getItem(itemIndex);
+	item->setHeader(value.toString());
 
-	if (result)
-		emit dataChanged(index, index);
+	emit dataChanged(itemIndex, itemIndex);
 
-	return result;
+	return true;
 }
 
-/*bool TreeModel::setHeaderData(int section, Qt::Orientation orientation,
-							  const QVariant &value, int role)
+void TreeModel::sortChildren(const QModelIndex& parentIndex)
 {
-	if (role != Qt::EditRole || orientation != Qt::Horizontal)
-		return false;
+	if (!parentIndex.isValid())
+		return ;
 
-	bool result = rootItem->setData(value);
-
-	if (result)
-		emit headerDataChanged(orientation, section, section);
-
-	return result;
-}*/
-
-QModelIndex TreeModel::match(const QModelIndex& start, const QString& value) const
-{
-	QModelIndex result;
-	QModelIndex p = parent(start);
-	int from = start.row();
-	int to = rowCount(p);
-
-	for (int r = from; r < to; ++r) {
-		QModelIndex idx = index(r, 0, p);
-		if (!idx.isValid())
-			continue;
-		QString s = info(idx);
-
-		if (value.toString() == s) {
-			QMessageBox::critical(0, "Debug", "Found!", QMessageBox::Ok);
-			result.append(idx);
-		}
-
-		if (hasChildren(idx)) { // search the hierarchy
-			QMessageBox::critical(0, "Debug", "Check children!", QMessageBox::Ok);
-			result += match(index(0, idx.column(), idx), role, value, hits, flags);
-		}
-	}
-
-	return result;
+	TreeItem* item = getItem(parentIndex);
+	item->sortChildren();
 }
+
 //-- class TreeModel --/////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //-- class TreeItem --//////////////////////////////////////////////////////////////////////////////
 
-TreeItem::TreeItem(const QVariant &data, const QString &header, TreeItem* parent)
+TreeItem::TreeItem(const QString& header, TreeItem* parent)
 {
 	parentItem = parent;
-	itemData = data;
-	itemInfo = header;
+	this->header = header;
 }
 
 TreeItem::~TreeItem()
@@ -346,14 +370,14 @@ TreeItem::~TreeItem()
 	qDeleteAll(childItems);
 }
 
-QString TreeItem::info() const
-{
-	return itemInfo;
-}
-
 TreeItem* TreeItem::child(int number)
 {
 	return childItems.value(number);
+}
+
+TreeItem* TreeItem::parent()
+{
+	return parentItem;
 }
 
 int TreeItem::childCount() const
@@ -369,58 +393,45 @@ int TreeItem::childNumber() const
 	return 0;
 }
 
-int TreeItem::columnCount() const
+QString TreeItem::getHeader() const
 {
-	return 1;
+	return header;
 }
 
-QVariant TreeItem::data() const
-{
-	return itemData;
+bool TreeItem::insertChild(QString& header)
+{		
+	TreeItem* item = new TreeItem(header, this);
+	childItems.insert(childItems.size(), item);
+
+	return true;
 }
 
-bool TreeItem::insertChildren(int position, int count)
+bool TreeItem::removeChild(int position)
 {
 	if (position < 0 || position > childItems.size())
 		return false;
 
-	for (int row = 0; row < count; ++row) {
-		QVariant data;
-		QString info;
-		TreeItem* item = new TreeItem(data, info, this);
-		childItems.insert(position, item);
-	}
+	delete childItems.takeAt(position);
 
 	return true;
 }
 
-TreeItem* TreeItem::parent()
+void TreeItem::setHeader(const QString &value)
 {
-	return parentItem;
+	header = value;
 }
 
-bool TreeItem::removeChildren(int position, int count)
+bool lessThan(const TreeItem* i1, const TreeItem* i2)
 {
-	if (position < 0 || position + count > childItems.size())
-		return false;
-
-	for (int row = 0; row < count; ++row)
-		delete childItems.takeAt(position);
-
-	return true;
+	QString s1 = i1->getHeader();
+	QString s2 = i2->getHeader();
+	return s1 < s2;
 }
 
-bool TreeItem::setData(const QVariant &value)
+void TreeItem::sortChildren()
 {
-	//QMessageBox::critical(0, "Debug", "Debugdf", QMessageBox::Ok);
+	qSort(childItems.begin(), childItems.end(), lessThan);
+}
 
-	itemData = value;
-	return true;
-}
-bool TreeItem::setInfo(const QString &value)
-{
-	itemInfo = value;
-	return true;
-}
 //-- class TreeItem --//////////////////////////////////////////////////////////////////////////////
 ////////////////////////////////////////////////////////////////////////////////////////////////////
