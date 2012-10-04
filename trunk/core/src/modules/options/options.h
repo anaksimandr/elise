@@ -12,53 +12,12 @@ class OptionsDialog;
 class TreeModel;
 class TreeItem;
 
-class TreeModel : public QAbstractItemModel
-{
-	Q_OBJECT
-private:
-	TreeItem*	rootItem;
-
-	TreeItem*	getItem(const QModelIndex& index) const;
-
-public:
-	TreeModel(const QString& header, QObject *parent = 0);
-	~TreeModel();
-
-	QModelIndex match(const QModelIndex& startIndex, const QString& header) const;
-	QModelIndex index(int row, int column, const QModelIndex& parentIndex = QModelIndex()) const;
-	QModelIndex parent(const QModelIndex& itemIndex) const;
-
-	QVariant data(const QModelIndex& itemIndex, int role) const;
-
-	int rowCount(const QModelIndex& parentIndex = QModelIndex()) const;
-	int columnCount(const QModelIndex& parentIndex = QModelIndex()) const;
-
-	Qt::ItemFlags flags(const QModelIndex& itemIndex) const;
-
-	bool setData(const QModelIndex& itemIndex, const QVariant& value, int role = Qt::EditRole);
-	bool insert(const QModelIndex& parentIndex = QModelIndex(), QString& header = QString());
-	bool remove(const QModelIndex& itemIndex = QModelIndex());
-
-	void sortChildren(const QModelIndex& parentIndex);
-};
-
-class TreeItemDelegate : public QStyledItemDelegate
-{
-public:
-	TreeItemDelegate()
-	{}
-
-	QSize sizeHint(const QStyleOptionViewItem& option, const QModelIndex& index) const;
-	void paint(QPainter* painter,
-			   const QStyleOptionViewItem& option, const QModelIndex& index ) const;
-};
-
 class OptionsDialog : public QWidget
 {
 	Q_OBJECT
 private:
 	QTreeView*				treeView;
-	QGroupBox*				widgetClientArea;
+	QGroupBox*				widgetArea;
 
 	QLineEdit*				edit;
 public:
@@ -66,11 +25,14 @@ public:
 	OptionsDialog();
 	~OptionsDialog();
 
+	bool					addPage(QWidget *page);
+
+	void					sort();
+
 	//int						insertItem();
 	bool					addChild();
 	bool					deleteChild();
 	bool					findItem();
-	bool					sort();
 };
 
 int LoadOptionsModule();
