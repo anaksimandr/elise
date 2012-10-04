@@ -13,6 +13,7 @@
 #include "modules/logon.h"
 #include "../../api/e_database.h"
 #include "../../api/e_options.h"
+#include "modules/options/treeitem.h"
 #include "modules/options.h"
 
 //-- Some stuff from windows

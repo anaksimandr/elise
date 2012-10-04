@@ -14,36 +14,40 @@ OptionsDialog* OptionsDialog::options = 0;
 
 
 
-
 OptionsDialog::OptionsDialog()
 {
 	this->setAttribute(Qt::WA_DeleteOnClose);
 	this->setFixedSize(700, 500);
+
 	//-- Options tree
 	treeView = new QTreeView(this);
 	treeView->move(-1, -1);
 	treeView->resize(200, this->height() + 2);
 
-	QString header = "11";
-	TreeModel* model = new TreeModel(header, this);
+	QString str;
+	TreeModel* model = new TreeModel(str, this);
 
 	TreeItemDelegate* delegate = new TreeItemDelegate();
 	treeView->setModel(model);
 	treeView->setItemDelegate(delegate);
 	treeView->setHeaderHidden(true);
-	//treeView->setRootIsDecorated(true);
-	//this->setStyleSheet("QTreeView { show-decoration-selected: 1;}"
-		//				"QTreeView::item { border: 5px solid #d9d9d9; }");
-	/*this->setStyleSheet(
-						"QTreeView::branch:has-siblings:adjoins-item {background: red;}"
-				"QTreeView::branch:!has-children:!has-siblings:adjoins-item {background: blue;}"
-				"QTreeView::branch:closed:has-children:has-siblings {background: pink;}");*/
 
 	//-- Client area for current settings
 	widgetClientArea = new QGroupBox(this);
 	widgetClientArea->move(treeView->width() + 10, 10);
 	widgetClientArea->resize(this->width() - treeView->width() - 10 - 10,
 							 this->height() - 10 - 40);
+	QStackedLayout* layout = new QStackedLayout();
+	widgetClientArea->setLayout(layout);
+
+	/*
+	//treeView->setRootIsDecorated(true);
+	//this->setStyleSheet("QTreeView::item {border-bottom: 1px solid #bfcde4;}"
+		//				"QTreeView::item::selected {border-bottom: 1px solid #bfcde4;}");
+	this->setStyleSheet(
+						"QTreeView::branch:has-siblings:adjoins-item {background: red;}"
+				"QTreeView::branch:!has-children:!has-siblings:adjoins-item {background: blue;}"
+				"QTreeView::branch:closed:has-children:has-siblings {background: pink;}");
 
 	edit = new QLineEdit(widgetClientArea);
 	edit->move(20, 20);
@@ -75,7 +79,29 @@ OptionsDialog::OptionsDialog()
 		//QMessageBox::critical(0, "Debug", "bingo nahui", QMessageBox::Ok);
 	//widgetClientArea->show();
 	//QTreeView* vv = new QTreeView(widgetClientArea);
-	//vv->resize(vv->parentWidget()->size());
+	//vv->resize(vv->parentWidget()->size());*/
+
+	QModelIndex index = treeView->selectionModel()->currentIndex();
+	str = "Chat";
+	model->insert(index, str);
+	str = "Popup windows";
+	model->insert(index, str);
+	str = "History";
+	model->insert(index, str);
+	str = "Moduls";
+	model->insert(index, str);
+	str = "Network";
+	model->insert(index, str);
+	str = "Services";
+	model->insert(index, str);
+	str = "Ivents";
+	model->insert(index, str);
+	str = "Contact list";
+	model->insert(index, str);
+	str = "Status";
+	model->insert(index, str);
+	str = "Config";
+	model->insert(index, str);
 }
 
 OptionsDialog::~OptionsDialog()
@@ -154,6 +180,8 @@ int LoadOptionsModule()
 
 int UnloadOptionsModule()
 {
+	if (OptionsDialog::options == 0)
+		OptionsDialog::options->~OptionsDialog();
 	return 0;
 }
 
@@ -169,9 +197,21 @@ void TreeItemDelegate::paint(QPainter* painter,
 							 const QStyleOptionViewItem& option, const QModelIndex& index ) const
 {
 	QStyleOptionViewItem opt = option;
-	if ((index.isValid()) && (index.column() == 0)) {
+
+	if ((index.isValid()) && (index.column() == 0) && !index.parent().isValid()) {
+
 		//opt.displayAlignment = Qt::AlignCenter;
-		opt.backgroundBrush = Qt::red;
+
+		QLinearGradient gradient(opt.rect.bottomLeft(), opt.rect.bottomRight());
+		gradient.setColorAt(0.0, QColor(175, 175, 175, 0));
+		gradient.setColorAt(0.5, QColor(175, 175, 175, 255));
+		gradient.setColorAt(1.0, QColor(175, 175, 175, 0));
+
+		painter->save();
+		painter->setPen(QPen(QBrush(gradient), 1));
+		//painter->drawLine(opt.rect.topLeft(), opt.rect.topRight());
+		painter->drawLine(opt.rect.bottomLeft(), opt.rect.bottomRight());
+		painter->restore();
 	}
 
 	QStyledItemDelegate::paint(painter, opt, index);
@@ -425,7 +465,7 @@ bool lessThan(const TreeItem* i1, const TreeItem* i2)
 {
 	QString s1 = i1->getHeader();
 	QString s2 = i2->getHeader();
-	return s1 < s2;
+	return s1.toLower() < s2.toLower();
 }
 
 void TreeItem::sortChildren()
