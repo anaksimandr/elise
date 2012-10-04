@@ -1,5 +1,5 @@
 
-#include "../commonheaders.h"
+#include "../../commonheaders.h"
 
 OptionsDialog* OptionsDialog::options = 0;
 
