@@ -17,7 +17,8 @@ SOURCES += \
 	src/modules/tray.cpp \
 	src/modules/logon.cpp \
 	src/modules/options/options.cpp \
-    src/modules/options/treeitem.cpp
+    src/modules/options/treeitem.cpp \
+    src/modules/options/treemodel.cpp
 
 
 HEADERS += \
@@ -32,7 +33,8 @@ HEADERS += \
 	../api/e_database.h \
 	../api/e_options.h \
 	src/modules/options/options.h \
-    src/modules/options/treeitem.h
+    src/modules/options/treeitem.h \
+    src/modules/options/treemodel.h
 
 RESOURCES += \
 	res/resources.qrc

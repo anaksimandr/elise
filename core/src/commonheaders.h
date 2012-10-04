@@ -14,6 +14,7 @@
 #include "../../api/e_database.h"
 #include "../../api/e_options.h"
 #include "modules/options/treeitem.h"
+#include "modules/options/treemodel.h"
 #include "modules/options/options.h"
 
 //-- Some stuff from windows
