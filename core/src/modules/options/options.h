@@ -6,7 +6,7 @@
 #include <QVariant>
 //#include <QVector>
 #include <QList>
-#include "../commonheaders.h"
+#include "../../commonheaders.h"
 
 class OptionsDialog;
 class TreeModel;
