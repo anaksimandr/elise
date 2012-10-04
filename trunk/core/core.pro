@@ -16,7 +16,8 @@ SOURCES += \
 	src/modules.cpp \
 	src/modules/tray.cpp \
 	src/modules/logon.cpp \
-	src/modules/options.cpp
+	src/modules/options.cpp \
+    src/modules/options/treeitem.cpp
 
 
 HEADERS += \
@@ -30,7 +31,8 @@ HEADERS += \
 	../api/e_dbpluginapi.h \
 	../api/e_database.h \
 	../api/e_options.h \
-	src/modules/options.h
+	src/modules/options.h \
+    src/modules/options/treeitem.h
 
 RESOURCES += \
 	res/resources.qrc
