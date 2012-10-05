@@ -6,22 +6,28 @@
 class TreeItem
 {
 private:
-	QList<TreeItem*>	childItems;
+	QString				id;
 	QString				header;
+	QWidget*			page;
+	int					index;	//-- index in QStackedLayout
 	TreeItem*			parentItem;
+	QList<TreeItem*>	childItems;
 public:
-	TreeItem(const QString& header, TreeItem* parent = 0);
+	TreeItem(const QString& headerExt, const QString& idExt, QWidget* widget, const int indx,
+			 TreeItem* parent = 0);
 	~TreeItem();
 
 	TreeItem*	parent();
 	TreeItem*	child(int number);
 	int			childCount() const;
 	int			childNumber() const;
+	int			getLayoutIndex() const;
 	QString		getHeader() const;
-	bool		insertChild(QString& header);
+	QString		getId() const;
+	QWidget*	getWidget() const;
+	bool		insertChild(QString& headerExt, QString& idExt, QWidget* widget, int indx);
 	bool		removeChild(int position);
 	void		setHeader(const QString& value);
-	void		sortChildren();
 };
 
 #endif // TREEITEM_H

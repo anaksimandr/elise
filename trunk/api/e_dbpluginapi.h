@@ -4,9 +4,9 @@
 #include "e_pluginapi.h"
 
 typedef struct {
-	bool savePassword;
-	bool defaultAccount;
-	QString password;
+	bool	savePassword;
+	bool	defaultAccount;
+	QString	password;
 } ACCOUNT;
 
 class IDBPlugin

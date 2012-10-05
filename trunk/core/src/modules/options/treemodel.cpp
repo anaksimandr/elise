@@ -29,10 +29,11 @@ void TreeItemDelegate::paint(QPainter* painter,
 	QStyledItemDelegate::paint(painter, opt, index);
 }
 
-TreeModel::TreeModel(const QString& header, QObject* parent)
+TreeModel::TreeModel(const QString& header, const QString& id, QWidget* widget,
+					 const int index, QObject* parent)
 	: QAbstractItemModel(parent)
 {
-	rootItem = new TreeItem(header);
+	rootItem = new TreeItem(header, id, widget, index);
 }
 
 TreeModel::~TreeModel()
@@ -47,9 +48,18 @@ int TreeModel::rowCount(const QModelIndex& parentIndex) const
 	return parent->childCount();
 }
 
-int TreeModel::columnCount(const QModelIndex & /* parentIndex */) const
+int TreeModel::columnCount(const QModelIndex& /* parentIndex */) const
 {
 	return 1;
+}
+
+int TreeModel::getLayoutIndex(const QModelIndex& itemIndex) const
+{
+	if (!itemIndex.isValid())
+		return -1;
+
+	TreeItem* item = getItem(itemIndex);
+	return item->getLayoutIndex();
 }
 
 QVariant TreeModel::data(const QModelIndex& itemIndex, int role) const
@@ -97,15 +107,15 @@ QModelIndex TreeModel::match(const QModelIndex& startIndex, const QString& heade
 		if (!resultIndex.isValid())
 			continue;
 
-		QString s = data(resultIndex, Qt::DisplayRole).toString();
+		//QString s = data(resultIndex, Qt::DisplayRole).toString();
+		TreeItem* item = getItem(resultIndex);
+		QString s = item->getId();
 
-		if (header == s) {
-			//QMessageBox::critical(0, "Debug", "Found!", QMessageBox::Ok);
+		if (header == s)
 			return resultIndex;
-		}
 
-		if (hasChildren(resultIndex)) { // search the hierarchy
-			//QMessageBox::critical(0, "Debug", "Check children!", QMessageBox::Ok);
+		//-- search the hierarchy
+		if (hasChildren(resultIndex)) {
 			resultIndex = match(index(0, resultIndex.column(), resultIndex), header);
 			if (resultIndex.isValid())
 				return resultIndex;
@@ -143,7 +153,8 @@ QModelIndex TreeModel::parent(const QModelIndex& itemIndex) const
 	return createIndex(parent->childNumber(), 0, parent);
 }
 
-bool TreeModel::insert(const QModelIndex& parentIndex, QString& header)
+bool TreeModel::insert(const QModelIndex& parentIndex, QString& header, QString& id,
+					   QWidget* widget, int index)
 {
 	if (header.isEmpty())
 		return false;
@@ -152,9 +163,8 @@ bool TreeModel::insert(const QModelIndex& parentIndex, QString& header)
 	bool success;
 
 	beginInsertRows(parentIndex, 0, 0);
-	success = parent->insertChild(header);
+	success = parent->insertChild(header, id, widget, index);
 	endInsertRows();
-	//sortChildren(parentIndex);
 
 	return success;
 }
@@ -190,13 +200,4 @@ bool TreeModel::setData(const QModelIndex& itemIndex, const QVariant& value, int
 	emit dataChanged(itemIndex, itemIndex);
 
 	return true;
-}
-
-void TreeModel::sortChildren(const QModelIndex& parentIndex)
-{
-	if (!parentIndex.isValid())
-		return ;
-
-	TreeItem* item = getItem(parentIndex);
-	item->sortChildren();
 }
