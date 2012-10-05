@@ -17,22 +17,17 @@ class OptionsDialog : public QWidget
 	Q_OBJECT
 private:
 	QTreeView*				treeView;
-	QGroupBox*				widgetArea;
+	//QGroupBox*				widgetArea;
+	QStackedLayout*			layout;
 
-	QLineEdit*				edit;
 public:
 	static OptionsDialog*	options;
 	OptionsDialog();
 	~OptionsDialog();
 
-	bool					addPage(QWidget *page);
+	int					addPage(OPTIONSPAGE* page);
+	void				selectPage(const QModelIndex& current, const QModelIndex& previous);
 
-	void					sort();
-
-	//int						insertItem();
-	bool					addChild();
-	bool					deleteChild();
-	bool					findItem();
 };
 
 int LoadOptionsModule();

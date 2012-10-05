@@ -23,7 +23,8 @@ private:
 	TreeItem*	getItem(const QModelIndex& index) const;
 
 public:
-	TreeModel(const QString& header, QObject *parent = 0);
+	TreeModel(const QString& header = 0, const QString& id = QString(), QWidget* widget = 0,
+			  const int index = 0, QObject* parent = 0);
 	~TreeModel();
 
 	QModelIndex match(const QModelIndex& startIndex, const QString& header) const;
@@ -35,13 +36,15 @@ public:
 	int rowCount(const QModelIndex& parentIndex = QModelIndex()) const;
 	int columnCount(const QModelIndex& parentIndex = QModelIndex()) const;
 
+	int getLayoutIndex(const QModelIndex& itemIndex) const;
+
 	Qt::ItemFlags flags(const QModelIndex& itemIndex) const;
 
 	bool setData(const QModelIndex& itemIndex, const QVariant& value, int role = Qt::EditRole);
-	bool insert(const QModelIndex& parentIndex = QModelIndex(), QString& header = QString());
+	bool insert(const QModelIndex& parentIndex = QModelIndex(), QString& header = QString(),
+				QString& id = QString(), QWidget* widget = 0, int index = 0);
 	bool remove(const QModelIndex& itemIndex = QModelIndex());
 
-	void sortChildren(const QModelIndex& parentIndex);
 };
 
 #endif // TREEMODEL_H

@@ -1,9 +1,13 @@
 #include "../../commonheaders.h"
 
-TreeItem::TreeItem(const QString& header, TreeItem* parent)
+TreeItem::TreeItem(const QString& headerExt, const QString& idExt, QWidget* widget,
+				   const int indx, TreeItem* parent)
 {
 	parentItem = parent;
-	this->header = header;
+	this->header = headerExt;
+	this->id = idExt;
+	this->page = widget;
+	this->index = indx;
 }
 
 TreeItem::~TreeItem()
@@ -34,15 +38,42 @@ int TreeItem::childNumber() const
 	return 0;
 }
 
+int TreeItem::getLayoutIndex() const
+{
+	return index;
+}
+
 QString TreeItem::getHeader() const
 {
 	return header;
 }
 
-bool TreeItem::insertChild(QString& header)
+QString TreeItem::getId() const
 {
-	TreeItem* item = new TreeItem(header, this);
-	childItems.insert(childItems.size(), item);
+	return id;
+}
+
+QWidget* TreeItem::getWidget() const
+{
+	return page;
+}
+
+bool TreeItem::insertChild(QString& headerExt, QString& idExt, QWidget* widget, int indx)
+{
+	TreeItem* item = new TreeItem(headerExt, idExt, widget, indx, this);
+
+	if (childItems.count() == 0)
+		childItems.insert(0, item);
+	else {
+		QList<TreeItem*>::iterator i;
+		for (i = childItems.begin(); i != childItems.end(); ++i) {
+			if ((*i)->getHeader().toLower() > headerExt.toLower()) {
+				childItems.insert(i, item);
+				return true;
+			}
+		}
+		childItems.insert(i, item);
+	}
 
 	return true;
 }
@@ -61,7 +92,7 @@ void TreeItem::setHeader(const QString &value)
 {
 	header = value;
 }
-
+/*
 bool lessThan(const TreeItem* i1, const TreeItem* i2)
 {
 	QString s1 = i1->getHeader();
@@ -72,4 +103,4 @@ bool lessThan(const TreeItem* i1, const TreeItem* i2)
 void TreeItem::sortChildren()
 {
 	qSort(childItems.begin(), childItems.end(), lessThan);
-}
+}*/

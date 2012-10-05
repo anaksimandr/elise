@@ -5,11 +5,25 @@ OptionsDialog* OptionsDialog::options = 0;
 
 int AddPage(uintptr_t wParam,uintptr_t lParam)
 {
+	if (OptionsDialog::options == 0)
+		return -1;
+
+	OPTIONSPAGE* page = (OPTIONSPAGE*)wParam;
+
+	return OptionsDialog::options->addPage(page);
+}
+
+int ShowOptions(uintptr_t wParam,uintptr_t lParam)
+{
+	if (OptionsDialog::options == 0) {
+		OptionsDialog::options = new OptionsDialog();
+		NotifyEventHooks(&OPTIONS_SHOW, 0, 0);
+	}
+
+	OptionsDialog::options->show();
 
 	return 0;
 }
-
-
 
 int LoadOptionsModule()
 {
@@ -27,19 +41,27 @@ int UnloadOptionsModule()
 	return 0;
 }
 
-int ShowOptions(uintptr_t wParam,uintptr_t lParam)
+int OptionsDialog::addPage(OPTIONSPAGE* page)
 {
-	if (OptionsDialog::options == 0) {
-		OptionsDialog::options = new OptionsDialog();
-		NotifyEventHooks(&OPTIONS_SHOW, 0, 0);
+	TreeModel* model = dynamic_cast<TreeModel*>(treeView->model());
+	QModelIndex index = model->index(0, 0);
+	QModelIndex parent = model->match(index, page->parentId);
+
+	int layoutIndex = layout->addWidget(page->page);
+
+	//-- Insert to rootItem if parent not found
+	if (!model->insert(parent, page->title, page->id, page->page, layoutIndex)) {
+		layout->takeAt(layoutIndex);
+		return -1;
 	}
-	OptionsDialog::options->show();
+
 	return 0;
 }
 
-bool OptionsDialog::addPage(QWidget* page)
+void OptionsDialog::selectPage(const QModelIndex& current, const QModelIndex& previous)
 {
-	return true;
+	TreeModel* model = dynamic_cast<TreeModel*>(treeView->model());
+	layout->setCurrentIndex(model->getLayoutIndex(current));
 }
 
 OptionsDialog::OptionsDialog()
@@ -53,7 +75,7 @@ OptionsDialog::OptionsDialog()
 	treeView->resize(200, this->height() + 2);
 
 	QString str;
-	TreeModel* model = new TreeModel(str, this);
+	TreeModel* model = new TreeModel(str, str, 0, 0, this);
 
 	TreeItemDelegate* delegate = new TreeItemDelegate();
 	treeView->setModel(model);
@@ -61,12 +83,15 @@ OptionsDialog::OptionsDialog()
 	treeView->setHeaderHidden(true);
 
 	//-- Client area for current settings
-	widgetArea = new QGroupBox(this);
+	QGroupBox* widgetArea = new QGroupBox(this);
 	widgetArea->move(treeView->width() + 10, 10);
 	widgetArea->resize(this->width() - treeView->width() - 10 - 10,
 							 this->height() - 10 - 40);
-	QStackedLayout* layout = new QStackedLayout();
+	layout = new QStackedLayout(this);
 	widgetArea->setLayout(layout);
+
+	connect(treeView->selectionModel(), &QItemSelectionModel::currentChanged,
+			this, &OptionsDialog::selectPage);
 
 	/*
 	//treeView->setRootIsDecorated(true);
@@ -109,78 +134,101 @@ OptionsDialog::OptionsDialog()
 	//QTreeView* vv = new QTreeView(widgetClientArea);
 	//vv->resize(vv->parentWidget()->size());*/
 
-	QModelIndex index = treeView->selectionModel()->currentIndex();
+	QWidget* wi;
+	OPTIONSPAGE* page = new OPTIONSPAGE;
+
 	str = "Chat";
-	model->insert(index, str);
+	page->id = str;
+	page->parentId = "FFFF";
+	page->title = str;
+	wi = new QWidget();
+	wi->setToolTip(str);
+	page->page = wi;
+	addPage(page);
+
 	str = "Popup windows";
-	model->insert(index, str);
+	page->id = str;
+	page->parentId = "FFFF";
+	page->title = str;
+	wi = new QWidget();
+	wi->setToolTip(str);
+	page->page = wi;
+	addPage(page);
+
 	str = "History";
-	model->insert(index, str);
+	page->id = str;
+	page->parentId = "FFFF";
+	page->title = str;
+	wi = new QWidget();
+	wi->setToolTip(str);
+	page->page = wi;
+	addPage(page);
+
 	str = "Moduls";
-	model->insert(index, str);
+	page->id = str;
+	page->parentId = "FFFF";
+	page->title = str;
+	wi = new QWidget();
+	wi->setToolTip(str);
+	page->page = wi;
+	addPage(page);
+
 	str = "Network";
-	model->insert(index, str);
+	page->id = str;
+	page->parentId = "FFFF";
+	page->title = str;
+	wi = new QWidget();
+	wi->setToolTip(str);
+	page->page = wi;
+	addPage(page);
+
 	str = "Services";
-	model->insert(index, str);
+	page->id = str;
+	page->parentId = "FFFF";
+	page->title = str;
+	wi = new QWidget();
+	wi->setToolTip(str);
+	page->page = wi;
+	addPage(page);
+
 	str = "Ivents";
-	model->insert(index, str);
+	page->id = str;
+	page->parentId = "FFFF";
+	page->title = str;
+	wi = new QWidget();
+	wi->setToolTip(str);
+	page->page = wi;
+	addPage(page);
+
 	str = "Contact list";
-	model->insert(index, str);
+	page->id = str;
+	page->parentId = "FFFF";
+	page->title = str;
+	wi = new QWidget();
+	wi->setToolTip(str);
+	page->page = wi;
+	addPage(page);
+
 	str = "Status";
-	model->insert(index, str);
+	page->id = str;
+	page->parentId = "FFFF";
+	page->title = str;
+	wi = new QWidget();
+	wi->setToolTip(str);
+	page->page = wi;
+	addPage(page);
+
 	str = "Config";
-	model->insert(index, str);
+	page->id = str;
+	page->parentId = "FFFF";
+	page->title = str;
+	wi = new QWidget();
+	wi->setToolTip(str);
+	page->page = wi;
+	addPage(page);
 }
 
 OptionsDialog::~OptionsDialog()
 {
 	OptionsDialog::options = 0;
-}
-
-bool OptionsDialog::sort()
-{
-	TreeModel* model = dynamic_cast<TreeModel*>(treeView->model());
-	QModelIndex index = model->index(0, 0);
-
-	model->sortChildren(index);
-
-	return true;
-}
-
-
-
-bool OptionsDialog::addChild()
-{
-	QModelIndex index = treeView->selectionModel()->currentIndex();
-	TreeModel* model = dynamic_cast<TreeModel*>(treeView->model());
-
-	if (!model->insert(index, edit->text()))
-		return false;
-
-	return true;
-}
-
-bool OptionsDialog::deleteChild()
-{
-	QModelIndex index = treeView->selectionModel()->currentIndex();
-	TreeModel* model = dynamic_cast<TreeModel*>(treeView->model());
-
-	if (model->remove(index))
-		return true;
-
-	return false;
-}
-
-bool OptionsDialog::findItem()
-{
-	TreeModel* model = dynamic_cast<TreeModel*>(treeView->model());
-	QModelIndex index = model->index(0, 0);
-	QModelIndex result = model->match(index, edit->text());
-
-	if (result.isValid()) {
-		treeView->setCurrentIndex(result);
-		return true;
-	}
-
-	return false;
 }

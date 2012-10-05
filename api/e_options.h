@@ -6,9 +6,10 @@ const QString	OPTIONS_ADD_PAGE	=	"Options/AddPage";
 
 typedef struct
 {
-	QString id;
-	QString title;
-	QString group;
+	QString		id;
+	QString		parentId;
+	QString		title;
+	QWidget*	page;
 
 } OPTIONSPAGE;
 
