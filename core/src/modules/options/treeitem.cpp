@@ -1,12 +1,10 @@
 #include "../../commonheaders.h"
 
-TreeItem::TreeItem(const QString& headerExt, const QString& idExt, QWidget* widget,
-				   const int indx, TreeItem* parent)
+TreeItem::TreeItem(const QString& headerExt, const QString& idExt, const int indx, TreeItem* parent)
 {
 	parentItem = parent;
 	this->header = headerExt;
 	this->id = idExt;
-	this->page = widget;
 	this->index = indx;
 }
 
@@ -53,14 +51,9 @@ QString TreeItem::getId() const
 	return id;
 }
 
-QWidget* TreeItem::getWidget() const
+bool TreeItem::insertChild(QString& headerExt, QString& idExt, int indx)
 {
-	return page;
-}
-
-bool TreeItem::insertChild(QString& headerExt, QString& idExt, QWidget* widget, int indx)
-{
-	TreeItem* item = new TreeItem(headerExt, idExt, widget, indx, this);
+	TreeItem* item = new TreeItem(headerExt, idExt, indx, this);
 
 	if (childItems.count() == 0)
 		childItems.insert(0, item);
