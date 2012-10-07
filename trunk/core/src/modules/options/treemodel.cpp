@@ -29,11 +29,11 @@ void TreeItemDelegate::paint(QPainter* painter,
 	QStyledItemDelegate::paint(painter, opt, index);
 }
 
-TreeModel::TreeModel(const QString& header, const QString& id, QWidget* widget,
+TreeModel::TreeModel(const QString& header, const QString& id,
 					 const int index, QObject* parent)
 	: QAbstractItemModel(parent)
 {
-	rootItem = new TreeItem(header, id, widget, index);
+	rootItem = new TreeItem(header, id, index);
 }
 
 TreeModel::~TreeModel()
@@ -153,8 +153,7 @@ QModelIndex TreeModel::parent(const QModelIndex& itemIndex) const
 	return createIndex(parent->childNumber(), 0, parent);
 }
 
-bool TreeModel::insert(const QModelIndex& parentIndex, QString& header, QString& id,
-					   QWidget* widget, int index)
+bool TreeModel::insert(const QModelIndex& parentIndex, QString& header, QString& id, int index)
 {
 	if (header.isEmpty())
 		return false;
@@ -163,7 +162,7 @@ bool TreeModel::insert(const QModelIndex& parentIndex, QString& header, QString&
 	bool success;
 
 	beginInsertRows(parentIndex, 0, 0);
-	success = parent->insertChild(header, id, widget, index);
+	success = parent->insertChild(header, id, index);
 	endInsertRows();
 
 	return success;

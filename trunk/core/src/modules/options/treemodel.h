@@ -23,7 +23,7 @@ private:
 	TreeItem*	getItem(const QModelIndex& index) const;
 
 public:
-	TreeModel(const QString& header = 0, const QString& id = QString(), QWidget* widget = 0,
+	TreeModel(const QString& header = 0, const QString& id = QString(),
 			  const int index = 0, QObject* parent = 0);
 	~TreeModel();
 
@@ -42,7 +42,7 @@ public:
 
 	bool setData(const QModelIndex& itemIndex, const QVariant& value, int role = Qt::EditRole);
 	bool insert(const QModelIndex& parentIndex = QModelIndex(), QString& header = QString(),
-				QString& id = QString(), QWidget* widget = 0, int index = 0);
+				QString& id = QString(), int index = 0);
 	bool remove(const QModelIndex& itemIndex = QModelIndex());
 
 };

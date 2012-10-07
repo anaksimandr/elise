@@ -47,10 +47,21 @@ int OptionsDialog::addPage(OPTIONSPAGE* page)
 	QModelIndex index = model->index(0, 0);
 	QModelIndex parent = model->match(index, page->parentId);
 
+	if (page->page == 0) {
+		//-- Create default widget for blank pages
+		page->page = new QLabel("Please select a subentry from the list", this);
+		//page->page = new QLineEdit("Please select a subentry from the list", this);
+		page->page->resize(this->width(), this->height());
+		//QMessageBox::critical(this, "debug", QString::number(page->page->width()), QMessageBox::Ok);
+	}
+	else
+		//-- Set OptionsDialog as parent to delete widget on exit
+		page->page->setParent(this);
+
 	int layoutIndex = layout->addWidget(page->page);
 
 	//-- Insert to rootItem if parent not found
-	if (!model->insert(parent, page->title, page->id, page->page, layoutIndex)) {
+	if (!model->insert(parent, page->title, page->id, layoutIndex)) {
 		layout->takeAt(layoutIndex);
 		return -1;
 	}
@@ -75,7 +86,7 @@ OptionsDialog::OptionsDialog()
 	treeView->resize(200, this->height() + 2);
 
 	QString str;
-	TreeModel* model = new TreeModel(str, str, 0, 0, this);
+	TreeModel* model = new TreeModel(str, str, 0, this);
 
 	TreeItemDelegate* delegate = new TreeItemDelegate();
 	treeView->setModel(model);
@@ -88,6 +99,7 @@ OptionsDialog::OptionsDialog()
 	widgetArea->resize(this->width() - treeView->width() - 10 - 10,
 							 this->height() - 10 - 40);
 	layout = new QStackedLayout(this);
+	//layout->setAlignment(Qt::AlignCenter);
 	widgetArea->setLayout(layout);
 
 	connect(treeView->selectionModel(), &QItemSelectionModel::currentChanged,
@@ -186,9 +198,7 @@ OptionsDialog::OptionsDialog()
 	page->id = str;
 	page->parentId = "FFFF";
 	page->title = str;
-	wi = new QWidget();
-	wi->setToolTip(str);
-	page->page = wi;
+	page->page = 0;
 	addPage(page);
 
 	str = "Ivents";
