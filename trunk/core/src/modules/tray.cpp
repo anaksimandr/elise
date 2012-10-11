@@ -35,6 +35,14 @@ int addToContextMenu(uintptr_t wParam,uintptr_t lParam)
 	return 0;
 }
 
+int setTrayIcon(uintptr_t wParam,uintptr_t lParam)
+{
+	QIcon* icon = (QIcon*)wParam;
+	//QIcon icon2 = *icon;
+	trayElise->setIcon(*icon);
+	return 0;
+}
+
 int EliseTray::addToMenu(QAction* action)
 {
 	contextMenu()->addAction(action);
@@ -51,8 +59,10 @@ int LoadTrayModule()
 	CreateHookableEvent(&TRAY_MIDDLECLICK);
 	QObject::connect(trayElise, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
 					 trayElise, SLOT(trayActivationNotify(QSystemTrayIcon::ActivationReason)));
+	//QObject::connect(trayElise, &EliseTray::activated, trayElise, &EliseTray::trayActivationNotify);
 	trayElise->setContextMenu(new QMenu());
 	CreateServiceFunction(&TRAY_ADD_MENUITEM, (ELISESERVICE)addToContextMenu);
+	CreateServiceFunction(&TRAY_SET_ICON, (ELISESERVICE)setTrayIcon);
 	return 0;
 }
 

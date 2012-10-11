@@ -49,10 +49,11 @@ int OptionsDialog::addPage(OPTIONSPAGE* page)
 
 	if (page->page == 0) {
 		//-- Create default widget for blank pages
-		page->page = new QLabel("Please select a subentry from the list", this);
-		//page->page = new QLineEdit("Please select a subentry from the list", this);
-		page->page->resize(this->width(), this->height());
-		//QMessageBox::critical(this, "debug", QString::number(page->page->width()), QMessageBox::Ok);
+		//page->page = new QLabel("Please select a subentry from the list", this);
+		page->page = new QLineEdit("Please select a subentry from the list", this);
+		page->page->setFixedSize(200, 20);
+		//page->page->setFixedSize(478, 448);
+		page->page->move(this->width() / 2, this->height() / 2);
 	}
 	else
 		//-- Set OptionsDialog as parent to delete widget on exit

@@ -4,6 +4,10 @@
 const QString	OPTIONS_SHOW		=	"Options/Show";
 const QString	OPTIONS_ADD_PAGE	=	"Options/AddPage";
 
+/*
+QWidget* page size is 478x448;
+*/
+
 typedef struct
 {
 	QString		id;

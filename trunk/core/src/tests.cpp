@@ -103,8 +103,8 @@ QTestWindow::QTestWindow()
 	layoutUtil->addWidget(button);
 
 	button = new QPushButton(this);
-	button->setText("none");
-	//connect(button, SIGNAL(clicked()), this, SLOT(testDB()));
+	button->setText("Set icon");
+	connect(button, &QPushButton::clicked, this, &QTestWindow::setTrayIcon);
 	layoutUtil->addWidget(button);
 
 	button = new QPushButton(this);
@@ -279,6 +279,14 @@ void QTestWindow::changeAcc()
 void QTestWindow::showOptions()
 {
 	CallService(&OPTIONS_SHOW, 0, 0);
+}
+
+void QTestWindow::setTrayIcon()
+{
+	QString filename = QFileDialog::getOpenFileName(this, "Open file", "", "SVG (*.svg);; Files (*.*)");
+	QIcon* icon = new QIcon(filename);
+	CallService(&TRAY_SET_ICON, (uintptr_t)icon, 0);
+	delete icon;
 }
 
 //-- Database
