@@ -23,6 +23,7 @@ public slots:
 	void			uuidCreate();
 	void			testNewPlugin();
 	void			showOptions();
+	void			setTrayIcon();
 	//void			testDB();
 	void			changeAcc();
 	//-- Database

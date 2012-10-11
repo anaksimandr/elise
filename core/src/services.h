@@ -24,6 +24,7 @@ const QString	E_SKIN_MODULE		=	"Skins";
 const QString	SHUTDOWN_SERVICE	=	"System/Shutdown";	/* Call this method to close Elise. */
 const QString	CHANGEACC_SERVICE	=	"System/ChangeAcc";	/* Calls unload plugins and calls login window. */
 const QString	TRAY_ADD_MENUITEM	=	"Tray/AddMenuItem";	/* Adds item to tray context menu. */
+const QString	TRAY_SET_ICON		=	"Tray/SetIcon";		/* */
 
 //-- Hookable events
 const QString	TRAY_SINGLECLICK	=	"Tray/SingleClick";	/* The system tray entry was clicked. */

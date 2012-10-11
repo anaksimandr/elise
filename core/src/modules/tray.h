@@ -18,6 +18,7 @@ public:
 					~EliseTray();
     int				addToMenu(QAction* action);
 	int				delFromMenu(QAction* action);
+	//int				setIcon(QIcon* icon);
 	//int				addToContextMenu();
 };
 
