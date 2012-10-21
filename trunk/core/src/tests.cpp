@@ -284,6 +284,7 @@ void QTestWindow::showOptions()
 void QTestWindow::setTrayIcon()
 {
 	QString filename = QFileDialog::getOpenFileName(this, "Open file", "", "SVG (*.svg);; Files (*.*)");
+	//QMessageBox::critical(this, "Debug", "2", QMessageBox::Ok);
 	QIcon* icon = new QIcon(filename);
 	CallService(&TRAY_SET_ICON, (uintptr_t)icon, 0);
 	delete icon;

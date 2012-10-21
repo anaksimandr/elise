@@ -3,7 +3,7 @@
 
 OptionsDialog* OptionsDialog::options = 0;
 
-int AddPage(uintptr_t wParam,uintptr_t lParam)
+int AddPage(uintptr_t wParam, uintptr_t lParam)
 {
 	if (OptionsDialog::options == 0)
 		return -1;
@@ -13,7 +13,7 @@ int AddPage(uintptr_t wParam,uintptr_t lParam)
 	return OptionsDialog::options->addPage(page);
 }
 
-int ShowOptions(uintptr_t wParam,uintptr_t lParam)
+int ShowOptions(uintptr_t wParam, uintptr_t lParam)
 {
 	if (OptionsDialog::options == 0) {
 		OptionsDialog::options = new OptionsDialog();
@@ -30,39 +30,38 @@ int LoadOptionsModule()
 	OptionsDialog::options = 0;
 	CreateHookableEvent(&OPTIONS_SHOW);
 	CreateServiceFunction(&OPTIONS_SHOW, (ELISESERVICE)ShowOptions);
-	CreateServiceFunction(&OPTIONS_ADD_PAGE, (ELISESERVICE)AddPage);
 	return 0;
 }
 
 int UnloadOptionsModule()
 {
-	if (OptionsDialog::options == 0)
+	if (OptionsDialog::options != 0)
 		OptionsDialog::options->~OptionsDialog();
+	DestroyHookableEvent(&OPTIONS_SHOW);
+	DestroyServiceFunction(&OPTIONS_SHOW);
 	return 0;
 }
 
-int OptionsDialog::addPage(OPTIONSPAGE* page)
+int OptionsDialog::addPage(OPTIONSPAGE* newPage)
 {
 	TreeModel* model = dynamic_cast<TreeModel*>(treeView->model());
 	QModelIndex index = model->index(0, 0);
-	QModelIndex parent = model->match(index, page->parentId);
+	QModelIndex parent = model->match(index, newPage->parentId);
 
-	if (page->page == 0) {
+	if (newPage->page == 0) {
 		//-- Create default widget for blank pages
-		//page->page = new QLabel("Please select a subentry from the list", this);
-		page->page = new QLineEdit("Please select a subentry from the list", this);
-		page->page->setFixedSize(200, 20);
-		//page->page->setFixedSize(478, 448);
-		page->page->move(this->width() / 2, this->height() / 2);
+		newPage->page = new QWidget(this);
+		QLabel* label = new QLabel("Please select a subentry from the list", newPage->page);
+		label->move(150, 220);
 	}
 	else
 		//-- Set OptionsDialog as parent to delete widget on exit
-		page->page->setParent(this);
+		newPage->page->setParent(this);
 
-	int layoutIndex = layout->addWidget(page->page);
+	int layoutIndex = layout->addWidget(newPage->page);
 
 	//-- Insert to rootItem if parent not found
-	if (!model->insert(parent, page->title, page->id, layoutIndex)) {
+	if (!model->insert(parent, newPage->title, newPage->id, layoutIndex)) {
 		layout->takeAt(layoutIndex);
 		return -1;
 	}
@@ -237,9 +236,16 @@ OptionsDialog::OptionsDialog()
 	wi->setToolTip(str);
 	page->page = wi;
 	addPage(page);
+
+	CreateServiceFunction(&OPTIONS_ADD_PAGE, (ELISESERVICE)AddPage);
+	CreateHookableEvent(&OPTIONS_SAVE);
+	CreateHookableEvent(&OPTIONS_CLOSE);
 }
 
 OptionsDialog::~OptionsDialog()
 {
 	OptionsDialog::options = 0;
+	DestroyHookableEvent(&OPTIONS_SAVE);
+	DestroyHookableEvent(&OPTIONS_CLOSE);
+	DestroyServiceFunction(&OPTIONS_ADD_PAGE);
 }

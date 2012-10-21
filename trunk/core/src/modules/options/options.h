@@ -25,7 +25,7 @@ public:
 	OptionsDialog();
 	~OptionsDialog();
 
-	int					addPage(OPTIONSPAGE* page);
+	int					addPage(OPTIONSPAGE* newPage);
 	void				selectPage(const QModelIndex& current, const QModelIndex& previous);
 
 	void				saveSettings();
