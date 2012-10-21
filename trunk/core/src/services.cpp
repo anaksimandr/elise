@@ -8,8 +8,8 @@ static QMutex qmutexHooks;
 static QMutex qmutexServices;
 
 //-- Arrays of hookable events and services
-static QMap <QString, THookEvent*> qmapHooks;
-static QMap <QString, TService*> qmapServices;
+static QMap <QLatin1String, THookEvent*> qmapHooks;
+static QMap <QLatin1String, TService*> qmapServices;
 
 
 int InitialiseModularEngine(void)
@@ -27,9 +27,12 @@ int InitialiseModularEngine(void)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //-- HOOKS --///////////////////////////////////////////////////////////////////////////////////////
 
-int CreateHookableEvent(const QString* name)
+int CreateHookableEvent(const QLatin1String* name)
 {
-	if (name->isEmpty())
+	//if (name->isEmpty())
+	//	return -1;
+
+	if (name->size() < 1)
 		return -1;
 
 	qmutexHooks.lock();
@@ -53,9 +56,12 @@ int CreateHookableEvent(const QString* name)
 	return 0;
 }
 
-int DestroyHookableEvent(const QString* name)
+int DestroyHookableEvent(const QLatin1String* name)
 {
-	if (name->isEmpty())
+	//if (name->isEmpty())
+	//	return -1;
+
+	if (name->size() < 1)
 		return -1;
 
 	qmutexHooks.lock();
@@ -93,7 +99,7 @@ int DestroyHookableEvent(const QString* name)
 	return 0;
 }
 
-int CallHookSubscribers(const QString* name, uintptr_t wParam, uintptr_t lParam )
+int CallHookSubscribers(const QLatin1String* name, uintptr_t wParam, uintptr_t lParam )
 {
 	int returnErr = 0;
 	THookEvent* p = qmapHooks[*name];
@@ -141,7 +147,7 @@ int CallHookSubscribers(const QString* name, uintptr_t wParam, uintptr_t lParam 
 }
 
 //-- May be will be deprecated
-int checkHook(const QString* name)
+int checkHook(const QLatin1String* name)
 {
 	if (!qmapHooks.contains(*name))
 		return -1;
@@ -159,7 +165,7 @@ int checkHook(const QString* name)
 	return 0;
 }
 
-int NotifyEventHooks(const QString* name, uintptr_t wParam, uintptr_t lParam )
+int NotifyEventHooks(const QLatin1String* name, uintptr_t wParam, uintptr_t lParam )
 {
 	//extern HWND hAPCWindow;
 
@@ -181,9 +187,12 @@ int NotifyEventHooks(const QString* name, uintptr_t wParam, uintptr_t lParam )
 	return (checkHook(name) == -1) ? -1 : CallHookSubscribers(name, wParam, lParam);
 }
 
-int HookEventInt(const QString* name, ELISEHOOK hookProc)
+int HookEventInt(const QLatin1String* name, ELISEHOOK hookProc)
 {	
-	if (name->isEmpty())
+	//if (name->isEmpty())
+	//	return -2;
+
+	if (name->size() < 1)
 		return -2;
 
 	qmutexHooks.lock();
@@ -216,14 +225,17 @@ int HookEventInt(const QString* name, ELISEHOOK hookProc)
 	return p->subscriberCount++;
 }
 
-int HookEvent(const QString* name, ELISEHOOK hookProc)
+int HookEvent(const QLatin1String* name, ELISEHOOK hookProc)
 {
 	return HookEventInt(name, hookProc);
 }
 
 int UnhookEvent(const THook hook)
 {
-	if (hook.name == NULL || hook.name->isEmpty())
+	//if (hook.name == NULL || hook.name->isEmpty())
+	//	return -1;
+
+	if (hook.name == NULL || hook.name->size() < 1)
 		return -1;
 
 	qmutexHooks.lock();
@@ -261,9 +273,11 @@ int UnhookEvent(const THook hook)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //-- SERVICES --////////////////////////////////////////////////////////////////////////////////////
 
-int CreateServiceFunctionInt(const QString *name, ELISESERVICE serviceProc, int type)
+int CreateServiceFunctionInt(const QLatin1String* name, ELISESERVICE serviceProc, int type)
 {	
-	if (name->isEmpty())
+	//if (name->isEmpty())
+	//	return -1;
+	if (name->size() < 1)
 		return -1;
 	qmutexServices.lock();
 	//-- Return 1 if service with this name already exists.
@@ -292,7 +306,7 @@ int CreateServiceFunctionInt(const QString *name, ELISESERVICE serviceProc, int 
 	return 0;
 }
 
-int CreateServiceFunction(const QString *name, ELISESERVICE serviceProc)
+int CreateServiceFunction(const QLatin1String* name, ELISESERVICE serviceProc)
 {
 	return CreateServiceFunctionInt(name, serviceProc, 0);
 }
@@ -302,9 +316,11 @@ int CreateServiceFunction(const QString *name, ELISESERVICE serviceProc)
 //	return CreateServiceFunctionInt(name, (ELISESERVICE)serviceProc, 1);
 //}
 
-int ServiceExists(const QString* name)
+int ServiceExists(const QLatin1String* name)
 {
-	if (name->isEmpty())
+	//if (name->isEmpty())
+	//	return -1;
+	if (name->size() < 1)
 		return -1;
 
 	qmutexServices.lock();
@@ -314,9 +330,11 @@ int ServiceExists(const QString* name)
 	return is;
 }
 
-intptr_t CallService(const QString* name, uintptr_t wParam, uintptr_t lParam)
+intptr_t CallService(const QLatin1String* name, uintptr_t wParam, uintptr_t lParam)
 {
-	if (name->isEmpty())
+	//if (name->isEmpty())
+	//	return SERVICE_NOTFOUND;
+	if (name->size() < 1)
 		return SERVICE_NOTFOUND;
 
 	qmutexServices.lock();
@@ -342,9 +360,11 @@ intptr_t CallService(const QString* name, uintptr_t wParam, uintptr_t lParam)
 	//return qmapServices.value(*name)->pfnService(wParam, lParam);
 }
 
-int DestroyServiceFunction(const QString *name)
+int DestroyServiceFunction(const QLatin1String* name)
 {
-	if (name->isEmpty())
+	//if (name->isEmpty())
+	//	return -1;
+	if (name->size() < 1)
 		return -1;
 	qmutexServices.lock();
 	//-- Return SERVICE_NOTFOUND if service with this name not exists.

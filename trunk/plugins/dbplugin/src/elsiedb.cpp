@@ -12,7 +12,8 @@ QString qsProfile;
 int WriteSettingToBase(uintptr_t  wParam, uintptr_t lParam)
 {
 	SETTING* set = (SETTING*)lParam;
-	if (set->qsModule->isEmpty() || set->qsSetting->isEmpty()) {
+	//if (set->qsModule->isEmpty() || set->qsSetting->isEmpty()) {
+	if ((set->qsModule->size() < 1) || (set->qsSetting->size() < 1)) {
 #ifndef NDEBUG
 		QMessageBox::critical(0, "Debug WriteSettingToBase",
 							  "qsModule or qsSetting is empty\n"
@@ -86,7 +87,8 @@ int WriteSettingToBase(uintptr_t  wParam, uintptr_t lParam)
 int ReadSettingFromBase(uintptr_t  wParam, uintptr_t lParam)
 {
 	SETTING* set = (SETTING*)lParam;
-	if (set->qsModule->isEmpty() || set->qsSetting->isEmpty()) {
+	//if (set->qsModule->isEmpty() || set->qsSetting->isEmpty()) {
+	if ((set->qsModule->size() < 1) || (set->qsSetting->size() < 1)) {
 #ifndef NDEBUG
 		QMessageBox::critical(0, "Debug ReadSettingFromBase",
 							  "qsModule or qsSetting is empty\n"
@@ -156,7 +158,8 @@ int ReadSettingFromBase(uintptr_t  wParam, uintptr_t lParam)
 int DelteSettingFromBase(uintptr_t  wParam, uintptr_t lParam)
 {
 	SETTING* set = (SETTING*)lParam;
-	if (set->qsModule->isEmpty() || set->qsSetting->isEmpty()) {
+	//if (set->qsModule->isEmpty() || set->qsSetting->isEmpty()) {
+	if ((set->qsModule->size() < 1) || (set->qsSetting->size() < 1)) {
 #ifndef NDEBUG
 		QMessageBox::critical(0, "Debug ReadSettingFromBase",
 							  "qsModule or qsSetting is empty\n"

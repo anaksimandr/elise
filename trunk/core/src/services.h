@@ -18,18 +18,18 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //-- Names of system services and events --/////////////////////////////////////////////////////////
 
-const QString	E_SKIN_MODULE		=	"Skins";
+const QLatin1String	E_SKIN_MODULE		=	QLatin1String("Skins");
 
 //-- Services
-const QString	SHUTDOWN_SERVICE	=	"System/Shutdown";	/* Call this method to close Elise. */
-const QString	CHANGEACC_SERVICE	=	"System/ChangeAcc";	/* Calls unload plugins and calls login window. */
-const QString	TRAY_ADD_MENUITEM	=	"Tray/AddMenuItem";	/* Adds item to tray context menu. */
-const QString	TRAY_SET_ICON		=	"Tray/SetIcon";		/* */
+const QLatin1String	SHUTDOWN_SERVICE	=	QLatin1String("System/Shutdown");	/* Call this method to close Elise. */
+const QLatin1String	CHANGEACC_SERVICE	=	QLatin1String("System/ChangeAcc");	/* Calls unload plugins and calls login window. */
+const QLatin1String	TRAY_ADD_MENUITEM	=	QLatin1String("Tray/AddMenuItem");	/* Adds item to tray context menu. */
+const QLatin1String	TRAY_SET_ICON		=	QLatin1String("Tray/SetIcon");		/* */
 
 //-- Hookable events
-const QString	TRAY_SINGLECLICK	=	"Tray/SingleClick";	/* The system tray entry was clicked. */
-const QString	TRAY_DOUBLECLICK	=	"Tray/DoubleClick";	/* The system tray entry was double clicked. */
-const QString	TRAY_MIDDLECLICK	=	"Tray/MiddleClick";	/* The system tray entry was clicked with the middle mouse button. */
+const QLatin1String	TRAY_SINGLECLICK	=	QLatin1String("Tray/SingleClick");	/* The system tray entry was clicked. */
+const QLatin1String	TRAY_DOUBLECLICK	=	QLatin1String("Tray/DoubleClick");	/* The system tray entry was double clicked. */
+const QLatin1String	TRAY_MIDDLECLICK	=	QLatin1String("Tray/MiddleClick");	/* The system tray entry was clicked with the middle mouse button. */
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //-- Service and hook definitions --////////////////////////////////////////////////////////////////
@@ -87,7 +87,7 @@ typedef struct
 //-- See UnhookEvent function description for more details
 typedef struct
 {
-	QString* name;
+	QLatin1String* name;
 	int num;
 } THook;
 
@@ -120,7 +120,7 @@ typedef struct
   Will fail if the given name has already been used.
   Return 0 on success, -1 if the name is empty and 1 if the name has been already used.
 */
-int CreateHookableEvent(const QString* name);
+int CreateHookableEvent(const QLatin1String* name);
 
 /* DestroyHookableEvent
   Removes the event 'name' from the list of events. All modules hooked to it are automatically
@@ -129,7 +129,7 @@ int CreateHookableEvent(const QString* name);
   will fail if called with this name again.
   Return 0 on success, -1 if the name is empty and 1 if the 'name' not found in events list.
 */
-int DestroyHookableEvent(const QString* name);
+int DestroyHookableEvent(const QLatin1String* name);
 
 /* NotifyEventHooks
   Calls every module in turn that has hooked 'name', using the parameters wParam and lParam.
@@ -138,7 +138,7 @@ int DestroyHookableEvent(const QString* name);
   Returns 0 on success, -1 if name is invalid, any non-zero value that indicates abort of
   any called hook.
 */
-int NotifyEventHooks(const QString* name, uintptr_t wParam, uintptr_t lParam );
+int NotifyEventHooks(const QLatin1String* name, uintptr_t wParam, uintptr_t lParam );
 
 /* HookEvent
   Adds a new hook to the chain 'name', to be called when the hook owner calls
@@ -153,7 +153,7 @@ int NotifyEventHooks(const QString* name, uintptr_t wParam, uintptr_t lParam );
   Returns -2 if name is empty, -1 if name not found in events list. If the hook created
   successfully, returns its personal number that must be used by call UnhookEvent() as hook.num .
 */
-int HookEvent(const QString* name, ELISEHOOK hookProc);
+int HookEvent(const QLatin1String* name, ELISEHOOK hookProc);
 
 /* UnhookEvent
   Removes a hook from its event chain. It will no longer receive any events.
@@ -178,13 +178,13 @@ int UnhookEvent(const THook hook);
   callers of CallService().
   Returns 0 on success, -1 if 'name' is empty and 1 if name has been already used.
 */
-int CreateServiceFunction(const QString* name, ELISESERVICE serviceProc);
+int CreateServiceFunction(const QLatin1String* name, ELISESERVICE serviceProc);
 
 /* ServiceExists
   Finds if a service with the given 'name' exists.
   Returns non-zero if the service was found, and zero if it was not. Returns -1 if name is empty.
 */
-int ServiceExists(const QString* name);
+int ServiceExists(const QLatin1String* name);
 
 /* CallService
   Finds and calls the service function 'name' using the parameters wParam and
@@ -192,7 +192,7 @@ int ServiceExists(const QString* name);
   Returns SERVICE_NOTFOUND if no service function called 'name' has been
   created, or the value the service function returned otherwise.
 */
-intptr_t CallService(const QString* name, uintptr_t wParam, uintptr_t lParam);
+intptr_t CallService(const QLatin1String* name, uintptr_t wParam, uintptr_t lParam);
 
 /* DestroyServiceFunction
   Removes the function associated with name from the global service function
@@ -200,7 +200,7 @@ intptr_t CallService(const QString* name, uintptr_t wParam, uintptr_t lParam);
   service's name.
   Returns 0 on success, -1 if 'name' is empty and 1 if name not found in services list.
 */
-int DestroyServiceFunction(const QString* name);
+int DestroyServiceFunction(const QLatin1String* name);
 
 
 #endif // SERVICES_H__
