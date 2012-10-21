@@ -19,7 +19,7 @@ typedef struct {
 //-- See UnhookEvent() function description for more details
 typedef struct
 {
-	QString* name;
+	QLatin1String* name;
 	int num;
 } THook;
 #endif
@@ -43,15 +43,15 @@ typedef struct {
 } PLUGININFO;
 
 typedef struct {
-	int (*CreateHookableEvent)(const QString*);
-	int (*DestroyHookableEvent)(const QString*);
-	int (*NotifyEventHooks)(const QString*, uintptr_t, uintptr_t);
-	int (*HookEvent)(const QString*, ELISEHOOK);
+	int (*CreateHookableEvent)(const QLatin1String*);
+	int (*DestroyHookableEvent)(const QLatin1String*);
+	int (*NotifyEventHooks)(const QLatin1String*, uintptr_t, uintptr_t);
+	int (*HookEvent)(const QLatin1String*, ELISEHOOK);
 	int (*UnhookEvent)(const THook);
-	int (*CreateServiceFunction)(const QString*, ELISESERVICE);
-	int (*DestroyServiceFunction)(const QString*);
-	intptr_t (*CallService)(const QString*, uintptr_t, uintptr_t);
-	int (*ServiceExists)(const QString*);
+	int (*CreateServiceFunction)(const QLatin1String*, ELISESERVICE);
+	int (*DestroyServiceFunction)(const QLatin1String*);
+	intptr_t (*CallService)(const QLatin1String*, uintptr_t, uintptr_t);
+	int (*ServiceExists)(const QLatin1String*);
 } PLUGINLINK;
 
 #ifndef SERVICES_H__

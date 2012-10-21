@@ -4,7 +4,7 @@
 const PLUGINLINK* pluginLink;
 
 PLUGININFO pluginInfo = {
-	"DBPlugin",
+	QLatin1String("DBPlugin"),
 	{0,0,0,1},
 	"{ca0ae4d0-ea7c-4743-b34e-1a2c9c61991d}"
 };

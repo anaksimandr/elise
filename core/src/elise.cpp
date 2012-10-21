@@ -40,8 +40,9 @@ int shutDown(intptr_t result, intptr_t lParam)
 	return result;
 }
 
-#include <QFile>
+#ifndef NDEBUG
 
+#include <QFile>
 void myMessageOutput(QtMsgType type, const char *msg)
 {
 	QFile file("log.txt");
@@ -65,9 +66,13 @@ void myMessageOutput(QtMsgType type, const char *msg)
 	file.close();
 }
 
+#endif //NDEBUG
+
 int main(int argc, char* argv[])
 {
+#ifndef NDEBUG
 	qInstallMsgHandler(myMessageOutput);
+#endif //NDEBUG
 	QApplication app(argc, argv);
 	app.setQuitOnLastWindowClosed(false);
 	//QTextCodec::setCodecForTr(QTextCodec::codecForName("utf-8"));

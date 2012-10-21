@@ -28,9 +28,8 @@ public:
 	int					addPage(OPTIONSPAGE* newPage);
 	void				selectPage(const QModelIndex& current, const QModelIndex& previous);
 
-	void				saveSettings();
-	void				cancel();
-
+	void				okButton();
+	void				applayButton();
 };
 
 int LoadOptionsModule();

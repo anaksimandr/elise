@@ -72,16 +72,17 @@ int PluginLoader::callLoginWindow(QMap<QString, IPlugin*>* loadablePlugins, bool
 			|| loadablePlugins == 0
 			|| loadablePlugins->count() == 0)
 	{
-		QMessageBox::critical(0, "getAvailablePlugins error",
-							  "Failed to get plugins list or no one plugin was found.",
-							  QMessageBox::Cancel);
+		QMessageBox::critical(0,
+						QStringLiteral("getAvailablePlugins error"),
+						QStringLiteral("Failed to get plugins list or no one plugin was found."),
+						QMessageBox::Cancel);
 		dbPlugins->~QMap();
 		return 1;
 	}
 	//-- Check for DB plugins
 	if (dbPlugins == 0 || dbPlugins->count() == 0) {
-		QMessageBox::critical(0, "Error",
-							  "No one DB plugin was found.",
+		QMessageBox::critical(0, QStringLiteral("Error"),
+							  QStringLiteral("No one DB plugin was found."),
 							  QMessageBox::Cancel);
 		dbPlugins->~QMap();
 		return 1;

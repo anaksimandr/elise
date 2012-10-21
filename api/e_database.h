@@ -2,9 +2,9 @@
 #define E_DATABASE_H
 
 //-- Services
-const QString	DB_WRITESETTING	=	"DB/WriteSetting";	/* Call this method to write setting to DB. */
-const QString	DB_READSETTING	=	"DB/ReadSetting";	/* ... to read setting from DB. */
-const QString	DB_DELSETTING	=	"DB/DelteSetting";	/* ... to delete setting from DB.*/
+const QLatin1String	DB_WRITESETTING	=	QLatin1String("DB/WriteSetting");	/* Call this method to write setting to DB. */
+const QLatin1String	DB_READSETTING	=	QLatin1String("DB/ReadSetting");	/* ... to read setting from DB. */
+const QLatin1String	DB_DELSETTING	=	QLatin1String("DB/DelteSetting");	/* ... to delete setting from DB.*/
 
 //-- Types of settings
 const unsigned char intType		=	0;	//-- int
@@ -26,10 +26,10 @@ typedef struct {
 //-- And at some other places
 //-- Note: you must delete SETTING and its DBVARIANT when it becomes not necessary
 typedef struct {
-	int			contact;
-	QString*	qsModule;
-	QString*	qsSetting;
-	DBVARIANT*	var;
+	int				contact;
+	QLatin1String*	qsModule;
+	QLatin1String*	qsSetting;
+	DBVARIANT*		var;
 } SETTING;
 
 

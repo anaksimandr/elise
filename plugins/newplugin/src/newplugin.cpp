@@ -1,7 +1,7 @@
 
 #include "commonheaders.h"
 
-const QString	TESTPLUGIN_SERVICE	=	"TESTPLUGIN_SERVICE";
+const QLatin1String	TESTPLUGIN_SERVICE	=	QLatin1String("TESTPLUGIN_SERVICE");
 const PLUGINLINK* pluginLink;
 
 PLUGININFO pluginInfo = {

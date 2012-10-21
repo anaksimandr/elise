@@ -1,10 +1,10 @@
 #ifndef E_OPTIONS_H
 #define E_OPTIONS_H
 
-const QString	OPTIONS_SHOW		=	QStringLiteral("Options/Show");
-const QString	OPTIONS_ADD_PAGE	=	QStringLiteral("Options/AddPage");
-const QString	OPTIONS_SAVE		=	QStringLiteral("Options/Save");
-const QString	OPTIONS_CLOSE		=	QStringLiteral("Options/Close");
+const QLatin1String	OPTIONS_SHOW		=	QLatin1String("Options/Show");
+const QLatin1String	OPTIONS_ADD_PAGE	=	QLatin1String("Options/AddPage");
+const QLatin1String	OPTIONS_SAVE		=	QLatin1String("Options/Save");
+const QLatin1String	OPTIONS_CLOSE		=	QLatin1String("Options/Close");
 
 /*
 QWidget* page size is 478x448;

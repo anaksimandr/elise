@@ -218,7 +218,7 @@ QTestWindow::QTestWindow()
 
 	//-- Work with tray
 	thTray.num =  HookEvent(&TRAY_SINGLECLICK, (ELISEHOOK)hideMainWindow);
-	thTray.name = new QString(TRAY_SINGLECLICK);
+	thTray.name = new QLatin1String(TRAY_SINGLECLICK);
 
 	wii = this;
 	this->show();
@@ -263,7 +263,7 @@ void QTestWindow::uuidCreate()
 	setOutput(QUuid::createUuid().toString());
 }
 
-const QString testplugin_service = "TESTPLUGIN_SERVICE";
+const QLatin1String testplugin_service = QLatin1String("TESTPLUGIN_SERVICE");
 void QTestWindow::testNewPlugin()
 {
 	CallService(&testplugin_service, 0, 0);
@@ -294,8 +294,8 @@ void QTestWindow::setTrayIcon()
 
 void QTestWindow::saveSetting()
 {
-	QString module = v1->text();
-	QString setting = v2->text();
+	QLatin1String module = QLatin1String(v1->text().toLatin1());
+	QLatin1String setting = QLatin1String(v2->text().toLatin1());
 	SETTING* set = new SETTING;
 	set->contact = 0;
 	set->qsModule = &module;
@@ -332,8 +332,8 @@ void QTestWindow::saveSetting()
 
 void QTestWindow::readSetting()
 {
-	QString module = v1->text();
-	QString setting = v2->text();
+	QLatin1String module = QLatin1String(v1->text().toLatin1());
+	QLatin1String setting = QLatin1String(v2->text().toLatin1());
 	SETTING* set = new SETTING;
 	set->contact = 0;
 	set->qsModule = &module;
@@ -371,8 +371,8 @@ void QTestWindow::readSetting()
 
 void QTestWindow::delSetting()
 {
-	QString module = v1->text();
-	QString setting = v2->text();
+	QLatin1String module = QLatin1String(v1->text().toLatin1());
+	QLatin1String setting = QLatin1String(v2->text().toLatin1());
 	SETTING* set = new SETTING;
 	set->contact = 0;
 	set->qsModule = &module;
@@ -389,8 +389,8 @@ void QTestWindow::delSetting()
 	delete set;
 }
 
-static QString name = "TEST_SERVISE";
-static QString hkevName = "TEST_HOOKABLE_EVENT";
+static QLatin1String name = QLatin1String("TEST_SERVISE");
+static QLatin1String hkevName = QLatin1String("TEST_HOOKABLE_EVENT");
 static THook hookEv;
 
 //-- Hooks
@@ -496,7 +496,7 @@ void QTestWindow::delService()
 
 //-- Long test
 
-static QMap <QString, THook*> qmapHooks;
+static QMap <QLatin1String, THook*> qmapHooks;
 static void* hookableEvent;
 
 int testFunction(void* ho, int val)
@@ -506,7 +506,7 @@ int testFunction(void* ho, int val)
 	return val;
 }
 
-int testFunction2(const QString* name2, int val)
+int testFunction2(const QLatin1String* name2, int val)
 {
 	THook* p;
 	qmapHooks[*name2] = (THook*)hookableEvent;
@@ -514,7 +514,7 @@ int testFunction2(const QString* name2, int val)
 	return val;
 }
 
-int testFunction3(const QString name2, int val)
+int testFunction3(const QLatin1String name2, int val)
 {
 	THook* p;
 	qmapHooks[name2] = (THook*)hookableEvent;

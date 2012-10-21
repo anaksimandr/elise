@@ -75,6 +75,17 @@ void OptionsDialog::selectPage(const QModelIndex& current, const QModelIndex& pr
 	layout->setCurrentIndex(model->getLayoutIndex(current));
 }
 
+void OptionsDialog::applayButton()
+{
+	NotifyEventHooks(&OPTIONS_SAVE, 0, 0);
+}
+
+void OptionsDialog::okButton()
+{
+	NotifyEventHooks(&OPTIONS_SAVE, 0, 0);
+	this->close();
+}
+
 OptionsDialog::OptionsDialog()
 {
 	this->setAttribute(Qt::WA_DeleteOnClose);
@@ -104,6 +115,21 @@ OptionsDialog::OptionsDialog()
 
 	connect(treeView->selectionModel(), &QItemSelectionModel::currentChanged,
 			this, &OptionsDialog::selectPage);
+
+	QPushButton* btn = new QPushButton(QStringLiteral("Ok"), this);
+	btn->setFixedSize(70, 25);
+	btn->move(470, 467);
+	connect(btn, &QPushButton::clicked, this, &OptionsDialog::okButton);
+
+	btn = new QPushButton(QStringLiteral("Cancel"), this);
+	btn->setFixedSize(70, 25);
+	btn->move(545, 467);
+	connect(btn, &QPushButton::clicked, this, &OptionsDialog::close);
+
+	btn = new QPushButton(QStringLiteral("Applay"), this);
+	btn->setFixedSize(70, 25);
+	btn->move(620, 467);
+	connect(btn, &QPushButton::clicked, this, &OptionsDialog::applayButton);
 
 	/*
 	//treeView->setRootIsDecorated(true);
@@ -244,6 +270,7 @@ OptionsDialog::OptionsDialog()
 
 OptionsDialog::~OptionsDialog()
 {
+	NotifyEventHooks(&OPTIONS_CLOSE, 0, 0);
 	OptionsDialog::options = 0;
 	DestroyHookableEvent(&OPTIONS_SAVE);
 	DestroyHookableEvent(&OPTIONS_CLOSE);
