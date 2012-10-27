@@ -202,7 +202,7 @@ int PluginLoader::loadDBPlugin(QString pluginName, IDBPlugin* dbPlugin)
 	return dbPlugin->Load(&pluginLink);
 }
 
-int PluginLoader::loadPlugins(QMap<QString, IPlugin *>* loadablePlugins)
+int PluginLoader::loadPlugins(QMap<QString, IPlugin*>* loadablePlugins)
 {
 	if (plugins == 0)
 		plugins = new QMap<QString, IPlugin*>();

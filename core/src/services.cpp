@@ -12,7 +12,7 @@ static QMap <QLatin1String, THookEvent*> qmapHooks;
 static QMap <QLatin1String, TService*> qmapServices;
 
 
-int InitialiseModularEngine(void)
+/*int InitialiseModularEngine(void)
 {
 	//mainThreadId=GetCurrentThreadId();
 	//DuplicateHandle(GetCurrentProcess(),GetCurrentThread(),GetCurrentProcess(),&hMainThread,0,FALSE,DUPLICATE_SAME_ACCESS);
@@ -22,7 +22,7 @@ int InitialiseModularEngine(void)
 	//intptr_t reinterpret_cast<intptr_t>(ptr);
 
 	return 0;
-}
+}*/
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //-- HOOKS --///////////////////////////////////////////////////////////////////////////////////////
@@ -335,13 +335,13 @@ intptr_t CallService(const QLatin1String* name, uintptr_t wParam, uintptr_t lPar
 	//if (name->isEmpty())
 	//	return SERVICE_NOTFOUND;
 	if (name->size() < 1)
-		return SERVICE_NOTFOUND;
+		return -1;
 
 	qmutexServices.lock();
 	//-- Check service. Return SERVICE_NOTFOUND if service with this name not exists
 	if (!qmapServices.contains(*name)) {
 		qmutexServices.unlock();
-		return SERVICE_NOTFOUND;
+		return -2;
 	}
 
 	TService* ser = qmapServices.value(*name);
@@ -370,7 +370,7 @@ int DestroyServiceFunction(const QLatin1String* name)
 	//-- Return SERVICE_NOTFOUND if service with this name not exists.
 	if (!qmapServices.contains(*name)) {
 		qmutexServices.unlock();
-		return SERVICE_NOTFOUND;
+		return -2;
 	}
 
 	TService* ser = qmapServices.value(*name);

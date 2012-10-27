@@ -17,8 +17,8 @@ class OptionsDialog : public QWidget
 	Q_OBJECT
 private:
 	QTreeView*				treeView;
-	//QGroupBox*				widgetArea;
 	QStackedLayout*			layout;
+	QSet<OPTIONSSAVE>		saveFunctions;
 
 public:
 	static OptionsDialog*	options;
@@ -28,8 +28,9 @@ public:
 	int					addPage(OPTIONSPAGE* newPage);
 	void				selectPage(const QModelIndex& current, const QModelIndex& previous);
 
+	void				applay();
+
 	void				okButton();
-	void				applayButton();
 };
 
 int LoadOptionsModule();

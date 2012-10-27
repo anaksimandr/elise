@@ -66,6 +66,9 @@ int OptionsDialog::addPage(OPTIONSPAGE* newPage)
 		return -1;
 	}
 
+	//--
+	saveFunctions.insert(newPage->save);
+
 	return 0;
 }
 
@@ -75,14 +78,18 @@ void OptionsDialog::selectPage(const QModelIndex& current, const QModelIndex& pr
 	layout->setCurrentIndex(model->getLayoutIndex(current));
 }
 
-void OptionsDialog::applayButton()
+void OptionsDialog::applay()
 {
-	NotifyEventHooks(&OPTIONS_SAVE, 0, 0);
+	QSet<OPTIONSSAVE>::const_iterator i = saveFunctions.constBegin();
+	while (i != saveFunctions.constEnd()) {
+		(*i)();
+		++i;
+	}
 }
 
 void OptionsDialog::okButton()
 {
-	NotifyEventHooks(&OPTIONS_SAVE, 0, 0);
+	applay();
 	this->close();
 }
 
@@ -129,7 +136,7 @@ OptionsDialog::OptionsDialog()
 	btn = new QPushButton(QStringLiteral("Applay"), this);
 	btn->setFixedSize(70, 25);
 	btn->move(620, 467);
-	connect(btn, &QPushButton::clicked, this, &OptionsDialog::applayButton);
+	connect(btn, &QPushButton::clicked, this, &OptionsDialog::applay);
 
 	/*
 	//treeView->setRootIsDecorated(true);
@@ -264,7 +271,6 @@ OptionsDialog::OptionsDialog()
 	addPage(page);
 
 	CreateServiceFunction(&OPTIONS_ADD_PAGE, (ELISESERVICE)AddPage);
-	CreateHookableEvent(&OPTIONS_SAVE);
 	CreateHookableEvent(&OPTIONS_CLOSE);
 }
 
@@ -272,7 +278,6 @@ OptionsDialog::~OptionsDialog()
 {
 	NotifyEventHooks(&OPTIONS_CLOSE, 0, 0);
 	OptionsDialog::options = 0;
-	DestroyHookableEvent(&OPTIONS_SAVE);
 	DestroyHookableEvent(&OPTIONS_CLOSE);
 	DestroyServiceFunction(&OPTIONS_ADD_PAGE);
 }

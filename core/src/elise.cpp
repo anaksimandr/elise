@@ -5,7 +5,7 @@
 //-- Temporary module for tests
 #include "tests.h"
 
-int InitialiseModularEngine(void);
+//int InitialiseModularEngine(void);
 
 int shutDown(intptr_t result, intptr_t lParam)
 {
@@ -84,7 +84,7 @@ int main(int argc, char* argv[])
 	srand(uint(qrand()));
 
 	//-- Initialise modular engine
-	InitialiseModularEngine();
+	//InitialiseModularEngine();
 
 	//-- Load default modules; shut down if failed
 	if (LoadDefaultModules())
