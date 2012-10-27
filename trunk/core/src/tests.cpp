@@ -272,7 +272,7 @@ void QTestWindow::testNewPlugin()
 void QTestWindow::changeAcc()
 {
 	this->~QTestWindow();
-	if (CallService(&CHANGEACC_SERVICE, 0, 0) == SERVICE_NOTFOUND)
+	if (CallService(&CHANGEACC_SERVICE, 0, 0) == -2)
 		QMessageBox::critical(this, "Error", "Service not found.", QMessageBox::Ok);
 }
 
@@ -477,7 +477,7 @@ void QTestWindow::testtService()
 	int res = CallService(&name, 111, 0);
 	if (res == 111)
 		setOutput("Test service returned valid result");
-	else if (res == SERVICE_NOTFOUND)
+	else if (res == -2)
 		setOutput("SERVICE_NOTFOUND");
 	else
 		setOutput("Test service returned wrong result");
@@ -488,7 +488,7 @@ void QTestWindow::delService()
 	int res = DestroyServiceFunction(&name);
 	if (!res)
 		setOutput("Test service destroed");
-	else if (res == SERVICE_NOTFOUND)
+	else if (res == -2)
 		setOutput("SERVICE_NOTFOUND");
 	else
 		setOutput("Destroy service fail");
