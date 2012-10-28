@@ -18,7 +18,8 @@ SOURCES += \
 	src/modules/logon.cpp \
 	src/modules/options/options.cpp \
     src/modules/options/treeitem.cpp \
-    src/modules/options/treemodel.cpp
+    src/modules/options/treemodel.cpp \
+	src/modules/pluginloader/pluginloader.cpp
 
 
 HEADERS += \
@@ -34,7 +35,8 @@ HEADERS += \
 	../api/e_options.h \
 	src/modules/options/options.h \
     src/modules/options/treeitem.h \
-    src/modules/options/treemodel.h
+    src/modules/options/treemodel.h \
+	src/modules/pluginloader/pluginloader.h
 
 RESOURCES += \
 	res/resources.qrc

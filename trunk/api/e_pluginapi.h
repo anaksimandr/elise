@@ -14,16 +14,6 @@ typedef struct {
 	};
 } EVersion;
 
-#ifndef SERVICES_H__
-//-- Use this to store information about your hooks and to call UnhookEvent() function
-//-- See UnhookEvent() function description for more details
-typedef struct
-{
-	QLatin1String* name;
-	int num;
-} THook;
-#endif
-
 //-- Hook functions
 typedef int (*ELISEHOOK)(uintptr_t,uintptr_t);
 
@@ -42,6 +32,16 @@ typedef struct {
 	QUuid uuid;
 } PLUGININFO;
 
+#ifndef SERVICES_H__
+//-- Use this to store information about your hooks and to call UnhookEvent() function
+//-- See UnhookEvent() function description for more details
+typedef struct
+{
+	QLatin1String* name;
+	int num;
+} THook;
+#endif //SERVICES_H__
+
 typedef struct {
 	int (*CreateHookableEvent)(const QLatin1String*);
 	int (*DestroyHookableEvent)(const QLatin1String*);
@@ -55,7 +55,7 @@ typedef struct {
 } PLUGINLINK;
 
 #ifndef SERVICES_H__
-	//relies on a global variable 'pluginLink' in the plugins
+	//-- relies on a global variable 'pluginLink' in the plugins
 	extern const PLUGINLINK* pluginLink;
 	#define CreateHookableEvent(a)                    pluginLink->CreateHookableEvent(a)
 	#define DestroyHookableEvent(a)                   pluginLink->DestroyHookableEvent(a)
