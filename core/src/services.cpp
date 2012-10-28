@@ -33,13 +33,13 @@ int CreateHookableEvent(const QLatin1String* name)
 	//	return -1;
 
 	if (name->size() < 1)
-		return -1;
+		return -2;
 
 	qmutexHooks.lock();
 	//-- If event already exists - return
 	if (qmapHooks.contains(*name)) {
 		qmutexHooks.unlock();
-		return 1;
+		return -1;
 	}
 
 	THookEvent* newEvent;
@@ -62,14 +62,14 @@ int DestroyHookableEvent(const QLatin1String* name)
 	//	return -1;
 
 	if (name->size() < 1)
-		return -1;
+		return -2;
 
 	qmutexHooks.lock();
 	//if ( pLastHook == ( THook* )hEvent )
 	//	pLastHook = NULL;
 	if (!qmapHooks.contains(*name)) {
 		qmutexHooks.unlock();
-		return 1;
+		return -1;
 	}
 
 	THookEvent* p;
@@ -236,20 +236,20 @@ int UnhookEvent(const THook hook)
 	//	return -1;
 
 	if (hook.name == NULL || hook.name->size() < 1)
-		return -1;
+		return -2;
 
 	qmutexHooks.lock();
 	//-- If the event name is wrong - return
 	if (!qmapHooks.contains(*hook.name)) {
 		qmutexHooks.unlock();
-		return 1;
+		return -1;
 	}
 
 	THookEvent* p = qmapHooks[*hook.name];
 	//-- If there is no subscribers or num is wrong - return
 	if (p->qmapSubscribers == NULL || !p->qmapSubscribers->contains(hook.num)) {
 		qmutexHooks.unlock();
-		return -2;
+		return -3;
 	}
 
 	THookSubscriber* s = p->qmapSubscribers->value(hook.num);
@@ -278,12 +278,12 @@ int CreateServiceFunctionInt(const QLatin1String* name, ELISESERVICE serviceProc
 	//if (name->isEmpty())
 	//	return -1;
 	if (name->size() < 1)
-		return -1;
+		return -2;
 	qmutexServices.lock();
 	//-- Return 1 if service with this name already exists.
 	if (qmapServices.contains(*name)) {
 		qmutexServices.unlock();
-		return 1;
+		return -1;
 	}
 
 	TService* newSer;
@@ -321,7 +321,7 @@ int ServiceExists(const QLatin1String* name)
 	//if (name->isEmpty())
 	//	return -1;
 	if (name->size() < 1)
-		return -1;
+		return -2;
 
 	qmutexServices.lock();
 	bool is = qmapServices.contains(*name);
@@ -335,13 +335,13 @@ intptr_t CallService(const QLatin1String* name, uintptr_t wParam, uintptr_t lPar
 	//if (name->isEmpty())
 	//	return SERVICE_NOTFOUND;
 	if (name->size() < 1)
-		return -1;
+		return -2;
 
 	qmutexServices.lock();
 	//-- Check service. Return SERVICE_NOTFOUND if service with this name not exists
 	if (!qmapServices.contains(*name)) {
 		qmutexServices.unlock();
-		return -2;
+		return -1;
 	}
 
 	TService* ser = qmapServices.value(*name);
@@ -365,12 +365,12 @@ int DestroyServiceFunction(const QLatin1String* name)
 	//if (name->isEmpty())
 	//	return -1;
 	if (name->size() < 1)
-		return -1;
+		return -2;
 	qmutexServices.lock();
 	//-- Return SERVICE_NOTFOUND if service with this name not exists.
 	if (!qmapServices.contains(*name)) {
 		qmutexServices.unlock();
-		return -2;
+		return -1;
 	}
 
 	TService* ser = qmapServices.value(*name);

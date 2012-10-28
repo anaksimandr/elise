@@ -107,34 +107,34 @@ typedef struct
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //-- Hook functions --//////////////////////////////////////////////////////////////////////////////
 
-/* CreateHookableEvent
+/* CreateHookableEvent /////////////////////////////////////////////////////////////////////////////
   Adds an named event to the list. The event will be automatically destroyed on exit, or can be
   removed from the list earlier using
 	  DestroyHookableEvent();
   Will fail if the given name has already been used.
-  Return 0 on success, -1 if the name is empty and 1 if the name has been already used.
-*/
+  Return 0 on success, -2 if the name is empty and -1 if the name has been already used.
+*///////////////////////////////////////////////////////////////////////////////////////////////////
 int CreateHookableEvent(const QLatin1String* name);
 
-/* DestroyHookableEvent
+/* DestroyHookableEvent ////////////////////////////////////////////////////////////////////////////
   Removes the event 'name' from the list of events. All modules hooked to it are automatically
   unhooked.
 	  NotifyEventHooks(...);
   will fail if called with this name again.
-  Return 0 on success, -1 if the name is empty and 1 if the 'name' not found in events list.
-*/
+  Return 0 on success, -2 if the name is empty and -1 if the 'name' not found in events list.
+*///////////////////////////////////////////////////////////////////////////////////////////////////
 int DestroyHookableEvent(const QLatin1String* name);
 
-/* NotifyEventHooks
+/* NotifyEventHooks ////////////////////////////////////////////////////////////////////////////////
   Calls every module in turn that has hooked 'name', using the parameters wParam and lParam.
   If one of the hooks returned non-zero to indicate abort, returns that abort value immediately,
   without calling the rest of the hooks in the chain.
-  Returns 0 on success, -1 if name is invalid, any non-zero value that indicates abort of
-  any called hook.
-*/
+  Returns 0 on success, -2 if name is invalid, any non-zero value that indicates break of one
+  of called hooks.
+*///////////////////////////////////////////////////////////////////////////////////////////////////
 int NotifyEventHooks(const QLatin1String* name, uintptr_t wParam, uintptr_t lParam );
 
-/* HookEvent
+/* HookEvent ///////////////////////////////////////////////////////////////////////////////////////
   Adds a new hook to the chain 'name', to be called when the hook owner calls
 	  NotifyEventHooks(...);
   All hooks will be automatically destroyed when (their parent event is destroyed or) the programme
@@ -145,23 +145,23 @@ int NotifyEventHooks(const QLatin1String* name, uintptr_t wParam, uintptr_t lPar
   immediately. This abort value is returned to the caller of NotifyEventHooks() and
   should not be -1 since that is a special return code for NotifyEventHooks() (see above).
   Returns -2 if name is empty, -1 if name not found in events list. If the hook created
-  successfully, returns its personal number that must be used by call UnhookEvent() as hook.num .
-*/
+  successfully, returns its personal number that must be used by call UnhookEvent().
+*///////////////////////////////////////////////////////////////////////////////////////////////////
 int HookEvent(const QLatin1String* name, ELISEHOOK hookProc);
 
-/* UnhookEvent
+/* UnhookEvent /////////////////////////////////////////////////////////////////////////////////////
   Removes a hook from its event chain. It will no longer receive any events.
   hook.num in THook is personal number of destroying hook that was returned by HookEvent().
   hook.name in THook is name of chain of events from which the remove is.
-  Returns 0 on success, -1 if name is empty, 1 if name is not found in the list of events and -2
-  if there is no hooks in chain 'name'.
-*/
+  Returns 0 on success, -2 if name is empty, -1 if name is not found in the list of events and -3
+  if there is no hooks in chain 'name' or hook.num is wrong.
+*///////////////////////////////////////////////////////////////////////////////////////////////////
 int UnhookEvent(const THook hook);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //-- Service functions --///////////////////////////////////////////////////////////////////////////
 
-/* CreateServiceFunction
+/* CreateServiceFunction ///////////////////////////////////////////////////////////////////////////
   Adds a new service function called 'name' to the global list. Service function pointers are
   destroyed automatically on exit, but can be removed from the list earlier using
 	  DestroyServiceFunction()
@@ -170,30 +170,29 @@ int UnhookEvent(const THook hook);
   where the creator publishes the meanings of wParam, lParam and the return value.
   Service functions must not return SERVICE_NOTFOUND since that would confuse
   callers of CallService().
-  Returns 0 on success, -1 if 'name' is empty and 1 if name has been already used.
-*/
+  Returns 0 on success, -2 if name is empty and -1 if name has been already used.
+*///////////////////////////////////////////////////////////////////////////////////////////////////
 int CreateServiceFunction(const QLatin1String* name, ELISESERVICE serviceProc);
 
-/* ServiceExists
+/* ServiceExists ///////////////////////////////////////////////////////////////////////////////////
   Finds if a service with the given 'name' exists.
-  Returns non-zero if the service was found, and zero if it was not. Returns -1 if name is empty.
-*/
+  Returns non-zero if the service was found, and zero if it was not. Returns -2 if name is empty.
+*///////////////////////////////////////////////////////////////////////////////////////////////////
 int ServiceExists(const QLatin1String* name);
 
-/* CallService
-  Finds and calls the service function 'name' using the parameters wParam and
+/* CallService /////////////////////////////////////////////////////////////////////////////////////
+  Finds and calls the service function name using the parameters wParam and
   lParam.
-  Returns SERVICE_NOTFOUND if no service function called 'name' has been
-  created, or the value the service function returned otherwise.
-*/
+  Returns -1 if there is no service found otherwise returns the value of the service function.
+*///////////////////////////////////////////////////////////////////////////////////////////////////
 intptr_t CallService(const QLatin1String* name, uintptr_t wParam, uintptr_t lParam);
 
-/* DestroyServiceFunction
+/* DestroyServiceFunction //////////////////////////////////////////////////////////////////////////
   Removes the function associated with name from the global service function
   list. Modules calling CallService() will fail if they try to call this
   service's name.
-  Returns 0 on success, -1 if 'name' is empty and 1 if name not found in services list.
-*/
+  Returns 0 on success, -2 if name is empty and -1 if name not found in services list.
+*/ /////////////////////////////////////////////////////////////////////////////////////////////////
 int DestroyServiceFunction(const QLatin1String* name);
 
 
