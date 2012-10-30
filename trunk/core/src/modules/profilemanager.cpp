@@ -38,8 +38,11 @@ ProfileManager::ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins)
 	cmbProfiles->setEditable(true);
 	vboxACC->addWidget(cmbProfiles);
 	connect(cmbProfiles, SIGNAL(currentIndexChanged(const QString&)),
-			this, SLOT(loadProfilesDetails(const QString&)));
-	//connect(cmbProfiles, &QComboBox::currentIndexChanged, this, &ProfileManager::loadProfileDetails);
+			this, SLOT(loadProfileDetails(const QString&)));
+	/*connect(cmbProfiles,
+			static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged),
+			this,
+			&ProfileManager::loadProfileDetails);*/
 
 	//-- Password
 	lePassword = new QLineEdit(this);
@@ -53,8 +56,8 @@ ProfileManager::ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins)
 	cbSavePassword = new QCheckBox(this);
 	cbSavePassword->setText("Save password");
 	vboxACC->addWidget(cbSavePassword);
-	//connect(cbSavePassword, SIGNAL(stateChanged(int)), this, SLOT(setCBEnable(int)));
-	connect(cbSavePassword, &QCheckBox::stateChanged, this, &ProfileManager::setCBEnable);
+	connect(cbSavePassword, SIGNAL(stateChanged(int)), this, SLOT(setCBEnable(int)));
+	//connect(cbSavePassword, &QCheckBox::stateChanged, this, &ProfileManager::setCBEnable);
 
 	//-- Use as default profile
 	cbDefaultProfile = new QCheckBox(this);
@@ -167,8 +170,12 @@ void ProfileManager::loadProfileDetails(const QString& name)
 	PROFILE* p = profiles->value(name);
 	if ( p != 0) {
 		int tmp = 0;
-		if (p->savePassword)
+		if (p->savePassword) {
 			tmp = 2;
+			QMessageBox::critical(0, QStringLiteral("Debug"),
+								  QStringLiteral("2"),
+								  QMessageBox::Cancel);
+		}
 		cbSavePassword->setCheckState((Qt::CheckState)tmp);
 		tmp = 0;
 		if (p->defaultProfile)
@@ -179,10 +186,6 @@ void ProfileManager::loadProfileDetails(const QString& name)
 		else
 			lePassword->setText("");
 	}
-	QMessageBox::critical(0,
-							QStringLiteral("Debug"),
-							QStringLiteral("Failed."),
-							QMessageBox::Cancel);
 }
 
 int ProfileManager::loadDefaultProfile()
