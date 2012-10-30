@@ -23,8 +23,9 @@ private slots:
 	void			createProfile();
 	void			importProfile();
 	void			loadProfiles(const QString& text);
-	void			loadProfileDetails(const QString& name);
 	void			setCBEnable(int state);
+public slots:
+	void			loadProfileDetails(const QString& name);
 public:
 	ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins);
 	~ProfileManager();
