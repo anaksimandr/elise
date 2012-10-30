@@ -5,9 +5,9 @@
 
 typedef struct {
 	bool	savePassword;
-	bool	defaultAccount;
+	bool	defaultProfile;
 	QString	password;
-} ACCOUNT;
+} PROFILE;
 
 class IDBPlugin
 {
@@ -33,7 +33,7 @@ public:
 	//-- Return list of accounts names that already exists
 	//-- The key in returned QMap is a name of account.
 	//-- NOTE: core will destroy list after loading it's elements
-	virtual QMap<QString, ACCOUNT*>*	GetAccounts() = 0;
+	virtual QMap<QString, PROFILE*>*	GetProfiles() = 0;
 
 	//-- int Login(name, password, savePas, loginDefault);
 	//-- Login in account with gived name and password.
@@ -47,7 +47,7 @@ public:
 	//-- Creates new account with gived name and password.
 	//-- First parametr is name, second is password.
 	//-- Return 0 on success, non-zero on failure.
-	virtual int					CreateAccount(const QString&, const QString&) = 0;
+	virtual int					CreateProfile(const QString&, const QString&) = 0;
 };
 
 Q_DECLARE_INTERFACE(IDBPlugin, "Elise.basicDBPluginInterface/1.0")

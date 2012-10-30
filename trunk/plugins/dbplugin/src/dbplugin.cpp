@@ -102,14 +102,14 @@ int DBPlugin::openSysDB()
 	return 0;
 }
 
-QMap<QString, ACCOUNT*>* DBPlugin::GetAccounts()
+QMap<QString, PROFILE*>* DBPlugin::GetProfiles()
 {
-	QMap<QString, ACCOUNT*>* list = new QMap<QString, ACCOUNT*>();
-	ACCOUNT* item;
+	QMap<QString, PROFILE*>* list = new QMap<QString, PROFILE*>();
+	PROFILE* item;
 	if (!QSqlDatabase::connectionNames().contains(qsDBSys)) {
 		//-- If some trubles is
 		if (openSysDB()) {
-			item = new ACCOUNT;
+			item = new PROFILE;
 			item->savePassword = 0;
 			list->insert("Internal plugin error", item);
 			return list;
@@ -129,9 +129,9 @@ QMap<QString, ACCOUNT*>* DBPlugin::GetAccounts()
 				query.bindValue(":1", dirName);
 				query.exec();
 				query.next();
-				item = new ACCOUNT;
+				item = new PROFILE;
 				item->savePassword = query.value(1).toBool();
-				item->defaultAccount = query.value(2).toBool();
+				item->defaultProfile = query.value(2).toBool();
 				if (item->savePassword)
 					item->password = query.value(0).toString();
 				else
@@ -266,7 +266,7 @@ int DBPlugin::loadProfile(const QString& name, const QString& passwd)
 	return invalid;
 }
 
-int DBPlugin::CreateAccount(const QString& name, const QString& password)
+int DBPlugin::CreateProfile(const QString& name, const QString& password)
 {
 	if (getProfileDir().exists(name))
 		return 1;
