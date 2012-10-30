@@ -11,7 +11,8 @@
 #include "../../api/e_dbpluginapi.h" //-- We need include this after e_pluginapi.h
 #include "modules.h"
 #include "modules/tray.h"
-#include "modules/logon.h"
+//#include "modules/logon.h"
+#include "modules/profilemanager.h"
 #include "modules/options/treeitem.h"
 #include "modules/options/treemodel.h"
 #include "modules/options/options.h"

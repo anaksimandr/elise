@@ -38,10 +38,10 @@ int PluginLoader::callLoginWindow(QMap<QString, IPlugin*>* loadablePlugins, bool
 		dbPlugins->~QMap();
 		return 1;
 	}
-	AccountManager* manager =  new AccountManager(dbPlugins);
+	ProfileManager* manager =  new ProfileManager(dbPlugins);
 	if (first) {
 		//-- Startup
-		if (manager->loadDefault()) {
+		if (manager->loadDefaultProfile()) {
 			//-- If load default fails then show login window
 			if (manager->exec()) {
 				dbPlugins->~QMap();
@@ -50,7 +50,7 @@ int PluginLoader::callLoginWindow(QMap<QString, IPlugin*>* loadablePlugins, bool
 		}
 	}
 	else
-		//-- Change account
+		//-- Change profile
 		if (manager->exec()) {
 			dbPlugins->~QMap();
 			return 1;

@@ -19,10 +19,10 @@ public:
 	const QUuid*				ElisePluginInterfaces(void);
 	int							Load(const PLUGINLINK* link);
 	int							Unload(void);
-	QMap<QString, ACCOUNT*>*	GetAccounts();
+	QMap<QString, PROFILE*>*	GetProfiles();
 	int							Login(const QString& name, const QString& password,
 									  bool savePassword, bool loginDefault);
-	int							CreateAccount(const QString& name, const QString& password);
+	int							CreateProfile(const QString& name, const QString& password);
 };
 
 
