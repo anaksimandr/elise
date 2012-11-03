@@ -16,7 +16,7 @@ const QLatin1String	E_SKIN_MODULE		=	QLatin1String("Skins");
 
 //-- Services
 const QLatin1String	SHUTDOWN_SERVICE	=	QLatin1String("System/Shutdown");	/* Call this method to close Elise. */
-const QLatin1String	CHANGEACC_SERVICE	=	QLatin1String("System/ChangeAcc");	/* Calls unload plugins and calls login window. */
+const QLatin1String	CHANGEPROFILE_SERVICE	=	QLatin1String("System/ChangeAcc");	/* Calls unload plugins and calls login window. */
 const QLatin1String	TRAY_ADD_MENUITEM	=	QLatin1String("Tray/AddMenuItem");	/* Adds item to tray context menu. */
 const QLatin1String	TRAY_SET_ICON		=	QLatin1String("Tray/SetIcon");		/* */
 

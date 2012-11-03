@@ -119,14 +119,16 @@ QMap<QString, PROFILE*>* DBPlugin::GetProfiles()
 	QDir qdCurrent = QDir::current();
 	QDir qdDir = getProfileDir();
 	QDir::setCurrent(qdDir.path());
-	QSqlQuery query("select passwd, savepass, defacc from accounts where name=:1",
-					QSqlDatabase::database(qsDBSys));
+	QSqlQuery query(QSqlDatabase::database(qsDBSys));
+	QString qsQuery =
+			QStringLiteral("select passwd, savepass, defacc from accounts where name=:profileName");
 	//-- Check all directories in Profiles
 	foreach (QString dirName, qdDir.entryList(QDir::AllDirs | QDir::NoDot | QDir::NoDotDot)) {
 		if (qdDir.cd(dirName)) {
 			//-- If found valid DB - add it to list
 			if (qdDir.exists(dirName + qsDBPref)) {
-				query.bindValue(":1", dirName);
+				query.prepare(qsQuery);
+				query.bindValue(QStringLiteral(":profileName"), dirName);
 				query.exec();
 				query.next();
 				item = new PROFILE;
@@ -142,13 +144,15 @@ QMap<QString, PROFILE*>* DBPlugin::GetProfiles()
 		}
 	} //foreach
 	//-- Now, clean trash records from system DB
+	QSqlQuery query2(QSqlDatabase::database(qsDBSys));
+	qsQuery = QStringLiteral("delete from accounts where name=:profileName");
+	query.exec(QStringLiteral("select name from accounts"));
 	QString buf;
-	QSqlQuery query2("delete from accounts where name=:1", QSqlDatabase::database(qsDBSys));
-	query.exec("select name from accounts");
 	while (query.next()) {
 		buf = query.value(0).toString();
 		if (!list->contains(buf)) {
-			query2.bindValue(":1", buf);
+			query2.prepare(qsQuery);
+			query2.bindValue(QStringLiteral(":profileName"), buf);
 			query2.exec();
 			//QMessageBox::critical(0, "Debug", query.lastError().text(), QMessageBox::Ok);
 		}

@@ -27,7 +27,8 @@ private slots:
 public slots:
 	void			loadProfileDetails(const QString& name);
 public:
-	ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins);
+	//-- isChangeProfile: false - app start, true - change profile
+	ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins, bool isChangeProfile);
 	~ProfileManager();
 	int				loadDefaultProfile();
 };

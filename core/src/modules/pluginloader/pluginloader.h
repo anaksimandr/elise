@@ -12,9 +12,10 @@ class PluginLoader
 {
 private:
 	static QMap<QString, IPlugin*>*	plugins;
-	static LOADEDDBPLUGIN loadedDBPlugin;
-	static int			getAvailablePlugins(QMap<QString, IDBPlugin*>* dbPlugins,
-									   QMap<QString, IPlugin*>* loadablePlugins);
+	//static QMap<QUuid, QString>*	interfaces;
+	static LOADEDDBPLUGIN	loadedDBPlugin;
+	static int				getAvailablePlugins(QMap<QString, IDBPlugin*>* dbPlugins,
+												QMap<QString, IPlugin*>* loadablePlugins);
 public:
 	static QDir			getPluginsDir();
 	static int			callLoginWindow(QMap<QString, IPlugin*>* loadablePlugins, bool first);
