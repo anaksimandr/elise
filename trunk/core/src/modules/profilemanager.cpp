@@ -1,6 +1,6 @@
 #include "../commonheaders.h"
 
-ProfileManager::ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins)
+ProfileManager::ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins, bool isChangeProfile)
 {
 	//-- Check it before call this function
 	/*if (dbPlugins == 0 || dbPlugins->count() ==0) {
@@ -17,12 +17,12 @@ ProfileManager::ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins)
 	QHBoxLayout* hboxMain = new QHBoxLayout(this);
 
 	//-- Right staff
-	QGroupBox* groupDB = new QGroupBox("DB plugins", this);
+	QGroupBox* groupDB = new QGroupBox(QStringLiteral("DB plugins"), this);
 	QVBoxLayout* vboxDB = new QVBoxLayout(this);
 	groupDB->setLayout(vboxDB);
 
 	//-- Left staff
-	QGroupBox* groupACC = new QGroupBox("Profile", this);
+	QGroupBox* groupACC = new QGroupBox(QStringLiteral("Profile"), this);
 	QVBoxLayout* vboxACC = new QVBoxLayout(this);
 	groupACC->setLayout(vboxACC);
 
@@ -37,16 +37,16 @@ ProfileManager::ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins)
 	cmbProfiles->setMinimumSize(120, 18);
 	cmbProfiles->setEditable(true);
 	vboxACC->addWidget(cmbProfiles);
-	connect(cmbProfiles, SIGNAL(currentIndexChanged(const QString&)),
-			this, SLOT(loadProfileDetails(const QString&)));
-	/*connect(cmbProfiles,
+	//connect(cmbProfiles, SIGNAL(currentIndexChanged(const QString&)),
+	//		this, SLOT(loadProfileDetails(const QString&)));
+	connect(cmbProfiles,
 			static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged),
 			this,
-			&ProfileManager::loadProfileDetails);*/
+			&ProfileManager::loadProfileDetails);
 
 	//-- Password
 	lePassword = new QLineEdit(this);
-	lePassword->setPlaceholderText("password");
+	lePassword->setPlaceholderText(QStringLiteral("password"));
 	lePassword->setEchoMode(QLineEdit::Password);
 	vboxACC->addWidget(lePassword);
 	//connect(lePassword, SIGNAL(returnPressed()), this, SLOT(ok()));
@@ -54,10 +54,10 @@ ProfileManager::ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins)
 
 	//-- Checkboxes, don't ask password on login
 	cbSavePassword = new QCheckBox(this);
-	cbSavePassword->setText("Save password");
+	cbSavePassword->setText(QStringLiteral("Save password"));
 	vboxACC->addWidget(cbSavePassword);
-	connect(cbSavePassword, SIGNAL(stateChanged(int)), this, SLOT(setCBEnable(int)));
-	//connect(cbSavePassword, &QCheckBox::stateChanged, this, &ProfileManager::setCBEnable);
+	//connect(cbSavePassword, SIGNAL(stateChanged(int)), this, SLOT(setCBEnable(int)));
+	connect(cbSavePassword, &QCheckBox::stateChanged, this, &ProfileManager::setCBEnable);
 
 	//-- Use as default profile
 	cbDefaultProfile = new QCheckBox(this);
@@ -67,7 +67,7 @@ ProfileManager::ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins)
 
 	//-- OK, load profile
 	QPushButton* button = new QPushButton(this);
-	button->setText("OK");
+	button->setText(QStringLiteral("OK"));
 	//connect(button, SIGNAL(clicked()), this, SLOT(ok()));
 	connect(button, &QPushButton::clicked, this, &ProfileManager::ok);
 	vboxACC->addWidget(button);
@@ -81,20 +81,23 @@ ProfileManager::ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins)
 		iter.next();
 		cmbDBPlugins->addItem(iter.key());
 	}
-	connect(cmbDBPlugins, SIGNAL(currentIndexChanged(const QString&)),
-			this, SLOT(loadProfiles(const QString&)));
-	//connect(cmbDBPlugins, &QComboBox::currentIndexChanged, this, &ProfileManager::loadProfiles);
+	//connect(cmbDBPlugins, SIGNAL(currentIndexChanged(const QString&)),
+	//		this, SLOT(loadProfiles(const QString&)));
+	connect(cmbDBPlugins,
+			static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged),
+			this,
+			&ProfileManager::loadProfiles);
 
 	//-- Create profile button
 	button = new QPushButton(this);
-	button->setText("Create");
+	button->setText(QStringLiteral("Create"));
 	//connect(button, SIGNAL(clicked()), this, SLOT(createProfile()));
 	connect(button, &QPushButton::clicked, this, &ProfileManager::createProfile);
 	vboxDB->addWidget(button);
 
 	//-- Import profile button
 	button = new QPushButton(this);
-	button->setText("Import");
+	button->setText(QStringLiteral("Import"));
 	//connect(button, SIGNAL(clicked()), this, SLOT(importProfile()));
 	connect(button, &QPushButton::clicked, this, &ProfileManager::importProfile);
 	vboxDB->addWidget(button);
@@ -102,7 +105,7 @@ ProfileManager::ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins)
 
 	//-- Cancel
 	button = new QPushButton(this);
-	button->setText("Cancel");
+	button->setText(QStringLiteral("Cancel"));
 	//connect(button, SIGNAL(clicked()), this, SLOT(abort()));
 	connect(button, &QPushButton::clicked, this, &ProfileManager::abort);
 	button->resize(120, 23);
@@ -159,32 +162,31 @@ void ProfileManager::loadProfiles(const QString& text)
 		}
 		else
 			//-- No one profile was found
-			cmbProfiles->addItem("Create profile first");
+			cmbProfiles->addItem(QStringLiteral("Create profile first"));
 	}
 	else
-		cmbProfiles->addItem("Internal plugin error");
+		cmbProfiles->addItem(QStringLiteral("Internal plugin error"));
 }
 
 void ProfileManager::loadProfileDetails(const QString& name)
 {
 	PROFILE* p = profiles->value(name);
+	//QMessageBox::critical(0, QStringLiteral("Debug"), name, QMessageBox::Cancel);
 	if ( p != 0) {
-		int tmp = 0;
+		//-- Note: we can't use cbSavePassword->setCheckState(bool) because checkbox
+		//-- can be at one of three states and Qt::Checked is '2'.
 		if (p->savePassword) {
-			tmp = 2;
-			QMessageBox::critical(0, QStringLiteral("Debug"),
-								  QStringLiteral("2"),
-								  QMessageBox::Cancel);
-		}
-		cbSavePassword->setCheckState((Qt::CheckState)tmp);
-		tmp = 0;
-		if (p->defaultProfile)
-			tmp = 2;
-		cbDefaultProfile->setCheckState((Qt::CheckState)tmp);
-		if (p->savePassword)
 			lePassword->setText(p->password);
-		else
+			cbSavePassword->setCheckState(Qt::Checked);
+		}
+		else {
 			lePassword->setText("");
+			cbSavePassword->setCheckState(Qt::Unchecked);
+		}
+		if (p->defaultProfile)
+			cbDefaultProfile->setCheckState(Qt::Checked);
+		else
+			cbDefaultProfile->setCheckState(Qt::Unchecked);
 	}
 }
 
@@ -202,8 +204,8 @@ int ProfileManager::loadDefaultProfile()
 	if (dbPlugin->Login(cmbProfiles->currentText(), lePassword->text(),
 			cbSavePassword->isChecked(), cbDefaultProfile->isChecked()))
 	{
-		QMessageBox::critical(0, "Login error",
-					"Failed to default login.\nAccount does not exist or password does not match.",
+		QMessageBox::critical(0, QStringLiteral("Login error"),
+					QStringLiteral("Failed to default login.\nAccount does not exist or password does not match."),
 					QMessageBox::Cancel);
 		return 1;
 	}
@@ -245,8 +247,8 @@ void ProfileManager::ok()
 	if (dbPlugin->Login(cmbProfiles->currentText(), lePassword->text(),
 			cbSavePassword->isChecked(), cbDefaultProfile->isChecked()))
 	{
-		QMessageBox::critical(0, "Login error",
-							  "Failed to login.\nProfile does not exist or password does not match.",
+		QMessageBox::critical(0, QStringLiteral("Login error"),
+							  QStringLiteral("Failed to login.\nProfile does not exist or assword does not match."),
 							  QMessageBox::Cancel);
 		return;
 	}
@@ -267,12 +269,12 @@ void ProfileManager::createProfile()
 {
 	IDBPlugin* dbPlugin = DBPlugins->value(cmbDBPlugins->currentText());
 	if (dbPlugin->CreateProfile(cmbProfiles->currentText(), lePassword->text()))
-		QMessageBox::critical(0, "Create profile error",
-				"Failed to create profile.\nProfile already exist or another internal plugin error.",
+		QMessageBox::critical(0, QStringLiteral("Create profile error"),
+				QStringLiteral("Failed to create profile.\nProfile already exist or another internal plugin error."),
 				QMessageBox::Cancel);
 	else {
-		QMessageBox::information(0, "Information",
-								 "Profile created successfully.",
+		QMessageBox::information(0, QStringLiteral("Information"),
+								 QStringLiteral("Profile created successfully."),
 								 QMessageBox::Ok);
 		loadProfiles(cmbDBPlugins->currentText());
 	}
@@ -280,7 +282,7 @@ void ProfileManager::createProfile()
 
 void ProfileManager::importProfile()
 {
-	QMessageBox::critical(0, "Error",
-						  "Sorry, this function is not supported yet.",
+	QMessageBox::critical(0, QStringLiteral("Error"),
+						  QStringLiteral("Sorry, this function is not supported yet."),
 						  QMessageBox::Cancel);
 }

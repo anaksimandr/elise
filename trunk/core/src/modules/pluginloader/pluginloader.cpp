@@ -1,6 +1,7 @@
 #include "../../commonheaders.h"
 
 QMap<QString, IPlugin*>*	PluginLoader::plugins = 0;
+//QMap<QUuid, QString>*		PluginLoader::interfaces = 0;
 LOADEDDBPLUGIN				PluginLoader::loadedDBPlugin;
 
 const PLUGINLINK pluginLink = {
@@ -146,8 +147,8 @@ int PluginLoader::unloadPlugins()
 		iter.next();
 		//-- Call Elise plugin api unload
 		if (iter.value()->Unload())
-			QMessageBox::critical(0, "unloadPlugins error",
-								  "Error while unloading plugin " + iter.key() + ".",
+			QMessageBox::critical(0, QStringLiteral("unloadPlugins error"),
+								  QStringLiteral("Error while unloading plugin ") + iter.key(),
 								  QMessageBox::Ok);
 		loader.setFileName(pluginsDir.absoluteFilePath(iter.key()));
 		//-- Free plugin
@@ -157,8 +158,8 @@ int PluginLoader::unloadPlugins()
 	} //while
 	//-- Unload DB plugin
 	if (loadedDBPlugin.plugin->Unload())
-		QMessageBox::critical(0, "unloadPlugins error",
-							 "Error while unloading DB plugin" + loadedDBPlugin.name + ".",
+		QMessageBox::critical(0, QStringLiteral("unloadPlugins error"),
+							 QStringLiteral("Error while unloading DB plugin") + loadedDBPlugin.name,
 							  QMessageBox::Ok);
 	loader.setFileName(pluginsDir.absoluteFilePath(loadedDBPlugin.name));
 	loader.unload();
