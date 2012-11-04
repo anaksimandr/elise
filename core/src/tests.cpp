@@ -272,7 +272,7 @@ void QTestWindow::testNewPlugin()
 void QTestWindow::changeAcc()
 {
 	this->~QTestWindow();
-	if (CallService(&CHANGEACC_SERVICE, 0, 0) == -2)
+	if (CallService(&CHANGEPROFILE_SERVICE, 0, 0) == -2)
 		QMessageBox::critical(this, "Error", "Service not found.", QMessageBox::Ok);
 }
 
