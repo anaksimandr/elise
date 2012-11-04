@@ -98,9 +98,6 @@ int main(int argc, char* argv[])
 	//-- Ensure that the kernel hooks the SystemShutdownProc() after all plugins
 	//HookEvent(ME_SYSTEM_SHUTDOWN,SystemShutdownProc);
 
-	//-- Here, may be, should create some things to work with memory like this
-	//forkthread(compactHeapsThread,0,NULL);
-
 	//-- Idle system
 	//CreateServiceFunction(MS_SYSTEM_SETIDLECALLBACK,SystemSetIdleCallback);
 	//CreateServiceFunction(MS_SYSTEM_GETIDLE, SystemGetIdle);

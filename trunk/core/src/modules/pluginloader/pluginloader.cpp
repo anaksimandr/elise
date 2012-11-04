@@ -16,51 +16,6 @@ const PLUGINLINK pluginLink = {
 		&ServiceExists
 };
 
-int PluginLoader::callLoginWindow(QMap<QString, IPlugin*>* loadablePlugins, bool first)
-{
-	//-- First, we must get list of all available plugins to know which db plugins are exist.
-	QMap<QString, IDBPlugin*>* dbPlugins	= new QMap<QString, IDBPlugin*>();
-	if (PluginLoader::getAvailablePlugins(dbPlugins, loadablePlugins)
-			|| loadablePlugins == 0
-			|| loadablePlugins->count() == 0)
-	{
-		QMessageBox::critical(0,
-						QStringLiteral("getAvailablePlugins error"),
-						QStringLiteral("Failed to get plugins list or no one plugin was found."),
-						QMessageBox::Cancel);
-		dbPlugins->~QMap();
-		return 1;
-	}
-	//-- Check for DB plugins
-	if (dbPlugins == 0 || dbPlugins->count() == 0) {
-		QMessageBox::critical(0, QStringLiteral("Error"),
-							  QStringLiteral("No one DB plugin was found."),
-							  QMessageBox::Cancel);
-		dbPlugins->~QMap();
-		return 1;
-	}
-	ProfileManager* manager =  new ProfileManager(dbPlugins);
-	if (first) {
-		//-- Startup
-		if (manager->loadDefaultProfile()) {
-			//-- If load default fails then show login window
-			if (manager->exec()) {
-				dbPlugins->~QMap();
-				return 1;
-			}
-		}
-	}
-	else
-		//-- Change profile
-		if (manager->exec()) {
-			dbPlugins->~QMap();
-			return 1;
-		}
-
-	dbPlugins->~QMap();
-	return 0;
-}
-
 QDir PluginLoader::getPluginsDir()
 {
 	QDir pluginsDir = QDir(qApp->applicationDirPath());

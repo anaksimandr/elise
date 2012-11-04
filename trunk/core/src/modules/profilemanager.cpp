@@ -1,13 +1,7 @@
 #include "../commonheaders.h"
 
-ProfileManager::ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins, bool isChangeProfile)
+ProfileManager::ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins)
 {
-	//-- Check it before call this function
-	/*if (dbPlugins == 0 || dbPlugins->count() ==0) {
-		QMessageBox::critical(0, "Error",
-							  "No one db plugin was found.",
-							  QMessageBox::Cancel);
-	}*/
 	DBPlugins = availableDBPlugins;
 	profiles = 0;
 	this->setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowTitleHint);
@@ -116,6 +110,8 @@ ProfileManager::ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins, bo
 
 	hboxMain->setSizeConstraint(QLayout::SetFixedSize);
 
+	profiles = 0;
+
 	//-- First time initialize cmbAccount programmatically
 	loadProfiles(cmbDBPlugins->currentText());
 	loadProfileDetails(cmbProfiles->currentText());
@@ -123,7 +119,15 @@ ProfileManager::ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins, bo
 
 ProfileManager::~ProfileManager()
 {
-
+	//-- Destroy profiles list if exists
+	if (profiles != 0) {
+		QMapIterator<QString, PROFILE*> iter(*profiles);
+		while (iter.hasNext()) {
+			iter.next();
+			delete iter.value();
+		}
+		profiles->~QMap();
+	}
 }
 
 void ProfileManager::setCBEnable(int state)
@@ -193,7 +197,7 @@ void ProfileManager::loadProfileDetails(const QString& name)
 int ProfileManager::loadDefaultProfile()
 {
 	if (qsDefaultProfile.isEmpty())
-		//-- No default acc found
+		//-- No default profile found
 		return 1;
 
 	cmbProfiles->setCurrentIndex(cmbProfiles->findText(qsDefaultProfile));
@@ -209,32 +213,34 @@ int ProfileManager::loadDefaultProfile()
 					QMessageBox::Cancel);
 		return 1;
 	}
+	//moved to destructor
 	//-- Destroy list if exists
-	if (profiles != 0) {
-		QMapIterator<QString, PROFILE*> iter(*profiles);
-		while (iter.hasNext()) {
-			iter.next();
-			delete iter.value();
-		}
-		profiles->~QMap();
-	}
+	//if (profiles != 0) {
+	//	QMapIterator<QString, PROFILE*> iter(*profiles);
+	//	while (iter.hasNext()) {
+	//		iter.next();
+	//		delete iter.value();
+	//	}
+	//	profiles->~QMap();
+	//}
 
 	return PluginLoader::loadDBPlugin(cmbDBPlugins->currentText(), dbPlugin);
 }
 
 void ProfileManager::abort()
 {
+	//moved to destructor
 	//-- Destroy profiles list if exists
-	if (profiles != 0) {
-		QMapIterator<QString, PROFILE*> iter(*profiles);
-		PROFILE* p;
-		while (iter.hasNext()) {
-			iter.next();
-			p = iter.value();
-			delete p;
-		}
-		profiles->~QMap();
-	}
+	//if (profiles != 0) {
+	//	QMapIterator<QString, PROFILE*> iter(*profiles);
+	//	PROFILE* p;
+	//	while (iter.hasNext()) {
+	//		iter.next();
+	//		p = iter.value();
+	//		delete p;
+	//	}
+	//	profiles->~QMap();
+	//}
 
 	//-- Abort Elise loading and exit
 	done(1);
@@ -252,16 +258,17 @@ void ProfileManager::ok()
 							  QMessageBox::Cancel);
 		return;
 	}
-	//-- if success then try fully load the plugin
+	//moved to destructor
 	//-- Destroy profiles list if exists
-	if (profiles != 0) {
-		QMapIterator<QString, PROFILE*> iter(*profiles);
-		while (iter.hasNext()) {
-			iter.next();
-			delete iter.value();
-		}
-		profiles->~QMap();
-	}
+	//if (profiles != 0) {
+	//	QMapIterator<QString, PROFILE*> iter(*profiles);
+	//	while (iter.hasNext()) {
+	//		iter.next();
+	//		delete iter.value();
+	//	}
+	//	profiles->~QMap();
+	//}
+	//-- if success then try fully load the plugin	
 	done(PluginLoader::loadDBPlugin(cmbDBPlugins->currentText(), dbPlugin));
 }
 

@@ -168,23 +168,23 @@ int DBPlugin::Login(const QString& name, const QString& password,
 {
 	//-- Try to load profile (check pass)
 	if (!loadProfile(name, password)) {
-		//-- Need it to disconnect from system DB at the end
+		//-- Need this brackets to disconnect from system DB at the end
 		{
 			QSqlQuery query(QSqlDatabase::database(qsDBSys));
 			//-- Update fields in system table for valid account
 			if (loginDefault) {
-				query.prepare("update accounts set defacc='false'");
+				query.prepare(QStringLiteral("update accounts set defacc='false'"));
 				query.exec();
 			}
-			query.prepare("select count(1) from accounts where name=:1");
-			query.bindValue(":1", name);
+			query.prepare(QStringLiteral("select count(1) from accounts where name=:profileName"));
+			query.bindValue(QStringLiteral(":profileName"), name);
 			query.exec();
 			query.next();
 			if (query.value(0).toInt() > 0)
-				query.prepare("update accounts set passwd=:2, savepass=:3, defacc=:4 where name=:1");
+				query.prepare(QStringLiteral("update accounts set passwd=:2, savepass=:3, defacc=:4 where name=:profileName"));
 			else
-				query.prepare("insert into accounts(name, passwd, savepass, defacc) values(:1, :2, :3, :4)");
-			query.bindValue(":1", name);
+				query.prepare(QStringLiteral("insert into accounts(name, passwd, savepass, defacc) values(:profileName, :2, :3, :4)"));
+			query.bindValue(":profileName", name);
 			if (savePassword)
 				query.bindValue(":2", password);
 			else
