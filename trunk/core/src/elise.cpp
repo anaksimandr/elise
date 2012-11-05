@@ -5,6 +5,9 @@
 //-- Temporary module for tests
 #include "tests.h"
 
+namespace Core
+{
+
 //int InitialiseModularEngine(void);
 
 int shutDown(intptr_t result, intptr_t lParam)
@@ -39,6 +42,8 @@ int shutDown(intptr_t result, intptr_t lParam)
 	QApplication::exit(result);
 	return result;
 }
+
+} // namespace Core
 
 #ifndef NDEBUG
 
