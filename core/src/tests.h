@@ -14,7 +14,7 @@ private:
 	QLineEdit*		v3;
 	QLineEdit*		v4;
 	QLineEdit*		v5;
-	THook			thTray;
+    Core::THook			thTray;
 protected:
 	//Elise*			parent;
 	//virtual void	contextMenuEvent(QContextMenuEvent* e);

@@ -17,7 +17,7 @@ int ShowOptions(uintptr_t wParam, uintptr_t lParam)
 {
 	if (OptionsDialog::options == 0) {
 		OptionsDialog::options = new OptionsDialog();
-		NotifyEventHooks(&OPTIONS_SHOW, 0, 0);
+        Core::NotifyEventHooks(&OPTIONS_SHOW, 0, 0);
 	}
 
 	OptionsDialog::options->show();
@@ -28,8 +28,8 @@ int ShowOptions(uintptr_t wParam, uintptr_t lParam)
 int LoadOptionsModule()
 {
 	OptionsDialog::options = 0;
-	CreateHookableEvent(&OPTIONS_SHOW);
-	CreateServiceFunction(&OPTIONS_SHOW, (ELISESERVICE)ShowOptions);
+    Core::CreateHookableEvent(&OPTIONS_SHOW);
+    Core::CreateServiceFunction(&OPTIONS_SHOW, (ELISESERVICE)ShowOptions);
 	return 0;
 }
 
@@ -37,8 +37,8 @@ int UnloadOptionsModule()
 {
 	if (OptionsDialog::options != 0)
 		OptionsDialog::options->~OptionsDialog();
-	DestroyHookableEvent(&OPTIONS_SHOW);
-	DestroyServiceFunction(&OPTIONS_SHOW);
+    Core::DestroyHookableEvent(&OPTIONS_SHOW);
+    Core::DestroyServiceFunction(&OPTIONS_SHOW);
 	return 0;
 }
 
@@ -270,14 +270,14 @@ OptionsDialog::OptionsDialog()
 	page->page = wi;
 	addPage(page);
 
-	CreateServiceFunction(&OPTIONS_ADD_PAGE, (ELISESERVICE)AddPage);
-	CreateHookableEvent(&OPTIONS_CLOSE);
+    Core::CreateServiceFunction(&OPTIONS_ADD_PAGE, (ELISESERVICE)AddPage);
+    Core::CreateHookableEvent(&OPTIONS_CLOSE);
 }
 
 OptionsDialog::~OptionsDialog()
 {
-	NotifyEventHooks(&OPTIONS_CLOSE, 0, 0);
+    Core::NotifyEventHooks(&OPTIONS_CLOSE, 0, 0);
 	OptionsDialog::options = 0;
-	DestroyHookableEvent(&OPTIONS_CLOSE);
-	DestroyServiceFunction(&OPTIONS_ADD_PAGE);
+    Core::DestroyHookableEvent(&OPTIONS_CLOSE);
+    Core::DestroyServiceFunction(&OPTIONS_ADD_PAGE);
 }

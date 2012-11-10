@@ -5,15 +5,15 @@ QMap<QString, IPlugin*>*	PluginLoader::plugins = 0;
 LOADEDDBPLUGIN				PluginLoader::loadedDBPlugin;
 
 const PLUGINLINK pluginLink = {
-		&CreateHookableEvent,
-		&DestroyHookableEvent,
-		&NotifyEventHooks,
-		&HookEvent,
-		&UnhookEvent,
-		&CreateServiceFunction,
-		&DestroyServiceFunction,
-		&CallService,
-		&ServiceExists
+        &Core::CreateHookableEvent,
+        &Core::DestroyHookableEvent,
+        &Core::NotifyEventHooks,
+        &Core::HookEvent,
+        &Core::UnhookEvent,
+        &Core::CreateServiceFunction,
+        &Core::DestroyServiceFunction,
+        &Core::CallService,
+        &Core::ServiceExists
 };
 
 QDir PluginLoader::getPluginsDir()
@@ -51,14 +51,14 @@ int PluginLoader::getAvailablePlugins(QMap<QString, IDBPlugin*>* dbPlugins,
 			IPlugin* validPlugin = qobject_cast<IPlugin*>(plugin);
 			//-- Elise plugin
 			if (validPlugin) {
-				if (validPlugin->ElisePluginInfo(g_eliseVersion) != NULL)
+                if (validPlugin->ElisePluginInfo(Core::g_eliseVersion) != NULL)
 					loadablePlugins->insert(fileName, validPlugin);
 			}
 			//-- Elise DB plugin
 			else {
 				IDBPlugin* validDBPlugin = qobject_cast<IDBPlugin*>(plugin);
 				if (validDBPlugin) {
-					if (validDBPlugin->ElisePluginInfo(g_eliseVersion) != NULL)
+                    if (validDBPlugin->ElisePluginInfo(Core::g_eliseVersion) != NULL)
 						dbPlugins->insert(fileName, validDBPlugin);
 				}
 			}
@@ -93,6 +93,10 @@ int PluginLoader::loadPlugins(QMap<QString, IPlugin*>* loadablePlugins)
 
 int PluginLoader::unloadPlugins()
 {
+    //-- Launching app
+    if (plugins == 0)
+        return 0;
+
 	//-- NOTE: we are not destroying QMap plugins here because we need it for new loading and
 	//-- it will be automatically destroyed on fully exit
 	QDir pluginsDir = getPluginsDir();
