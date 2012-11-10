@@ -48,7 +48,7 @@ int shutDown(intptr_t result, intptr_t lParam)
 #ifndef NDEBUG
 
 #include <QFile>
-void myMessageOutput(QtMsgType type, const char *msg)
+void messageOutput(QtMsgType type, const char *msg)
 {
 	QFile file("log.txt");
 	file.open(QIODevice::Append | QIODevice::Text);
@@ -76,7 +76,7 @@ void myMessageOutput(QtMsgType type, const char *msg)
 int main(int argc, char* argv[])
 {
 #ifndef NDEBUG
-	qInstallMsgHandler(myMessageOutput);
+	qInstallMsgHandler(messageOutput);
 #endif //NDEBUG
 	QApplication app(argc, argv);
 	app.setQuitOnLastWindowClosed(false);
@@ -92,8 +92,8 @@ int main(int argc, char* argv[])
 	//InitialiseModularEngine();
 
 	//-- Load default modules; shut down if failed
-	if (LoadDefaultModules())
-		return shutDown(-1, 0);
+	if (Core::LoadDefaultModules())
+		return Core::shutDown(-1, 0);
 
 	//CreateServiceFunction(&SHUTDOWN_SERVICE, (ELISESERVICE)shutDown);
 

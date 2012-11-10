@@ -3,6 +3,9 @@
 //-- Temporary module for tests
 #include "tests.h"
 
+namespace Core
+{
+
 extern int shutDown(intptr_t, intptr_t);
 int LoadProfile(intptr_t, intptr_t);
 
@@ -97,3 +100,5 @@ int UnloadDefaultModules()
 
 	return 0;
 }
+
+} //namespace Core

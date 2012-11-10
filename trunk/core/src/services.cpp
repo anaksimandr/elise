@@ -3,6 +3,9 @@
 
 #include "commonheaders.h"
 
+namespace Core
+{
+
 //-- Critical sections
 static QMutex qmutexHooks;
 static QMutex qmutexServices;
@@ -387,3 +390,5 @@ int DestroyServiceFunction(const QLatin1String* name)
 	qmutexServices.unlock();
 	return 0;
 }
+
+} //namespace Core
