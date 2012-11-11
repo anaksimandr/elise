@@ -1,7 +1,10 @@
-#ifndef PROFILEMANAGER_H
-#define PROFILEMANAGER_H
+#ifndef ELISE_CORE_MODULES_PROFILEMANAGER_H_
+#define ELISE_CORE_MODULES_PROFILEMANAGER_H_
 
-#include "../commonheaders.h"
+#include <QtWidgets/QtWidgets>
+//#include "../../../api/e_pluginapi.h"
+#include "../../../api/e_dbpluginapi.h"
+//#include "../commonheaders.h"
 
 class ProfileManager : public QDialog
 {
@@ -13,7 +16,7 @@ private:
 	QCheckBox*		cbSavePassword;
 	QCheckBox*		cbDefaultProfile;
 	QMap<QString, IDBPlugin*>* DBPlugins;
-	QMap<QString, PROFILE*>* profiles;
+	QMap<QString, Profile*>* profiles;
 	QString			qsDefaultProfile;
 protected:
 
@@ -32,4 +35,4 @@ public:
 	int				loadDefaultProfile();
 };
 
-#endif // PROFILEMANAGER_H
+#endif // ELISE_CORE_MODULES_PROFILEMANAGER_H_

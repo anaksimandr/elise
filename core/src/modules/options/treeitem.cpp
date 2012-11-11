@@ -1,4 +1,5 @@
-#include "../../commonheaders.h"
+//#include "../../commonheaders.h"
+#include "treeitem.h"
 
 TreeItem::TreeItem(const QString& headerExt, const QString& idExt, const int indx, TreeItem* parent)
 {

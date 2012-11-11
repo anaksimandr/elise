@@ -1,5 +1,6 @@
-
-#include "../commonheaders.h"
+#include "tray.h"
+#include "../services.h"
+//#include "../commonheaders.h"
 
 EliseTray* trayElise;
 
@@ -9,17 +10,17 @@ void EliseTray::trayActivationNotify(QSystemTrayIcon::ActivationReason reason)
 	{
 		case QSystemTrayIcon::Trigger:
 		{
-            Core::NotifyEventHooks(&Core::TRAY_SINGLECLICK, 0, 0);
+			core::NotifyEventHooks(&Core::TRAY_SINGLECLICK, 0, 0);
 			break;
 		}
 		case QSystemTrayIcon::DoubleClick:
 		{
-            Core::NotifyEventHooks(&Core::TRAY_DOUBLECLICK, 0, 0);
+			core::NotifyEventHooks(&Core::TRAY_DOUBLECLICK, 0, 0);
 			break;
 		}
 		case QSystemTrayIcon::MiddleClick:
 		{
-            Core::NotifyEventHooks(&Core::TRAY_MIDDLECLICK, 0, 0);
+			core::NotifyEventHooks(&Core::TRAY_MIDDLECLICK, 0, 0);
 			break;
 		}
 		default:
@@ -54,15 +55,15 @@ int LoadTrayModule()
 	trayElise = new EliseTray();
 	trayElise->setIcon(QIcon(":/icons/img/main.png"));
 	trayElise->show();
-	Core::CreateHookableEvent(&Core::TRAY_SINGLECLICK);
-	Core::CreateHookableEvent(&Core::TRAY_DOUBLECLICK);
-	Core::CreateHookableEvent(&Core::TRAY_MIDDLECLICK);
+	core::CreateHookableEvent(&core::TRAY_SINGLECLICK);
+	core::CreateHookableEvent(&core::TRAY_DOUBLECLICK);
+	core::CreateHookableEvent(&core::TRAY_MIDDLECLICK);
 	QObject::connect(trayElise, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
 					 trayElise, SLOT(trayActivationNotify(QSystemTrayIcon::ActivationReason)));
 	//QObject::connect(trayElise, &EliseTray::activated, trayElise, &EliseTray::trayActivationNotify);
 	trayElise->setContextMenu(new QMenu());
-	Core::CreateServiceFunction(&Core::TRAY_ADD_MENUITEM, (ELISESERVICE)addToContextMenu);
-	Core::CreateServiceFunction(&Core::TRAY_SET_ICON, (ELISESERVICE)setTrayIcon);
+	core::CreateServiceFunction(&core::TRAY_ADD_MENUITEM, (ELISESERVICE)addToContextMenu);
+	core::CreateServiceFunction(&core::TRAY_SET_ICON, (ELISESERVICE)setTrayIcon);
 	return 0;
 }
 

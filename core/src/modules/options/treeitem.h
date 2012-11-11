@@ -1,7 +1,8 @@
-#ifndef TREEITEM_H
-#define TREEITEM_H
+#ifndef ELISE_CORE_MODULES_OPTIONS_TREEITEM_H_
+#define ELISE_CORE_MODULES_OPTIONS_TREEITEM_H_
 
-#include "../../commonheaders.h"
+#include <QtWidgets/QtWidgets>
+//#include "../../commonheaders.h"
 
 class TreeItem
 {
@@ -27,4 +28,4 @@ public:
 	void		setHeader(const QString& value);
 };
 
-#endif // TREEITEM_H
+#endif // ELISE_CORE_MODULES_OPTIONS_TREEITEM_H_

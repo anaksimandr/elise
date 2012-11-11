@@ -1,16 +1,15 @@
-#ifndef OPTIONS_H
-#define OPTIONS_H
+#ifndef ELISE_CORE_MODULES_OPTIONS_OPTIONS_H_
+#define ELISE_CORE_MODULES_OPTIONS_OPTIONS_H_
 
-#include <QAbstractItemModel>
-#include <QModelIndex>
-#include <QVariant>
-//#include <QVector>
-#include <QList>
-#include "../../commonheaders.h"
+#include <QtWidgets/QtWidgets>
+#include "../../../../api/e_options.h"
+//#include "../../commonheaders.h"
 
-class OptionsDialog;
-class TreeModel;
-class TreeItem;
+class QModelIndex;
+
+//class OptionsDialog;
+//class TreeModel;
+//class TreeItem;
 
 class OptionsDialog : public QWidget
 {
@@ -18,14 +17,14 @@ class OptionsDialog : public QWidget
 private:
 	QTreeView*				treeView;
 	QStackedLayout*			layout;
-	QSet<OPTIONSSAVE>		saveFunctions;
+	QSet<OptionsSaver>		saveFunctions;
 
 public:
 	static OptionsDialog*	options;
 	OptionsDialog();
 	~OptionsDialog();
 
-	int					addPage(OPTIONSPAGE* newPage);
+	int					addPage(OptionsPage* newPage);
 	void				selectPage(const QModelIndex& current, const QModelIndex& previous);
 
 	void				applay();
@@ -36,4 +35,4 @@ public:
 int LoadOptionsModule();
 int UnloadOptionsModule();
 
-#endif // OPTIONS_H
+#endif // ELISE_CORE_MODULES_OPTIONS_OPTIONS_H_

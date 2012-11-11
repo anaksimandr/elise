@@ -1,10 +1,13 @@
-#ifndef SERVICES_H__
-#define SERVICES_H__
+#ifndef ELISE_CORE_SERVICES_H_
+#define ELISE_CORE_SERVICES_H_
 
-#include <QMutex>
-#include <QMap>
+class QMap;
+class QMutex;
+class QLatin1String;
 
-namespace Core
+struct THook;
+
+namespace core
 {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -32,13 +35,13 @@ const QLatin1String	TRAY_MIDDLECLICK	=	QLatin1String("Tray/MiddleClick");	/* The
 //-- Service and hook definitions --////////////////////////////////////////////////////////////////
 
 //-- Hook functions
-typedef int (*ELISEHOOK)(uintptr_t,uintptr_t);
+//typedef int (*ELISEHOOK)(uintptr_t,uintptr_t);
 //typedef int (*ELISEHOOKPARAM)(uintptr_t,uintptr_t,uintptr_t);
 //typedef int (*ELISEHOOKOBJ)(void*,uintptr_t,uintptr_t);
 //typedef int (*ELISEHOOKOBJPARAM)(void*,uintptr_t,uintptr_t,uintptr_t);
 
 //-- Services functions
-typedef intptr_t (*ELISESERVICE)(uintptr_t,uintptr_t);								//-- type = 0
+//typedef intptr_t (*ELISESERVICE)(uintptr_t,uintptr_t);								//-- type = 0
 //typedef void (QTestWindow::* ptToWidgetMemb)();
 //typedef intptr_t (*ELISESERVICEWIDG)(QWidget*, ptToWidgetMemb);			//-- type = 1
 //typedef intptr_t (*ELISESERVICEPARAM)(uintptr_t,uintptr_t,uintptr_t);
@@ -82,11 +85,11 @@ typedef struct
 
 //-- Use this to store information about your hooks and to call UnhookEvent function
 //-- See UnhookEvent function description for more details
-typedef struct
+/*typedef struct
 {
 	QLatin1String* name;
 	int num;
-} THook;
+} THook;*/
 
 //-- Services
 typedef struct
@@ -198,6 +201,6 @@ intptr_t CallService(const QLatin1String* name, uintptr_t wParam, uintptr_t lPar
 */ /////////////////////////////////////////////////////////////////////////////////////////////////
 int DestroyServiceFunction(const QLatin1String* name);
 
-} //namespace Core
+} //namespace core
 
-#endif // SERVICES_H__
+#endif // ELISE_CORE_SERVICES_H_

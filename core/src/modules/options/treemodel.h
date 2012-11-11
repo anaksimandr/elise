@@ -1,7 +1,9 @@
-#ifndef TREEMODEL_H
-#define TREEMODEL_H
+#ifndef ELISE_CORE_MODULES_OPTIONS_TREEMODEL_H_
+#define ELISE_CORE_MODULES_OPTIONS_TREEMODEL_H_
 
-#include "../../commonheaders.h"
+#include <QtWidgets/QtWidgets>
+#include "treeitem.h"
+//#include "../../commonheaders.h"
 
 class TreeItemDelegate : public QStyledItemDelegate
 {
@@ -47,4 +49,4 @@ public:
 
 };
 
-#endif // TREEMODEL_H
+#endif // ELISE_CORE_MODULES_OPTIONS_TREEMODEL_H_

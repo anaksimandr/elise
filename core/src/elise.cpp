@@ -1,11 +1,11 @@
-#include "commonheaders.h"
 #include <cstdlib>
 #include <ctime>
+#include "modules.h"
 
 //-- Temporary module for tests
 #include "tests.h"
 
-namespace Core
+namespace core
 {
 
 //int InitialiseModularEngine(void);
@@ -43,7 +43,7 @@ int shutDown(intptr_t result, intptr_t lParam)
 	return result;
 }
 
-} // namespace Core
+} // namespace core
 
 #ifndef NDEBUG
 
@@ -92,8 +92,8 @@ int main(int argc, char* argv[])
 	//InitialiseModularEngine();
 
 	//-- Load default modules; shut down if failed
-	if (Core::LoadDefaultModules())
-		return Core::shutDown(-1, 0);
+	if (core::LoadDefaultModules())
+		return core::shutDown(-1, 0);
 
 	//CreateServiceFunction(&SHUTDOWN_SERVICE, (ELISESERVICE)shutDown);
 

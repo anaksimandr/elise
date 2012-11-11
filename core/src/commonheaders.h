@@ -18,10 +18,10 @@
 #include "modules/options/options.h"
 #include "modules/pluginloader/pluginloader.h"
 
-namespace Core
+namespace core
 {
 const EVersion g_eliseVersion = {0,0,0,1};
-} //namespace Core
+} //namespace core
 
 //-- Some stuff from windows
 //typedef void* HANDLE;
