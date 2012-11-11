@@ -1,7 +1,8 @@
-#ifndef TRAY_H
-#define TRAY_H
+#ifndef ELISE_CORE_MODULES_TRAY_H_
+#define ELISE_CORE_MODULES_TRAY_H_
 
-#include "../commonheaders.h"
+#include <QtWidgets/QtWidgets>
+//#include "../commonheaders.h"
 
 class EliseTray;
 extern EliseTray* trayElise;
@@ -25,4 +26,4 @@ public:
 int LoadTrayModule();
 int UnloadTrayModule();
 
-#endif // TRAY_H
+#endif // ELISE_CORE_MODULES_TRAY_H_

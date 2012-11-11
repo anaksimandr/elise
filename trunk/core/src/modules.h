@@ -1,14 +1,12 @@
-#ifndef MODULES_H
-#define MODULES_H
+#ifndef ELISE_CORE_MODULES_H_
+#define ELISE_CORE_MODULES_H_
 
-#include "commonheaders.h"
-
-namespace Core
+namespace core
 {
 
 int LoadDefaultModules();
 int UnloadDefaultModules();
 
-} //namespace Core
+} //namespace core
 
-#endif // MODULES_H
+#endif // ELISE_CORE_MODULES_H_

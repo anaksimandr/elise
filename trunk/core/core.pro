@@ -36,7 +36,8 @@ HEADERS += \
     src/modules/options/treeitem.h \
     src/modules/options/treemodel.h \
 	src/modules/pluginloader/pluginloader.h \
-    src/modules/profilemanager.h
+    src/modules/profilemanager.h \
+    src/elise.h
 
 RESOURCES += \
 	res/resources.qrc

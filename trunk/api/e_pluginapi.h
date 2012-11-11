@@ -1,5 +1,5 @@
-#ifndef E_PLUGINAPI_H
-#define E_PLUGINAPI_H
+#ifndef ELISE_API_E_PLUGINAPI_H_
+#define ELISE_API_E_PLUGINAPI_H_
 
 //-- Store information about version here
 typedef struct {
@@ -11,13 +11,12 @@ typedef struct {
 } EVersion;
 
 //-- Hook functions
-typedef int (*ELISEHOOK)(uintptr_t,uintptr_t);
+typedef int (*EliseHook)(uintptr_t,uintptr_t);
 
 //-- Services functions
-typedef intptr_t (*ELISESERVICE)(uintptr_t,uintptr_t);
+typedef intptr_t (*EliseService)(uintptr_t,uintptr_t);
 
 typedef struct {
-	//int cbSize;
 	QString name;
 	EVersion version;
 	//char *description;
@@ -26,10 +25,10 @@ typedef struct {
 	//char *copyright;
 	//char *homepage;
 	QUuid uuid;
-} PLUGININFO;
+} PluginInfo;
 
 //-- Use this to store information about your hooks and to call UnhookEvent() function
-//-- See UnhookEvent() function description for more details
+//-- See UnhookEvent() function description in services.h for more details.
 typedef struct
 {
 	QLatin1String* name;
@@ -44,15 +43,15 @@ class ICore
 	virtual int			CreateHookableEvent(const QLatin1String*) = 0;
 	virtual int			DestroyHookableEvent(const QLatin1String*) = 0;
 	virtual int			NotifyEventHooks(const QLatin1String*, uintptr_t, uintptr_t) = 0;
-	virtual int			HookEvent(const QLatin1String*, ELISEHOOK) = 0;
-	virtual int			UnhookEvent(const Core::THook) = 0;
-	virtual int			CreateServiceFunction(const QLatin1String*, ELISESERVICE) = 0;
+	virtual int			HookEvent(const QLatin1String*, EliseHook) = 0;
+	virtual int			UnhookEvent(const THook) = 0;
+	virtual int			CreateServiceFunction(const QLatin1String*, EliseService) = 0;
 	virtual int			DestroyServiceFunction(const QLatin1String*) = 0;
 	virtual intptr_t	CallService(const QLatin1String*, uintptr_t, uintptr_t) = 0;
 	virtual int			ServiceExists(const QLatin1String*) = 0;
 };
 
-#ifndef E_DBPLUGINAPI_H
+#ifndef ELISE_API_E_DBPLUGINAPI_H_
 class IPlugin
 {
 public:
@@ -76,6 +75,6 @@ public:
 };
 
 Q_DECLARE_INTERFACE(IPlugin, "Elise.basicPluginInterface/1.0")
-#endif // E_DBPLUGINAPI_H
+#endif // ELISE_API_E_DBPLUGINAPI_H_
 
-#endif // E_PLUGINAPI_H
+#endif // ELISE_API_E_PLUGINAPI_H_

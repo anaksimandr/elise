@@ -1,5 +1,7 @@
-
-#include "../../commonheaders.h"
+#include "options.h"
+#include "treemodel.h"
+#include "../../services.h"
+//#include "../../commonheaders.h"
 
 OptionsDialog* OptionsDialog::options = 0;
 
@@ -8,7 +10,7 @@ int AddPage(uintptr_t wParam, uintptr_t lParam)
 	if (OptionsDialog::options == 0)
 		return -1;
 
-	OPTIONSPAGE* page = (OPTIONSPAGE*)wParam;
+	OptionsPage* page = (OPTIONSPAGE*)wParam;
 
 	return OptionsDialog::options->addPage(page);
 }
@@ -17,7 +19,7 @@ int ShowOptions(uintptr_t wParam, uintptr_t lParam)
 {
 	if (OptionsDialog::options == 0) {
 		OptionsDialog::options = new OptionsDialog();
-        Core::NotifyEventHooks(&OPTIONS_SHOW, 0, 0);
+		core::NotifyEventHooks(&OPTIONS_SHOW, 0, 0);
 	}
 
 	OptionsDialog::options->show();
@@ -28,8 +30,8 @@ int ShowOptions(uintptr_t wParam, uintptr_t lParam)
 int LoadOptionsModule()
 {
 	OptionsDialog::options = 0;
-    Core::CreateHookableEvent(&OPTIONS_SHOW);
-    Core::CreateServiceFunction(&OPTIONS_SHOW, (ELISESERVICE)ShowOptions);
+	core::CreateHookableEvent(&OPTIONS_SHOW);
+	core::CreateServiceFunction(&OPTIONS_SHOW, (ELISESERVICE)ShowOptions);
 	return 0;
 }
 
@@ -37,12 +39,12 @@ int UnloadOptionsModule()
 {
 	if (OptionsDialog::options != 0)
 		OptionsDialog::options->~OptionsDialog();
-    Core::DestroyHookableEvent(&OPTIONS_SHOW);
-    Core::DestroyServiceFunction(&OPTIONS_SHOW);
+	core::DestroyHookableEvent(&OPTIONS_SHOW);
+	core::DestroyServiceFunction(&OPTIONS_SHOW);
 	return 0;
 }
 
-int OptionsDialog::addPage(OPTIONSPAGE* newPage)
+int OptionsDialog::addPage(OptionsPage* newPage)
 {
 	TreeModel* model = dynamic_cast<TreeModel*>(treeView->model());
 	QModelIndex index = model->index(0, 0);
@@ -80,7 +82,7 @@ void OptionsDialog::selectPage(const QModelIndex& current, const QModelIndex& pr
 
 void OptionsDialog::applay()
 {
-	QSet<OPTIONSSAVE>::const_iterator i = saveFunctions.constBegin();
+	QSet<OptionsSaver>::const_iterator i = saveFunctions.constBegin();
 	while (i != saveFunctions.constEnd()) {
 		(*i)();
 		++i;
@@ -270,14 +272,14 @@ OptionsDialog::OptionsDialog()
 	page->page = wi;
 	addPage(page);
 
-    Core::CreateServiceFunction(&OPTIONS_ADD_PAGE, (ELISESERVICE)AddPage);
-    Core::CreateHookableEvent(&OPTIONS_CLOSE);
+	core::CreateServiceFunction(&OPTIONS_ADD_PAGE, (ELISESERVICE)AddPage);
+	core::CreateHookableEvent(&OPTIONS_CLOSE);
 }
 
 OptionsDialog::~OptionsDialog()
 {
-    Core::NotifyEventHooks(&OPTIONS_CLOSE, 0, 0);
+	core::NotifyEventHooks(&OPTIONS_CLOSE, 0, 0);
 	OptionsDialog::options = 0;
-    Core::DestroyHookableEvent(&OPTIONS_CLOSE);
-    Core::DestroyServiceFunction(&OPTIONS_ADD_PAGE);
+	core::DestroyHookableEvent(&OPTIONS_CLOSE);
+	core::DestroyServiceFunction(&OPTIONS_ADD_PAGE);
 }

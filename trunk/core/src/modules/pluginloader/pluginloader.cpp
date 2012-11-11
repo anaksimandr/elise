@@ -1,19 +1,20 @@
-#include "../../commonheaders.h"
+//#include "../../commonheaders.h"
+#include "pluginloader.h"
 
 QMap<QString, IPlugin*>*	PluginLoader::plugins = 0;
 //QMap<QUuid, QString>*		PluginLoader::interfaces = 0;
-LOADEDDBPLUGIN				PluginLoader::loadedDBPlugin;
+LoadedDBPlugin				PluginLoader::loadedDBPlugin;
 
 const PLUGINLINK pluginLink = {
-        &Core::CreateHookableEvent,
-        &Core::DestroyHookableEvent,
-        &Core::NotifyEventHooks,
-        &Core::HookEvent,
-        &Core::UnhookEvent,
-        &Core::CreateServiceFunction,
-        &Core::DestroyServiceFunction,
-        &Core::CallService,
-        &Core::ServiceExists
+		&core::CreateHookableEvent,
+		&core::DestroyHookableEvent,
+		&core::NotifyEventHooks,
+		&core::HookEvent,
+		&core::UnhookEvent,
+		&core::CreateServiceFunction,
+		&core::DestroyServiceFunction,
+		&core::CallService,
+		&core::ServiceExists
 };
 
 QDir PluginLoader::getPluginsDir()

@@ -1,7 +1,9 @@
-
 #include <QMap>
+#include <QMutex>
+#include <QLatin1String>
+#include "services.h"
 
-#include "commonheaders.h"
+//#include "commonheaders.h"
 
 namespace Core
 {
@@ -102,12 +104,15 @@ int DestroyHookableEvent(const QLatin1String* name)
 	return 0;
 }
 
-int CallHookSubscribers(const QLatin1String* name, uintptr_t wParam, uintptr_t lParam )
+int NotifyEventHooks(const QLatin1String* name, uintptr_t wParam, uintptr_t lParam )
 {
+	//qmutexHooks.lock();
+	if (!qmapHooks.contains(*name))
+		return -1;
+
 	int returnErr = 0;
 	THookEvent* p = qmapHooks[*name];
-	if (p == NULL)
-		return -1;
+	//qmutexHooks.unlock();
 
 	p->qmutexHook->lock();
 
@@ -147,47 +152,6 @@ int CallHookSubscribers(const QLatin1String* name, uintptr_t wParam, uintptr_t l
 
 	p->qmutexHook->unlock();
 	return returnErr;
-}
-
-//-- May be will be deprecated
-int checkHook(const QLatin1String* name)
-{
-	if (!qmapHooks.contains(*name))
-		return -1;
-
-	//qmutexHooks.lock();
-	//-- Not yet needed
-	//if (pLastHook != hHook || !pLastHook) {
-	//	if (hooks.getIndex((THook*)hHook) == -1 ) {
-	//		LeaveCriticalSection( &csHooks );
-	//		return -1;
-	//	}
-	//	pLastHook = ( THook* )hHook;
-	//}
-	//qmutexHooks.unlock();
-	return 0;
-}
-
-int NotifyEventHooks(const QLatin1String* name, uintptr_t wParam, uintptr_t lParam )
-{
-	//extern HWND hAPCWindow;
-
-	//-- Not yet needed
-	//if ( GetCurrentThreadId() != mainThreadId ) {
-	//	THookToMainThreadItem item;
-	//
-	//	item.hDoneEvent = CreateEvent(NULL,FALSE,FALSE,NULL);
-	//	item.hook = ( THook* )hEvent;
-	//	item.wParam = wParam;
-	//	item.lParam = lParam;
-	//
-	//	QueueUserAPC( HookToMainAPCFunc, hMainThread, ( ULONG_PTR )&item );
-	//	PostMessage( hAPCWindow, WM_NULL, 0, 0 ); // let it process APC even if we're in a common dialog
-	//	WaitForSingleObject( item.hDoneEvent, INFINITE );
-	//	CloseHandle( item.hDoneEvent );
-	//	return item.result;
-	//}
-	return (checkHook(name) == -1) ? -1 : CallHookSubscribers(name, wParam, lParam);
 }
 
 int HookEventInt(const QLatin1String* name, ELISEHOOK hookProc)

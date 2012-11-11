@@ -1,5 +1,5 @@
-#ifndef E_DBPLUGINAPI_H
-#define E_DBPLUGINAPI_H
+#ifndef ELISE_API_E_DBPLUGINAPI_H_
+#define ELISE_API_E_DBPLUGINAPI_H_
 
 #include "e_pluginapi.h"
 
@@ -7,7 +7,7 @@ typedef struct {
 	bool	savePassword;
 	bool	defaultProfile;
 	QString	password;
-} PROFILE;
+} Profile;
 
 class IDBPlugin
 {
@@ -24,7 +24,7 @@ public:
 	//-- Must be called after login function.
 	//-- Return 0 on success, non-zero on failure.
 	//-- NOTE: if this function return non-zero then Elise loading wiil be aborted.
-	virtual	int					Load(const PLUGINLINK*) = 0;
+	virtual	int					Load(const ICore*) = 0;
 
 	//-- Unload plugin.
 	//-- Return 0 on success, non-zero on failure.
@@ -33,7 +33,7 @@ public:
 	//-- Return list of accounts names that already exists
 	//-- The key in returned QMap is a name of account.
 	//-- NOTE: core will destroy list after loading it's elements
-	virtual QMap<QString, PROFILE*>*	GetProfiles() = 0;
+	virtual QMap<QString, Profile*>*	GetProfiles() = 0;
 
 	//-- int Login(name, password, savePas, loginDefault);
 	//-- Login in account with gived name and password.
@@ -52,4 +52,4 @@ public:
 
 Q_DECLARE_INTERFACE(IDBPlugin, "Elise.basicDBPluginInterface/1.0")
 
-#endif // E_DBPLUGINAPI_H
+#endif // ELISE_API_E_DBPLUGINAPI_H_

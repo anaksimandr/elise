@@ -1,10 +1,10 @@
-#ifndef E_DATABASE_H
-#define E_DATABASE_H
+#ifndef ELISE_API_E_DATABASE_H_
+#define ELISE_API_E_DATABASE_H_
 
 //-- Services
-const QLatin1String	DB_WRITESETTING	=	QLatin1String("DB/WriteSetting");	/* Call this method to write setting to DB. */
-const QLatin1String	DB_READSETTING	=	QLatin1String("DB/ReadSetting");	/* ... to read setting from DB. */
-const QLatin1String	DB_DELSETTING	=	QLatin1String("DB/DelteSetting");	/* ... to delete setting from DB.*/
+const QLatin1String	DB_WRITESETTING	=	QLatin1String("DB/WriteSetting");	/* Write to DB. */
+const QLatin1String	DB_READSETTING	=	QLatin1String("DB/ReadSetting");	/* Read from DB. */
+const QLatin1String	DB_DELSETTING	=	QLatin1String("DB/DelteSetting");	/* Delete from DB.*/
 
 //-- Types of settings
 const unsigned char intType		=	0;	//-- int
@@ -20,7 +20,7 @@ typedef struct {
 		QString* textValue;
 		QByteArray* blobValue;
 	};
-} DBVARIANT;
+} DBVariant;
 
 //-- Used in calls of functions WriteSettingToBase() and ReadSettingFromBase()
 //-- And at some other places
@@ -30,7 +30,7 @@ typedef struct {
 	QLatin1String*	qsModule;
 	QLatin1String*	qsSetting;
 	DBVARIANT*		var;
-} SETTING;
+} Setting;
 
 
-#endif // E_DATABASE_H
+#endif // ELISE_API_E_DATABASE_H_
