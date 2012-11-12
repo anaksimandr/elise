@@ -1,5 +1,5 @@
-//#include "../../commonheaders.h"
 #include "treemodel.h"
+
 
 QSize TreeItemDelegate::sizeHint(const QStyleOptionViewItem&, const QModelIndex&) const
 {

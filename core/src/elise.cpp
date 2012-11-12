@@ -1,10 +1,9 @@
 #include <cstdlib>
 #include <ctime>
+#include <QtWidgets/QtWidgets>
 #include "elise.h"
 #include "modules.h"
 
-//-- Temporary module for tests
-#include "tests.h"
 
 namespace core
 {
@@ -115,7 +114,7 @@ int main(int argc, char* argv[])
 	//-- For test
 	//QTestWindow* window = new QTestWindow();
 
-	new QTestWindow();
+	//new QTestWindow();
 
 	return app.exec();
 }

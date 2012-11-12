@@ -3,7 +3,6 @@
 #include <QLatin1String>
 #include "services.h"
 
-//#include "commonheaders.h"
 
 namespace core
 {

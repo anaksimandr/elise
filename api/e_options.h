@@ -1,6 +1,10 @@
 #ifndef ELISE_API_E_OPTIONS_H_
 #define ELISE_API_E_OPTIONS_H_
 
+class QLatin1String;
+class QString;
+class QWidget;
+
 const QLatin1String	OPTIONS_SHOW		=	QLatin1String("Options/Show");
 const QLatin1String	OPTIONS_ADD_PAGE	=	QLatin1String("Options/AddPage");
 const QLatin1String	OPTIONS_SAVE		=	QLatin1String("Options/Save");

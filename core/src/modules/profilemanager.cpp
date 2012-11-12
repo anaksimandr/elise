@@ -1,6 +1,6 @@
 #include "profilemanager.h"
 #include "pluginloader/pluginloader.h"
-//#include "../commonheaders.h"
+
 
 ProfileManager::ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins)
 {
