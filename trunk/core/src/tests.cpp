@@ -326,7 +326,7 @@ void QTestWindow::saveSetting()
 			break;
 	}
 
-	core::CallService(&DB_WRITESETTING, 0, (uintptr_t)set);
+	core::CallService(&DB_WRITESETTING, reinterpret_cast<intptr_t>(set), 0);
 
 	delete set->var;
 	delete set;
@@ -346,7 +346,7 @@ void QTestWindow::readSetting()
 		set->var->textValue = new QString;
 	else if (set->var->type == blobType)
 		set->var->blobValue = new QByteArray;
-	if (!core::CallService(&DB_READSETTING, 0, (uintptr_t)set)) {
+	if (!core::CallService(&DB_READSETTING, reinterpret_cast<intptr_t>(set), 0)) {
 		switch (set->var->type) {
 			case intType:
 				setOutput(QString::number(set->var->intValue));
@@ -382,7 +382,7 @@ void QTestWindow::delSetting()
 	set->var = new DBVariant;
 	set->var->type = (unsigned char)v4->text().toInt();
 
-	if (!core::CallService(&DB_DELSETTING, 0, (uintptr_t)set))
+	if (!core::CallService(&DB_DELSETTING, reinterpret_cast<intptr_t>(set), 0))
 		setOutput("Setting deleted");
 	else
 		setOutput("Error");

@@ -7,7 +7,7 @@
 
 extern QString qsProfile;
 
-extern int WriteSettingToBase(intptr_t  wParam, intptr_t lParam);
-extern int ReadSettingFromBase(intptr_t  wParam, intptr_t lParam);
-extern int DelteSettingFromBase(intptr_t  wParam, intptr_t lParam);
+extern int WriteSettingToBase(intptr_t  wParam, intptr_t);
+extern int ReadSettingFromBase(intptr_t  wParam, intptr_t);
+extern int DelteSettingFromBase(intptr_t  wParam, intptr_t);
 #endif // ELISEDB_H

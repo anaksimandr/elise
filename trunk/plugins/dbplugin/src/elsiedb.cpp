@@ -11,9 +11,9 @@ extern const unsigned char blobType;
 
 QString qsProfile;
 
-int WriteSettingToBase(intptr_t  wParam, intptr_t lParam)
+int WriteSettingToBase(intptr_t  wParam, intptr_t)
 {
-	Setting* set = reinterpret_cast<Setting*>(lParam);
+	Setting* set = reinterpret_cast<Setting*>(wParam);
 	//if (set->qsModule->isEmpty() || set->qsSetting->isEmpty()) {
 	if ((set->qsModule->size() < 1) || (set->qsSetting->size() < 1)) {
 #ifndef NDEBUG
@@ -86,9 +86,9 @@ int WriteSettingToBase(intptr_t  wParam, intptr_t lParam)
 	return 0;
 }
 
-int ReadSettingFromBase(intptr_t  wParam, intptr_t lParam)
+int ReadSettingFromBase(intptr_t  wParam, intptr_t)
 {
-	Setting* set = reinterpret_cast<Setting*>(lParam);
+	Setting* set = reinterpret_cast<Setting*>(wParam);
 	//if (set->qsModule->isEmpty() || set->qsSetting->isEmpty()) {
 	if ((set->qsModule->size() < 1) || (set->qsSetting->size() < 1)) {
 #ifndef NDEBUG
@@ -157,9 +157,9 @@ int ReadSettingFromBase(intptr_t  wParam, intptr_t lParam)
 	return 0;
 }
 
-int DelteSettingFromBase(intptr_t  wParam, intptr_t lParam)
+int DelteSettingFromBase(intptr_t  wParam, intptr_t)
 {
-	Setting* set = reinterpret_cast<Setting*>(lParam);
+	Setting* set = reinterpret_cast<Setting*>(wParam);
 	//if (set->qsModule->isEmpty() || set->qsSetting->isEmpty()) {
 	if ((set->qsModule->size() < 1) || (set->qsSetting->size() < 1)) {
 #ifndef NDEBUG

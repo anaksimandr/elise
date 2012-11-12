@@ -1,6 +1,10 @@
 #ifndef ELISE_API_E_DATABASE_H_
 #define ELISE_API_E_DATABASE_H_
 
+class QLatin1String;
+class QString;
+class QByteArray;
+
 //-- Services
 const QLatin1String	DB_WRITESETTING	=	QLatin1String("DB/WriteSetting");	/* Write to DB. */
 const QLatin1String	DB_READSETTING	=	QLatin1String("DB/ReadSetting");	/* Read from DB. */
