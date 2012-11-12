@@ -14,10 +14,10 @@ typedef struct {
 } EVersion;
 
 //-- Hook functions
-typedef int (*EliseHook)(uintptr_t,uintptr_t);
+typedef int (*EliseHook)(intptr_t,intptr_t);
 
 //-- Services functions
-typedef intptr_t (*EliseService)(uintptr_t,uintptr_t);
+typedef intptr_t (*EliseService)(intptr_t,intptr_t);
 
 typedef struct {
 	QString name;

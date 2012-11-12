@@ -2,10 +2,10 @@
 #define ELISE_CORE_MODULES_PLUGINLOADER_PLUGINLOADER_H_
 
 #include <QtWidgets/QtWidgets>
-#include "coreapi.h"
-#include "../../../../api/e_pluginapi.h"
-#include "../../../../api/e_dbpluginapi.h"
-#include "coreapi.h"
+
+class IPlugin;
+class IDBPlugin;
+class CoreAPI;
 
 typedef struct {
 	QString name;

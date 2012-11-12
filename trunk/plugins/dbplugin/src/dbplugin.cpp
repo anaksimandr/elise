@@ -1,9 +1,13 @@
 
-#include "commonheaders.h"
+//#include "commonheaders.h"
+#include "dbplugin.h"
+#include "elisedb.h"
+#include "dbkey.h"
+#include "../../../api/e_database.h"
 
-const PLUGINLINK* pluginLink;
+ICore* core;
 
-PLUGININFO pluginInfo = {
+PluginInfo pluginInfo = {
 	QLatin1String("DBPlugin"),
 	{0,0,0,1},
 	"{ca0ae4d0-ea7c-4743-b34e-1a2c9c61991d}"
@@ -102,14 +106,14 @@ int DBPlugin::openSysDB()
 	return 0;
 }
 
-QMap<QString, PROFILE*>* DBPlugin::GetProfiles()
+QMap<QString, Profile*>* DBPlugin::GetProfiles()
 {
-	QMap<QString, PROFILE*>* list = new QMap<QString, PROFILE*>();
-	PROFILE* item;
+	QMap<QString, Profile*>* list = new QMap<QString, Profile*>();
+	Profile* item;
 	if (!QSqlDatabase::connectionNames().contains(qsDBSys)) {
 		//-- If some trubles is
 		if (openSysDB()) {
-			item = new PROFILE;
+			item = new Profile;
 			item->savePassword = 0;
 			list->insert("Internal plugin error", item);
 			return list;
@@ -131,7 +135,7 @@ QMap<QString, PROFILE*>* DBPlugin::GetProfiles()
 				query.bindValue(QStringLiteral(":profileName"), dirName);
 				query.exec();
 				query.next();
-				item = new PROFILE;
+				item = new Profile;
 				item->savePassword = query.value(1).toBool();
 				item->defaultProfile = query.value(2).toBool();
 				if (item->savePassword)
@@ -379,7 +383,7 @@ int DBPlugin::CreateProfile(const QString& name, const QString& password)
 	return 0;
 }
 
-PLUGININFO* DBPlugin::ElisePluginInfo(EVersion)
+PluginInfo* DBPlugin::ElisePluginInfo()
 {
 	return &pluginInfo;
 }
@@ -389,13 +393,13 @@ const QUuid* DBPlugin::ElisePluginInterfaces(void)
 	return &pluginInfo.uuid;
 }
 
-int DBPlugin::Load(const PLUGINLINK* link)
+int DBPlugin::Load(ICore* coreAPI)
 {
-	pluginLink = link;
+	core = coreAPI;
 
-	CreateServiceFunction(&DB_WRITESETTING, (ELISESERVICE)WriteSettingToBase);
-	CreateServiceFunction(&DB_READSETTING, (ELISESERVICE)ReadSettingFromBase);
-	CreateServiceFunction(&DB_DELSETTING, (ELISESERVICE)DelteSettingFromBase);
+	core->CreateServiceFunction(&DB_WRITESETTING, &WriteSettingToBase);
+	core->CreateServiceFunction(&DB_READSETTING, &ReadSettingFromBase);
+	core->CreateServiceFunction(&DB_DELSETTING, &DelteSettingFromBase);
 
 	return 0;
 }
