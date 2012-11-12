@@ -5,17 +5,17 @@
 
 OptionsDialog* OptionsDialog::options = 0;
 
-int AddPage(uintptr_t wParam, uintptr_t lParam)
+int AddPage(uintptr_t wParam, uintptr_t)
 {
 	if (OptionsDialog::options == 0)
 		return -1;
 
-	OptionsPage* page = (OPTIONSPAGE*)wParam;
+	OptionsPage* page = reinterpret_cast<OptionsPage*>(wParam);
 
 	return OptionsDialog::options->addPage(page);
 }
 
-int ShowOptions(uintptr_t wParam, uintptr_t lParam)
+int ShowOptions(uintptr_t, uintptr_t)
 {
 	if (OptionsDialog::options == 0) {
 		OptionsDialog::options = new OptionsDialog();
@@ -31,7 +31,7 @@ int LoadOptionsModule()
 {
 	OptionsDialog::options = 0;
 	core::CreateHookableEvent(&OPTIONS_SHOW);
-	core::CreateServiceFunction(&OPTIONS_SHOW, (ELISESERVICE)ShowOptions);
+	core::CreateServiceFunction(&OPTIONS_SHOW, &ShowOptions);
 	return 0;
 }
 
@@ -69,12 +69,12 @@ int OptionsDialog::addPage(OptionsPage* newPage)
 	}
 
 	//--
-	saveFunctions.insert(newPage->save);
+	saveFunctions.insert(newPage->savePage);
 
 	return 0;
 }
 
-void OptionsDialog::selectPage(const QModelIndex& current, const QModelIndex& previous)
+void OptionsDialog::selectPage(const QModelIndex& current, const QModelIndex&)
 {
 	TreeModel* model = dynamic_cast<TreeModel*>(treeView->model());
 	layout->setCurrentIndex(model->getLayoutIndex(current));
@@ -182,7 +182,7 @@ OptionsDialog::OptionsDialog()
 	//vv->resize(vv->parentWidget()->size());*/
 
 	QWidget* wi;
-	OPTIONSPAGE* page = new OPTIONSPAGE;
+	OptionsPage* page = new OptionsPage;
 
 	str = "Chat";
 	page->id = str;
@@ -272,7 +272,7 @@ OptionsDialog::OptionsDialog()
 	page->page = wi;
 	addPage(page);
 
-	core::CreateServiceFunction(&OPTIONS_ADD_PAGE, (ELISESERVICE)AddPage);
+	core::CreateServiceFunction(&OPTIONS_ADD_PAGE, &AddPage);
 	core::CreateHookableEvent(&OPTIONS_CLOSE);
 }
 

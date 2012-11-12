@@ -1,5 +1,6 @@
 #include <cstdlib>
 #include <ctime>
+#include "elise.h"
 #include "modules.h"
 
 //-- Temporary module for tests
@@ -10,7 +11,7 @@ namespace core
 
 //int InitialiseModularEngine(void);
 
-int shutDown(intptr_t result, intptr_t lParam)
+int shutDown(intptr_t result, intptr_t)
 {
 	//-- PreShut down stage
 	//SetEvent(hMirandaShutdown);

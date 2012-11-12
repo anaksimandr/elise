@@ -25,7 +25,7 @@ public:
 	~OptionsDialog();
 
 	int					addPage(OptionsPage* newPage);
-	void				selectPage(const QModelIndex& current, const QModelIndex& previous);
+	void				selectPage(const QModelIndex& current, const QModelIndex&);
 
 	void				applay();
 

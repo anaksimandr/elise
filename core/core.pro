@@ -19,7 +19,8 @@ SOURCES += \
     src/modules/options/treeitem.cpp \
     src/modules/options/treemodel.cpp \
 	src/modules/pluginloader/pluginloader.cpp \
-    src/modules/profilemanager.cpp
+    src/modules/profilemanager.cpp \
+    src/modules/pluginloader/coreapi.cpp
 
 
 HEADERS += \
@@ -37,7 +38,8 @@ HEADERS += \
     src/modules/options/treemodel.h \
 	src/modules/pluginloader/pluginloader.h \
     src/modules/profilemanager.h \
-    src/elise.h
+    src/elise.h \
+    src/modules/pluginloader/coreapi.h
 
 RESOURCES += \
 	res/resources.qrc

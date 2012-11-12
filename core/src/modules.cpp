@@ -1,24 +1,25 @@
 #include "modules.h"
-#include "modules/profilemanager.h"
+#include "elise.h"
 #include "modules/pluginloader/pluginloader.h"
+#include "modules/profilemanager.h"
+#include "modules/tray.h"
+#include "modules/options/options.h"
 
 
 //-- Temporary module for tests
 #include "tests.h"
 
-class QMap;
 
 namespace core
 {
 
-extern int shutDown(intptr_t, intptr_t);
 int LoadProfile(intptr_t, intptr_t);
 
 int LoadSystemModule()
 {
-	if (CreateServiceFunction(&SHUTDOWN_SERVICE, (ELISESERVICE)shutDown))
+	if (CreateServiceFunction(&SHUTDOWN_SERVICE, (EliseService)shutDown))
 		return 1;
-	if (CreateServiceFunction(&CHANGEPROFILE_SERVICE, (ELISESERVICE)LoadProfile))
+	if (CreateServiceFunction(&CHANGEPROFILE_SERVICE, (EliseService)LoadProfile))
 		return 1;
 	//if (CreateHookableEvent(&hkevName))
 		//return 1;

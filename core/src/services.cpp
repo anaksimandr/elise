@@ -5,7 +5,7 @@
 
 //#include "commonheaders.h"
 
-namespace Core
+namespace core
 {
 
 //-- Critical sections
@@ -154,7 +154,7 @@ int NotifyEventHooks(const QLatin1String* name, uintptr_t wParam, uintptr_t lPar
 	return returnErr;
 }
 
-int HookEventInt(const QLatin1String* name, ELISEHOOK hookProc)
+int HookEventInt(const QLatin1String* name, EliseHook hookProc)
 {	
 	//if (name->isEmpty())
 	//	return -2;
@@ -192,7 +192,7 @@ int HookEventInt(const QLatin1String* name, ELISEHOOK hookProc)
 	return p->subscriberCount++;
 }
 
-int HookEvent(const QLatin1String* name, ELISEHOOK hookProc)
+int HookEvent(const QLatin1String* name, EliseHook hookProc)
 {
 	return HookEventInt(name, hookProc);
 }
@@ -240,7 +240,7 @@ int UnhookEvent(const THook hook)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //-- SERVICES --////////////////////////////////////////////////////////////////////////////////////
 
-int CreateServiceFunctionInt(const QLatin1String* name, ELISESERVICE serviceProc, int type)
+int CreateServiceFunctionInt(const QLatin1String* name, EliseService serviceProc, int type)
 {	
 	//if (name->isEmpty())
 	//	return -1;
@@ -273,7 +273,7 @@ int CreateServiceFunctionInt(const QLatin1String* name, ELISESERVICE serviceProc
 	return 0;
 }
 
-int CreateServiceFunction(const QLatin1String* name, ELISESERVICE serviceProc)
+int CreateServiceFunction(const QLatin1String* name, EliseService serviceProc)
 {
 	return CreateServiceFunctionInt(name, serviceProc, 0);
 }
@@ -355,4 +355,4 @@ int DestroyServiceFunction(const QLatin1String* name)
 	return 0;
 }
 
-} //namespace Core
+} //namespace core

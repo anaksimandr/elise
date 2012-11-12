@@ -29,7 +29,7 @@ typedef struct {
 	int				contact;
 	QLatin1String*	qsModule;
 	QLatin1String*	qsSetting;
-	DBVARIANT*		var;
+	DBVariant*		var;
 } Setting;
 
 
