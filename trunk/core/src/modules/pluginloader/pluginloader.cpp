@@ -1,21 +1,11 @@
 //#include "../../commonheaders.h"
 #include "pluginloader.h"
 
+CoreAPI						PluginLoader::coreAPI;
 QMap<QString, IPlugin*>*	PluginLoader::plugins = 0;
 //QMap<QUuid, QString>*		PluginLoader::interfaces = 0;
 LoadedDBPlugin				PluginLoader::loadedDBPlugin;
 
-const PLUGINLINK pluginLink = {
-		&core::CreateHookableEvent,
-		&core::DestroyHookableEvent,
-		&core::NotifyEventHooks,
-		&core::HookEvent,
-		&core::UnhookEvent,
-		&core::CreateServiceFunction,
-		&core::DestroyServiceFunction,
-		&core::CallService,
-		&core::ServiceExists
-};
 
 QDir PluginLoader::getPluginsDir()
 {
@@ -52,15 +42,15 @@ int PluginLoader::getAvailablePlugins(QMap<QString, IDBPlugin*>* dbPlugins,
 			IPlugin* validPlugin = qobject_cast<IPlugin*>(plugin);
 			//-- Elise plugin
 			if (validPlugin) {
-                if (validPlugin->ElisePluginInfo(Core::g_eliseVersion) != NULL)
-					loadablePlugins->insert(fileName, validPlugin);
+				//if (validPlugin->ElisePluginInfo(Core::g_eliseVersion) != NULL)
+				loadablePlugins->insert(fileName, validPlugin);
 			}
 			//-- Elise DB plugin
 			else {
 				IDBPlugin* validDBPlugin = qobject_cast<IDBPlugin*>(plugin);
 				if (validDBPlugin) {
-                    if (validDBPlugin->ElisePluginInfo(Core::g_eliseVersion) != NULL)
-						dbPlugins->insert(fileName, validDBPlugin);
+					//if (validDBPlugin->ElisePluginInfo(Core::g_eliseVersion) != NULL)
+					dbPlugins->insert(fileName, validDBPlugin);
 				}
 			}
 		} //if plugin
@@ -73,7 +63,7 @@ int PluginLoader::loadDBPlugin(QString pluginName, IDBPlugin* dbPlugin)
 	loadedDBPlugin.name = pluginName;
 	loadedDBPlugin.plugin = dbPlugin;
 	//QMessageBox::information(0, "Debug", loadedDBPlugin.name, QMessageBox::Ok);
-	return dbPlugin->Load(&pluginLink);
+	return dbPlugin->Load(&coreAPI);
 }
 
 int PluginLoader::loadPlugins(QMap<QString, IPlugin*>* loadablePlugins)
@@ -85,7 +75,7 @@ int PluginLoader::loadPlugins(QMap<QString, IPlugin*>* loadablePlugins)
 	while (iter.hasNext()) {
 		iter.next();
 		p = iter.value();
-		if (p->Load(&pluginLink))
+		if (p->Load(&coreAPI))
 			return 1;
 		plugins->insert(iter.key(), p);
 	}

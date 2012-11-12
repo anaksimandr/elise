@@ -1,24 +1,19 @@
 #ifndef ELISE_CORE_SERVICES_H_
 #define ELISE_CORE_SERVICES_H_
 
-class QMap;
+#include "../../api/e_pluginapi.h"
+
 class QMutex;
 class QLatin1String;
 
-struct THook;
 
 namespace core
 {
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
-//-- Constants definitions --///////////////////////////////////////////////////////////////////////
-
-
-
-////////////////////////////////////////////////////////////////////////////////////////////////////
 //-- Names of system services and events --/////////////////////////////////////////////////////////
 
-const QLatin1String	E_SKIN_MODULE		=	QLatin1String("Skins");
+//const QLatin1String	E_SKIN_MODULE		=	QLatin1String("Skins");
 
 //-- Services
 const QLatin1String	SHUTDOWN_SERVICE	=	QLatin1String("System/Shutdown");	/* Call this method to close Elise. */
@@ -31,23 +26,6 @@ const QLatin1String	TRAY_SINGLECLICK	=	QLatin1String("Tray/SingleClick");	/* The
 const QLatin1String	TRAY_DOUBLECLICK	=	QLatin1String("Tray/DoubleClick");	/* The system tray entry was double clicked. */
 const QLatin1String	TRAY_MIDDLECLICK	=	QLatin1String("Tray/MiddleClick");	/* The system tray entry was clicked with the middle mouse button. */
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-//-- Service and hook definitions --////////////////////////////////////////////////////////////////
-
-//-- Hook functions
-//typedef int (*ELISEHOOK)(uintptr_t,uintptr_t);
-//typedef int (*ELISEHOOKPARAM)(uintptr_t,uintptr_t,uintptr_t);
-//typedef int (*ELISEHOOKOBJ)(void*,uintptr_t,uintptr_t);
-//typedef int (*ELISEHOOKOBJPARAM)(void*,uintptr_t,uintptr_t,uintptr_t);
-
-//-- Services functions
-//typedef intptr_t (*ELISESERVICE)(uintptr_t,uintptr_t);								//-- type = 0
-//typedef void (QTestWindow::* ptToWidgetMemb)();
-//typedef intptr_t (*ELISESERVICEWIDG)(QWidget*, ptToWidgetMemb);			//-- type = 1
-//typedef intptr_t (*ELISESERVICEPARAM)(uintptr_t,uintptr_t,uintptr_t);
-//typedef intptr_t (*ELISESERVICEOBJ)(void*,uintptr_t,uintptr_t);
-//typedef intptr_t (*ELISESERVICEOBJPARAM)(void*,uintptr_t,uintptr_t,uintptr_t);
-
 //-- Hooks
 typedef struct
 {
@@ -57,10 +35,8 @@ typedef struct
 	union {
 		struct {
 			union {
-				ELISEHOOK pfnHook;
+				EliseHook pfnHook;
 				//ELISEHOOKPARAM pfnHookParam;
-				//ELISEHOOKOBJ pfnHookObj;
-				//ELISEHOOKOBJPARAM pfnHookObjParam;
 			};
 			//void* object;
 			//intptr_t lParam;
@@ -98,11 +74,8 @@ typedef struct
 	//HINSTANCE hOwner;
 	int type;
 	union {
-		ELISESERVICE pfnService;
+		EliseService pfnService;
 		//ELISESERVICEWIDG pfnServiceWidg;
-		//ELISESERVICEPARAM pfnServiceParam;
-		//MIRANDASERVICEOBJ pfnServiceObj;
-		//MIRANDASERVICEOBJPARAM pfnServiceObjParam;
 	};
 	//int flags;
 	//LPARAM lParam;
@@ -153,7 +126,7 @@ int NotifyEventHooks(const QLatin1String* name, uintptr_t wParam, uintptr_t lPar
   Returns -2 if name is empty, -1 if name not found in events list. If the hook created
   successfully, returns its personal number that must be used by call UnhookEvent().
 *///////////////////////////////////////////////////////////////////////////////////////////////////
-int HookEvent(const QLatin1String* name, ELISEHOOK hookProc);
+int HookEvent(const QLatin1String* name, EliseHook hookProc);
 
 /* UnhookEvent /////////////////////////////////////////////////////////////////////////////////////
   Removes a hook from its event chain. It will no longer receive any events.
@@ -178,7 +151,7 @@ int UnhookEvent(const THook hook);
   callers of CallService().
   Returns 0 on success, -2 if name is empty and -1 if name has been already used.
 *///////////////////////////////////////////////////////////////////////////////////////////////////
-int CreateServiceFunction(const QLatin1String* name, ELISESERVICE serviceProc);
+int CreateServiceFunction(const QLatin1String* name, EliseService serviceProc);
 
 /* ServiceExists ///////////////////////////////////////////////////////////////////////////////////
   Finds if a service with the given 'name' exists.

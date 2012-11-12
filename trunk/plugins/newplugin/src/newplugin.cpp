@@ -1,17 +1,17 @@
 
-#include "commonheaders.h"
+#include "newplugin.h"
 
 const QLatin1String	TESTPLUGIN_SERVICE	=	QLatin1String("TESTPLUGIN_SERVICE");
-const PLUGINLINK* pluginLink;
+ICore* core;
 
-PLUGININFO pluginInfo = {
+PluginInfo pluginInfo = {
 	"NewPlugin",
 	{0,0,0,1},
 	"{ca0ae4d0-ea7c-4743-b34e-1a2c9c61991d}"
 };
 
 
-PLUGININFO* NewPlugin::ElisePluginInfo(EVersion)
+PluginInfo* NewPlugin::ElisePluginInfo()
 {
 	return &pluginInfo;
 }
@@ -21,7 +21,7 @@ const QUuid* NewPlugin::ElisePluginInterfaces(void)
 	return &pluginInfo.uuid;
 }
 
-int testPluginFunction(intptr_t result, intptr_t lParam)
+intptr_t testPluginFunction(intptr_t, intptr_t)
 {
 	QMessageBox qmes;
 	qmes.setText("Call test plugin success! uuid is\n" + pluginInfo.uuid.toString());
@@ -29,16 +29,16 @@ int testPluginFunction(intptr_t result, intptr_t lParam)
 	return 0;
 }
 
-int NewPlugin::Load(const PLUGINLINK* link)
+int NewPlugin::Load(ICore* coreAPI)
 {
-	pluginLink = link;
-	CreateServiceFunction(&TESTPLUGIN_SERVICE, (ELISESERVICE)testPluginFunction);
+	core = coreAPI;
+	core->CreateServiceFunction(&TESTPLUGIN_SERVICE, &testPluginFunction);
 	return 0;
 }
 
 int NewPlugin::Unload(void)
 {
-	DestroyServiceFunction(&TESTPLUGIN_SERVICE);
+	core->DestroyServiceFunction(&TESTPLUGIN_SERVICE);
 	return 0;
 }
 

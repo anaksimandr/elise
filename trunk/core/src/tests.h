@@ -1,7 +1,12 @@
 #ifndef TESTS_H
 #define TESTS_H
 
-#include "commonheaders.h"
+#include <QtWidgets/QtWidgets>
+#include "services.h"
+#include "modules/options/options.h"
+#include "../../api/e_database.h"
+
+//#include "commonheaders.h"
 
 class QTestWindow : public QWidget
 {
@@ -14,7 +19,7 @@ private:
 	QLineEdit*		v3;
 	QLineEdit*		v4;
 	QLineEdit*		v5;
-    Core::THook			thTray;
+	THook			thTray;
 protected:
 	//Elise*			parent;
 	//virtual void	contextMenuEvent(QContextMenuEvent* e);

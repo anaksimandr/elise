@@ -1,6 +1,9 @@
 #ifndef ELISE_API_E_PLUGINAPI_H_
 #define ELISE_API_E_PLUGINAPI_H_
 
+#include <QtCore>
+
+
 //-- Store information about version here
 typedef struct {
 	union
@@ -37,6 +40,7 @@ typedef struct
 
 class ICore
 {
+public:
 	virtual				~ICore() {}
 
 	//-- See services.h for more details
@@ -58,7 +62,7 @@ public:
 	virtual						~IPlugin() {}
 
 	//-- If this function return not NULL then the plugin is valid and can be load
-	virtual	PLUGININFO*			ElisePluginInfo(EVersion) = 0;
+	virtual	PluginInfo*			ElisePluginInfo() = 0;
 
 	//--
 	virtual	const QUuid*		ElisePluginInterfaces(void) = 0;
@@ -67,7 +71,7 @@ public:
 	//-- Must be called after login function
 	//-- Return 0 on success, non-zero on failure
 	//-- NOTE: if this function return non-zero then Elise loading wiil be aborted
-	virtual	int					Load(const ICore*) = 0;
+	virtual	int					Load(ICore*) = 0;
 
 	//-- Unload plugin
 	//-- Return 0 on success, non-zero on failure

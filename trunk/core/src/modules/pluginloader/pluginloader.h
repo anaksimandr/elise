@@ -2,9 +2,10 @@
 #define ELISE_CORE_MODULES_PLUGINLOADER_PLUGINLOADER_H_
 
 #include <QtWidgets/QtWidgets>
+#include "coreapi.h"
 #include "../../../../api/e_pluginapi.h"
 #include "../../../../api/e_dbpluginapi.h"
-//#include "../../commonheaders.h"
+#include "coreapi.h"
 
 typedef struct {
 	QString name;
@@ -14,6 +15,7 @@ typedef struct {
 class PluginLoader
 {
 private:
+	static CoreAPI		coreAPI;
 	static QMap<QString, IPlugin*>*	plugins;
 	//static QMap<QUuid, QString>*	interfaces;
 	static LoadedDBPlugin	loadedDBPlugin;

@@ -1,7 +1,8 @@
 #ifndef NEWPLUGIN_H
 #define NEWPLUGIN_H
 
-#include "commonheaders.h"
+#include <QtWidgets/QtWidgets>
+#include "../../../api/e_pluginapi.h"
 
 class NewPlugin : public QObject, IPlugin
  {
@@ -11,9 +12,9 @@ class NewPlugin : public QObject, IPlugin
 	Q_PLUGIN_METADATA(IID "elise.IPlugin")
 
 public:
-	PLUGININFO*			ElisePluginInfo(EVersion);
+	PluginInfo*			ElisePluginInfo();
 	const QUuid*		ElisePluginInterfaces(void);
-	int					Load(const PLUGINLINK* link);
+	int					Load(ICore* coreAPI);
 	int					Unload(void);
 };
 

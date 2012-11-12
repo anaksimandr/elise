@@ -1,4 +1,4 @@
-#ifndef COMMONHEADERS_H
+/*#ifndef COMMONHEADERS_H
 #define COMMONHEADERS_H
 
 #include <QtWidgets/QtWidgets>
@@ -6,3 +6,4 @@
 #include "newplugin.h"
 
 #endif // COMMONHEADERS_H
+*/
