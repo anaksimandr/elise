@@ -1,5 +1,7 @@
 
-#include "commonheaders.h"
+//#include "commonheaders.h"
+#include "elisedb.h"
+#include "../../../api/e_database.h"
 
 //-- Types of settings
 extern const unsigned char intType;
@@ -9,9 +11,9 @@ extern const unsigned char blobType;
 
 QString qsProfile;
 
-int WriteSettingToBase(uintptr_t  wParam, uintptr_t lParam)
+int WriteSettingToBase(intptr_t  wParam, intptr_t lParam)
 {
-	SETTING* set = (SETTING*)lParam;
+	Setting* set = reinterpret_cast<Setting*>(lParam);
 	//if (set->qsModule->isEmpty() || set->qsSetting->isEmpty()) {
 	if ((set->qsModule->size() < 1) || (set->qsSetting->size() < 1)) {
 #ifndef NDEBUG
@@ -84,9 +86,9 @@ int WriteSettingToBase(uintptr_t  wParam, uintptr_t lParam)
 	return 0;
 }
 
-int ReadSettingFromBase(uintptr_t  wParam, uintptr_t lParam)
+int ReadSettingFromBase(intptr_t  wParam, intptr_t lParam)
 {
-	SETTING* set = (SETTING*)lParam;
+	Setting* set = reinterpret_cast<Setting*>(lParam);
 	//if (set->qsModule->isEmpty() || set->qsSetting->isEmpty()) {
 	if ((set->qsModule->size() < 1) || (set->qsSetting->size() < 1)) {
 #ifndef NDEBUG
@@ -155,9 +157,9 @@ int ReadSettingFromBase(uintptr_t  wParam, uintptr_t lParam)
 	return 0;
 }
 
-int DelteSettingFromBase(uintptr_t  wParam, uintptr_t lParam)
+int DelteSettingFromBase(intptr_t  wParam, intptr_t lParam)
 {
-	SETTING* set = (SETTING*)lParam;
+	Setting* set = reinterpret_cast<Setting*>(lParam);
 	//if (set->qsModule->isEmpty() || set->qsSetting->isEmpty()) {
 	if ((set->qsModule->size() < 1) || (set->qsSetting->size() < 1)) {
 #ifndef NDEBUG

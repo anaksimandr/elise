@@ -1,4 +1,7 @@
-//#include "../../commonheaders.h"
+
+#include "../../../../api/e_pluginapi.h"
+#include "../../../../api/e_dbpluginapi.h"
+#include "coreapi.h"
 #include "pluginloader.h"
 
 CoreAPI						PluginLoader::coreAPI;

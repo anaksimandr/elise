@@ -1,6 +1,6 @@
 #include "tests.h"
 
-int hideMainWindow(uintptr_t, uintptr_t);
+int hideMainWindow(intptr_t, intptr_t);
 
 #include <QtSql>
 
@@ -233,7 +233,7 @@ QTestWindow::QTestWindow()
 	core::CallService(&core::TRAY_ADD_MENUITEM, (uintptr_t)action, 0);
 }
 
-int hideMainWindow(uintptr_t, uintptr_t)
+int hideMainWindow(intptr_t, intptr_t)
 {
 	if (wii->vis) {
 		wii->hide();
@@ -243,6 +243,8 @@ int hideMainWindow(uintptr_t, uintptr_t)
 		wii->show();
 		wii->vis = true;
 	}
+
+	return 0;
 }
 
 QTestWindow::~QTestWindow()
@@ -395,7 +397,7 @@ static THook hookEv;
 
 //-- Hooks
 
-int testHook(uintptr_t wParam, uintptr_t lParam)
+int testHook(intptr_t, intptr_t lParam)
 {
 	QMessageBox qmes;
 	qmes.setText("Test hook called! lParam is " + QString::number(lParam));
@@ -448,7 +450,7 @@ void QTestWindow::deleteHokableEvent()
 }
 
 //-- Services
-int testService(uintptr_t wParam, uintptr_t lParam)
+int testService(intptr_t wParam, intptr_t)
 {
 	QMessageBox qmes;
 	qmes.setText("Test service working");

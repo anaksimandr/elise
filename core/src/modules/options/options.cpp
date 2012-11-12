@@ -5,7 +5,7 @@
 
 OptionsDialog* OptionsDialog::options = 0;
 
-int AddPage(uintptr_t wParam, uintptr_t)
+int AddPage(intptr_t wParam, intptr_t)
 {
 	if (OptionsDialog::options == 0)
 		return -1;
@@ -15,7 +15,7 @@ int AddPage(uintptr_t wParam, uintptr_t)
 	return OptionsDialog::options->addPage(page);
 }
 
-int ShowOptions(uintptr_t, uintptr_t)
+int ShowOptions(intptr_t, intptr_t)
 {
 	if (OptionsDialog::options == 0) {
 		OptionsDialog::options = new OptionsDialog();

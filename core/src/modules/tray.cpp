@@ -29,14 +29,14 @@ void EliseTray::trayActivationNotify(QSystemTrayIcon::ActivationReason reason)
 	//return 0;
 }
 
-int addToContextMenu(uintptr_t wParam,uintptr_t)
+int addToContextMenu(intptr_t wParam,intptr_t)
 {
 	QAction* action = reinterpret_cast<QAction*>(wParam);
 	trayElise->addToMenu(action);
 	return 0;
 }
 
-int setTrayIcon(uintptr_t wParam,uintptr_t)
+int setTrayIcon(intptr_t wParam,intptr_t)
 {
 	QIcon* icon = (QIcon*)wParam;
 	//QIcon icon2 = *icon;

@@ -123,7 +123,7 @@ ProfileManager::~ProfileManager()
 {
 	//-- Destroy profiles list if exists
 	if (profiles != 0) {
-		QMapIterator<QString, PROFILE*> iter(*profiles);
+		QMapIterator<QString, Profile*> iter(*profiles);
 		while (iter.hasNext()) {
 			iter.next();
 			delete iter.value();
@@ -147,7 +147,7 @@ void ProfileManager::loadProfiles(const QString& text)
 	cmbProfiles->clear();
 	//-- Destroy old list if exists
 	if (profiles != 0) {
-		QMapIterator<QString, PROFILE*> iter(*profiles);
+		QMapIterator<QString, Profile*> iter(*profiles);
 		while (iter.hasNext()) {
 			iter.next();
 			delete iter.value();
@@ -158,7 +158,7 @@ void ProfileManager::loadProfiles(const QString& text)
 	profiles = DBPlugins->value(text)->GetProfiles();
 	if (profiles != 0) {
 		if (profiles->count() != 0) {
-			QMapIterator<QString, PROFILE*> iter(*profiles);
+			QMapIterator<QString, Profile*> iter(*profiles);
 			while (iter.hasNext()) {
 				iter.next();
 				cmbProfiles->addItem(iter.key());
@@ -176,7 +176,7 @@ void ProfileManager::loadProfiles(const QString& text)
 
 void ProfileManager::loadProfileDetails(const QString& name)
 {
-	PROFILE* p = profiles->value(name);
+	Profile* p = profiles->value(name);
 	//QMessageBox::critical(0, QStringLiteral("Debug"), name, QMessageBox::Cancel);
 	if ( p != 0) {
 		//-- Note: we can't use cbSavePassword->setCheckState(bool) because checkbox
