@@ -20,11 +20,11 @@ SOURCES += \
     src/modules/options/treemodel.cpp \
 	src/modules/pluginloader/pluginloader.cpp \
     src/modules/profilemanager.cpp \
-    src/modules/pluginloader/coreapi.cpp
+    src/modules/pluginloader/coreapi.cpp \
+    src/modules/pluginloader/pluginloaderoptions.cpp
 
 
 HEADERS += \
-    src/commonheaders.h \
     src/tests.h \
     src/services.h \
     src/modules.h \
@@ -33,13 +33,15 @@ HEADERS += \
 	../api/e_dbpluginapi.h \
 	../api/e_database.h \
 	../api/e_options.h \
+	../api/e_trayapi.h \
 	src/modules/options/options.h \
     src/modules/options/treeitem.h \
     src/modules/options/treemodel.h \
 	src/modules/pluginloader/pluginloader.h \
     src/modules/profilemanager.h \
     src/elise.h \
-    src/modules/pluginloader/coreapi.h
+    src/modules/pluginloader/coreapi.h \
+    src/modules/pluginloader/pluginloaderoptions.h
 
 RESOURCES += \
 	res/resources.qrc

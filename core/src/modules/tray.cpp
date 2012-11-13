@@ -1,5 +1,6 @@
 #include "tray.h"
 #include "../services.h"
+#include "../../../api/e_trayapi.h"
 
 
 EliseTray* trayElise;
@@ -10,17 +11,17 @@ void EliseTray::trayActivationNotify(QSystemTrayIcon::ActivationReason reason)
 	{
 		case QSystemTrayIcon::Trigger:
 		{
-			core::NotifyEventHooks(&core::TRAY_SINGLECLICK, 0, 0);
+			core::NotifyEventHooks(&TRAY_SINGLECLICK, 0, 0);
 			break;
 		}
 		case QSystemTrayIcon::DoubleClick:
 		{
-			core::NotifyEventHooks(&core::TRAY_DOUBLECLICK, 0, 0);
+			core::NotifyEventHooks(&TRAY_DOUBLECLICK, 0, 0);
 			break;
 		}
 		case QSystemTrayIcon::MiddleClick:
 		{
-			core::NotifyEventHooks(&core::TRAY_MIDDLECLICK, 0, 0);
+			core::NotifyEventHooks(&TRAY_MIDDLECLICK, 0, 0);
 			break;
 		}
 		default:
@@ -55,15 +56,15 @@ int LoadTrayModule()
 	trayElise = new EliseTray();
 	trayElise->setIcon(QIcon(":/icons/img/main.png"));
 	trayElise->show();
-	core::CreateHookableEvent(&core::TRAY_SINGLECLICK);
-	core::CreateHookableEvent(&core::TRAY_DOUBLECLICK);
-	core::CreateHookableEvent(&core::TRAY_MIDDLECLICK);
-	QObject::connect(trayElise, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
-					 trayElise, SLOT(trayActivationNotify(QSystemTrayIcon::ActivationReason)));
-	//QObject::connect(trayElise, &EliseTray::activated, trayElise, &EliseTray::trayActivationNotify);
+	core::CreateHookableEvent(&TRAY_SINGLECLICK);
+	core::CreateHookableEvent(&TRAY_DOUBLECLICK);
+	core::CreateHookableEvent(&TRAY_MIDDLECLICK);
+	//QObject::connect(trayElise, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
+	//				 trayElise, SLOT(trayActivationNotify(QSystemTrayIcon::ActivationReason)));
+	QObject::connect(trayElise, &EliseTray::activated, trayElise, &EliseTray::trayActivationNotify);
 	trayElise->setContextMenu(new QMenu());
-	core::CreateServiceFunction(&core::TRAY_ADD_MENUITEM, &addToContextMenu);
-	core::CreateServiceFunction(&core::TRAY_SET_ICON, &setTrayIcon);
+	core::CreateServiceFunction(&TRAY_ADD_MENUITEM, &addToContextMenu);
+	core::CreateServiceFunction(&TRAY_SET_ICON, &setTrayIcon);
 	return 0;
 }
 

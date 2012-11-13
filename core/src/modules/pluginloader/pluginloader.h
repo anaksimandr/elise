@@ -26,6 +26,7 @@ public:
 	static int			loadDBPlugin(QString pluginName, IDBPlugin* dbPlugin);
 	static int			loadPlugins(QMap<QString, IPlugin*>* loadablePlugins);
 	static int			unloadPlugins();
+	static int			LoadPluginLoader();
 };
 
 #endif // ELISE_CORE_MODULES_PLUGINLOADER_PLUGINLOADER_H_

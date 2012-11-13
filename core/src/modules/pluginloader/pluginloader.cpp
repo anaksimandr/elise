@@ -1,14 +1,23 @@
 
 #include "../../../../api/e_pluginapi.h"
 #include "../../../../api/e_dbpluginapi.h"
+#include "../../../../api/e_options.h"
 #include "coreapi.h"
 #include "pluginloader.h"
+#include "../../services.h"
+#include "pluginloaderoptions.h"
 
 CoreAPI						PluginLoader::coreAPI;
 QMap<QString, IPlugin*>*	PluginLoader::plugins = 0;
 //QMap<QUuid, QString>*		PluginLoader::interfaces = 0;
 LoadedDBPlugin				PluginLoader::loadedDBPlugin;
 
+int PluginLoader::LoadPluginLoader()
+{
+	core::HookEvent(&OPTIONS_SHOW, &PluginLoaderOptions::createLoaderOptionsPage);
+
+	return 0;
+}
 
 QDir PluginLoader::getPluginsDir()
 {

@@ -95,7 +95,7 @@ TreeItem* TreeModel::getItem(const QModelIndex& itemIndex) const
 	return rootItem;
 }
 
-QModelIndex TreeModel::match(const QModelIndex& startIndex, const QString& header) const
+QModelIndex TreeModel::match(const QModelIndex& startIndex, const QString& id) const
 {
 	QModelIndex resultIndex;
 	QModelIndex p = parent(startIndex);
@@ -112,12 +112,12 @@ QModelIndex TreeModel::match(const QModelIndex& startIndex, const QString& heade
 		TreeItem* item = getItem(resultIndex);
 		QString s = item->getId();
 
-		if (header == s)
+		if (id == s)
 			return resultIndex;
 
 		//-- search the hierarchy
 		if (hasChildren(resultIndex)) {
-			resultIndex = match(index(0, resultIndex.column(), resultIndex), header);
+			resultIndex = match(index(0, resultIndex.column(), resultIndex), id);
 			if (resultIndex.isValid())
 				return resultIndex;
 		}

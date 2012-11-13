@@ -13,13 +13,14 @@
 namespace core
 {
 
-int LoadProfile(intptr_t, intptr_t);
+intptr_t ChangeProfile(intptr_t, intptr_t);
+int LoadProfile(bool);
 
 int LoadSystemModule()
 {
-	if (CreateServiceFunction(&SHUTDOWN_SERVICE, (EliseService)shutDown))
+	if (CreateServiceFunction(&SHUTDOWN_SERVICE, &shutDown))
 		return 1;
-	if (CreateServiceFunction(&CHANGEPROFILE_SERVICE, (EliseService)LoadProfile))
+	if (CreateServiceFunction(&CHANGEPROFILE_SERVICE, &ChangeProfile))
 		return 1;
 	//if (CreateHookableEvent(&hkevName))
 		//return 1;
@@ -32,16 +33,36 @@ int LoadDefaultModules()
 {
 	if (LoadSystemModule())
 		return 1;
-	if (LoadTrayModule())
-		return 1;
 	if (LoadOptionsModule())
 		return 1;
+	if (PluginLoader::LoadPluginLoader())
+		return 1;
+	if (LoadTrayModule())
+		return 1;
 
-	//-- '1' means that this is launch of the application
-	return LoadProfile(1, 0);
+	//-- 'true' means that this is launch of the application
+	return LoadProfile(true);
 }
 
-int LoadProfile(intptr_t launchApp, intptr_t)
+int UnloadDefaultModules()
+{
+
+	//-- Hide tray icon
+	UnloadTrayModule();
+
+	return 0;
+}
+
+intptr_t ChangeProfile(intptr_t, intptr_t)
+{
+	//-- 'false' means that this is not launch of the application
+	if (LoadProfile(false))
+		return shutDown(-1, 0);
+
+	return 0;
+}
+
+int LoadProfile(bool launchApp)
 {
 	//-- First, unload all plugins
 	PluginLoader::unloadPlugins();
@@ -63,6 +84,7 @@ int LoadProfile(intptr_t launchApp, intptr_t)
 		dbPlugins->~QMap();
 		loadablePlugins->~QMap();
 		return 1;
+		//return shutDown(-1, 0);
 	}
 
 	ProfileManager* manager =  new ProfileManager(dbPlugins);
@@ -80,6 +102,7 @@ int LoadProfile(intptr_t launchApp, intptr_t)
 			dbPlugins->~QMap();
 			loadablePlugins->~QMap();
 			return 1;
+			//return shutDown(-1, 0);
 		}
 	}
 
@@ -91,19 +114,11 @@ int LoadProfile(intptr_t launchApp, intptr_t)
 	dbPlugins->~QMap();
 
 	if (result)
-		return shutDown(-1, 0);
+		return 1;
+		//return shutDown(-1, 0);
 
 	//-- For test
 	new QTestWindow();
-	return 0;
-}
-
-int UnloadDefaultModules()
-{
-
-	//-- Hide tray icon
-	UnloadTrayModule();
-
 	return 0;
 }
 

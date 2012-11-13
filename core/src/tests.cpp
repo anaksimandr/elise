@@ -217,8 +217,8 @@ QTestWindow::QTestWindow()
 	layoutV->setAlignment(button, Qt::AlignBottom);
 
 	//-- Work with tray
-	thTray.num =  core::HookEvent(&core::TRAY_SINGLECLICK, &hideMainWindow);
-	thTray.name = new QLatin1String(core::TRAY_SINGLECLICK);
+	thTray.num =  core::HookEvent(&TRAY_SINGLECLICK, &hideMainWindow);
+	thTray.name = new QLatin1String(TRAY_SINGLECLICK);
 
 	wii = this;
 	this->show();
@@ -226,11 +226,11 @@ QTestWindow::QTestWindow()
 
 	QAction* action = new QAction("Call testQStringCalls", 0);
 	connect(action, SIGNAL(triggered()), this, SLOT(testQStringCalls()));
-	core::CallService(&core::TRAY_ADD_MENUITEM, (uintptr_t)action, 0);
+	core::CallService(&TRAY_ADD_MENUITEM, (uintptr_t)action, 0);
 
 	action = new QAction("Exit", 0);
 	connect(action, SIGNAL(triggered()), this, SLOT(buttonExit()));
-	core::CallService(&core::TRAY_ADD_MENUITEM, (uintptr_t)action, 0);
+	core::CallService(&TRAY_ADD_MENUITEM, (uintptr_t)action, 0);
 }
 
 int hideMainWindow(intptr_t, intptr_t)
@@ -288,7 +288,7 @@ void QTestWindow::setTrayIcon()
 	QString filename = QFileDialog::getOpenFileName(this, "Open file", "", "SVG (*.svg);; Files (*.*)");
 	//QMessageBox::critical(this, "Debug", "2", QMessageBox::Ok);
 	QIcon* icon = new QIcon(filename);
-	core::CallService(&core::TRAY_SET_ICON, (uintptr_t)icon, 0);
+	core::CallService(&TRAY_SET_ICON, (uintptr_t)icon, 0);
 	delete icon;
 }
 

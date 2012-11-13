@@ -1,5 +1,5 @@
-#ifndef NEWPLUGIN_H
-#define NEWPLUGIN_H
+#ifndef ELISE_PLUGINS_DBPLUGIN_DBPLUGIN_H_
+#define ELISE_PLUGINS_DBPLUGIN_DBPLUGIN_H_
 
 //#include "commonheaders.h"
 #include <QtWidgets/QtWidgets>
@@ -29,4 +29,4 @@ public:
 };
 
 
-#endif // NEWPLUGIN_H
+#endif // ELISE_PLUGINS_DBPLUGIN_DBPLUGIN_H_

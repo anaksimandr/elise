@@ -1,5 +1,5 @@
-#ifndef NEWPLUGIN_H
-#define NEWPLUGIN_H
+#ifndef ELISE_PLUGINS_NEWPLUGIN_NEWPLUGIN_H_
+#define ELISE_PLUGINS_NEWPLUGIN_NEWPLUGIN_H_
 
 #include <QtWidgets/QtWidgets>
 #include "../../../api/e_pluginapi.h"
@@ -18,4 +18,4 @@ public:
 };
 
 
-#endif // NEWPLUGIN_H
+#endif // ELISE_PLUGINS_NEWPLUGIN_NEWPLUGIN_H_

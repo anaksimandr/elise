@@ -4,7 +4,7 @@
 #include <QtWidgets/QtWidgets>
 //#include "../../../api/e_pluginapi.h"
 #include "../../../api/e_dbpluginapi.h"
-//#include "../commonheaders.h"
+
 
 class ProfileManager : public QDialog
 {

@@ -13,7 +13,6 @@ SOURCES += \
 	src/elsiedb.cpp
 
 HEADERS += \
-	src/commonheaders.h \
 	../../api/e_dbpluginapi.h \
 	src/dbplugin.h \
     src/dbkey.h \
