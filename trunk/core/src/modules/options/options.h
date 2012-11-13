@@ -3,7 +3,7 @@
 
 #include <QtWidgets/QtWidgets>
 #include "../../../../api/e_options.h"
-//#include "../../commonheaders.h"
+
 
 class QModelIndex;
 
@@ -24,7 +24,8 @@ public:
 	OptionsDialog();
 	~OptionsDialog();
 
-	int					addPage(OptionsPage* newPage);
+	static int			addPage(OptionsPage* newPage);
+	static void			addDefaultPages();
 	void				selectPage(const QModelIndex& current, const QModelIndex&);
 
 	void				applay();

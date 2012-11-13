@@ -18,13 +18,9 @@ namespace core
 //-- Services
 const QLatin1String	SHUTDOWN_SERVICE	=	QLatin1String("System/Shutdown");	/* Call this method to close Elise. */
 const QLatin1String	CHANGEPROFILE_SERVICE	=	QLatin1String("System/ChangeAcc");	/* Calls unload plugins and calls login window. */
-const QLatin1String	TRAY_ADD_MENUITEM	=	QLatin1String("Tray/AddMenuItem");	/* Adds item to tray context menu. */
-const QLatin1String	TRAY_SET_ICON		=	QLatin1String("Tray/SetIcon");		/* */
 
 //-- Hookable events
-const QLatin1String	TRAY_SINGLECLICK	=	QLatin1String("Tray/SingleClick");	/* The system tray entry was clicked. */
-const QLatin1String	TRAY_DOUBLECLICK	=	QLatin1String("Tray/DoubleClick");	/* The system tray entry was double clicked. */
-const QLatin1String	TRAY_MIDDLECLICK	=	QLatin1String("Tray/MiddleClick");	/* The system tray entry was clicked with the middle mouse button. */
+//const QLatin1String	TRAY_SINGLECLICK	=	QLatin1String("Tray/SingleClick");
 
 //-- Hooks
 typedef struct

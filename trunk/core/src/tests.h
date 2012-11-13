@@ -5,6 +5,7 @@
 #include "services.h"
 #include "modules/options/options.h"
 #include "../../api/e_database.h"
+#include "../../api/e_trayapi.h"
 
 //#include "commonheaders.h"
 

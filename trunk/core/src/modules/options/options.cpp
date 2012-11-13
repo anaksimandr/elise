@@ -5,21 +5,13 @@
 
 OptionsDialog* OptionsDialog::options = 0;
 
-int AddPage(intptr_t wParam, intptr_t)
-{
-	if (OptionsDialog::options == 0)
-		return -1;
-
-	OptionsPage* page = reinterpret_cast<OptionsPage*>(wParam);
-
-	return OptionsDialog::options->addPage(page);
-}
-
 int ShowOptions(intptr_t, intptr_t)
 {
 	if (OptionsDialog::options == 0) {
 		OptionsDialog::options = new OptionsDialog();
-		core::NotifyEventHooks(&OPTIONS_SHOW, 0, 0);
+		OptionsDialog::addDefaultPages();
+		core::NotifyEventHooks(&OPTIONS_SHOW,
+							   reinterpret_cast<intptr_t>(&OptionsDialog::addPage), 0);
 	}
 
 	OptionsDialog::options->show();
@@ -46,30 +38,33 @@ int UnloadOptionsModule()
 
 int OptionsDialog::addPage(OptionsPage* newPage)
 {
-	TreeModel* model = dynamic_cast<TreeModel*>(treeView->model());
+	if (OptionsDialog::options == 0)
+		return -1;
+
+	TreeModel* model = dynamic_cast<TreeModel*>(options->treeView->model());
 	QModelIndex index = model->index(0, 0);
 	QModelIndex parent = model->match(index, newPage->parentId);
 
 	if (newPage->page == 0) {
 		//-- Create default widget for blank pages
-		newPage->page = new QWidget(this);
+		newPage->page = new QWidget(options);
 		QLabel* label = new QLabel("Please select a subentry from the list", newPage->page);
 		label->move(150, 220);
 	}
 	else
 		//-- Set OptionsDialog as parent to delete widget on exit
-		newPage->page->setParent(this);
+		newPage->page->setParent(options);
 
-	int layoutIndex = layout->addWidget(newPage->page);
+	int layoutIndex = options->layout->addWidget(newPage->page);
 
 	//-- Insert to rootItem if parent not found
 	if (!model->insert(parent, newPage->title, newPage->id, layoutIndex)) {
-		layout->takeAt(layoutIndex);
+		options->layout->takeAt(layoutIndex);
 		return -1;
 	}
 
 	//--
-	saveFunctions.insert(newPage->savePage);
+	options->saveFunctions.insert(newPage->savePage);
 
 	return 0;
 }
@@ -84,7 +79,8 @@ void OptionsDialog::applay()
 {
 	QSet<OptionsSaver>::const_iterator i = saveFunctions.constBegin();
 	while (i != saveFunctions.constEnd()) {
-		(*i)();
+		if (*i != 0)
+			(*i)();
 		++i;
 	}
 }
@@ -181,6 +177,21 @@ OptionsDialog::OptionsDialog()
 	//QTreeView* vv = new QTreeView(widgetClientArea);
 	//vv->resize(vv->parentWidget()->size());*/
 
+	//core::CreateServiceFunction(&OPTIONS_ADD_PAGE, &AddPage);
+	core::CreateHookableEvent(&OPTIONS_CLOSE);
+}
+
+OptionsDialog::~OptionsDialog()
+{
+	core::NotifyEventHooks(&OPTIONS_CLOSE, 0, 0);
+	OptionsDialog::options = 0;
+	core::DestroyHookableEvent(&OPTIONS_CLOSE);
+	//core::DestroyServiceFunction(&OPTIONS_ADD_PAGE);
+}
+
+void OptionsDialog::addDefaultPages()
+{
+	QString str;
 	QWidget* wi;
 	OptionsPage* page = new OptionsPage;
 
@@ -191,6 +202,7 @@ OptionsDialog::OptionsDialog()
 	wi = new QWidget();
 	wi->setToolTip(str);
 	page->page = wi;
+	page->savePage = 0;
 	addPage(page);
 
 	str = "Popup windows";
@@ -203,15 +215,6 @@ OptionsDialog::OptionsDialog()
 	addPage(page);
 
 	str = "History";
-	page->id = str;
-	page->parentId = "FFFF";
-	page->title = str;
-	wi = new QWidget();
-	wi->setToolTip(str);
-	page->page = wi;
-	addPage(page);
-
-	str = "Moduls";
 	page->id = str;
 	page->parentId = "FFFF";
 	page->title = str;
@@ -271,15 +274,4 @@ OptionsDialog::OptionsDialog()
 	wi->setToolTip(str);
 	page->page = wi;
 	addPage(page);
-
-	core::CreateServiceFunction(&OPTIONS_ADD_PAGE, &AddPage);
-	core::CreateHookableEvent(&OPTIONS_CLOSE);
-}
-
-OptionsDialog::~OptionsDialog()
-{
-	core::NotifyEventHooks(&OPTIONS_CLOSE, 0, 0);
-	OptionsDialog::options = 0;
-	core::DestroyHookableEvent(&OPTIONS_CLOSE);
-	core::DestroyServiceFunction(&OPTIONS_ADD_PAGE);
 }

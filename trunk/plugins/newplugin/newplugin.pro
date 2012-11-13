@@ -12,7 +12,6 @@ SOURCES += \
 	src/newplugin.cpp
 
 HEADERS += \
-	src/commonheaders.h \
 	../../api/e_pluginapi.h \
 	src/newplugin.h
 

@@ -29,7 +29,7 @@ public:
 			  const int index = 0, QObject* parent = 0);
 	~TreeModel();
 
-	QModelIndex match(const QModelIndex& startIndex, const QString& header) const;
+	QModelIndex match(const QModelIndex& startIndex, const QString& id) const;
 	QModelIndex index(int row, int column, const QModelIndex& parentIndex = QModelIndex()) const;
 	QModelIndex parent(const QModelIndex& itemIndex) const;
 
