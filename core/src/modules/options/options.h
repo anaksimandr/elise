@@ -7,9 +7,12 @@
 
 class QModelIndex;
 
-//class OptionsDialog;
-//class TreeModel;
-//class TreeItem;
+//-- Services
+extern const QLatin1String	OPTIONS_SHOW;		//"Options/Show"
+//-- Hookable events
+//-- There is also OPTIONS_SHOW event
+extern const QLatin1String	OPTIONS_SAVE;		//"Options/Save"
+extern const QLatin1String	OPTIONS_CLOSE;		//"Options/Close"
 
 class OptionsDialog : public QWidget
 {

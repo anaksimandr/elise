@@ -2,6 +2,7 @@
 #include "../../../../api/e_pluginapi.h"
 #include "../../../../api/e_dbpluginapi.h"
 #include "../../../../api/e_options.h"
+#include "../options/options.h"
 #include "coreapi.h"
 #include "pluginloader.h"
 #include "../../services.h"

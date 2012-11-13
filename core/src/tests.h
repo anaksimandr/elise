@@ -3,11 +3,10 @@
 
 #include <QtWidgets/QtWidgets>
 #include "services.h"
-#include "modules/options/options.h"
 #include "../../api/e_database.h"
-#include "../../api/e_trayapi.h"
+#include "modules/options/options.h"
+#include "modules/tray.h"
 
-//#include "commonheaders.h"
 
 class QTestWindow : public QWidget
 {
