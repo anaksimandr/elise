@@ -1,5 +1,10 @@
 #include "tests.h"
 
+const unsigned char intType		=	0;	//-- int
+const unsigned char realType	=	1;	//-- double
+const unsigned char textType	=	2;	//-- QString
+const unsigned char blobType	=	3;	//-- QByteArray
+
 int hideMainWindow(intptr_t, intptr_t);
 
 #include <QtSql>
@@ -274,7 +279,7 @@ void QTestWindow::testNewPlugin()
 void QTestWindow::changeAcc()
 {
 	this->~QTestWindow();
-	if (core::CallService(&core::CHANGEPROFILE_SERVICE, 0, 0) == -2)
+	if (core::CallService(&CHANGEPROFILE_SERVICE, 0, 0) == -2)
 		QMessageBox::critical(this, "Error", "Service not found.", QMessageBox::Ok);
 }
 
@@ -562,7 +567,7 @@ void QTestWindow::simpleTest()
 //-- Exit
 void QTestWindow::buttonExit()
 {
-	core::CallService(&core::SHUTDOWN_SERVICE, 0, 0);
+	core::CallService(&SHUTDOWN_SERVICE, 0, 0);
 }
 
 void QTestWindow::setOutput(QString text)

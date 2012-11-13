@@ -2,6 +2,9 @@
 #include "treemodel.h"
 #include "../../services.h"
 
+const QLatin1String	OPTIONS_SHOW		=	QLatin1String("Options/Show");
+const QLatin1String	OPTIONS_SAVE		=	QLatin1String("Options/Save");
+const QLatin1String	OPTIONS_CLOSE		=	QLatin1String("Options/Close");
 
 OptionsDialog* OptionsDialog::options = 0;
 

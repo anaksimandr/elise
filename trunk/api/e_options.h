@@ -5,13 +5,12 @@ class QLatin1String;
 class QString;
 class QWidget;
 
-//-- Services
-const QLatin1String	OPTIONS_SHOW		=	QLatin1String("Options/Show");
-//const QLatin1String	OPTIONS_ADD_PAGE	=	QLatin1String("Options/AddPage");
+/*/-- Services
+extern const QLatin1String	OPTIONS_SHOW;		//"Options/Show"
 //-- Hookable events
 //-- There is also OPTIONS_SHOW event
-const QLatin1String	OPTIONS_SAVE		=	QLatin1String("Options/Save");
-const QLatin1String	OPTIONS_CLOSE		=	QLatin1String("Options/Close");
+extern const QLatin1String	OPTIONS_SAVE;		//"Options/Save"
+extern const QLatin1String	OPTIONS_CLOSE;		//"Options/Close"*/
 
 //-- Functions that will be called during the save settings
 typedef void (*OptionsSaver)();

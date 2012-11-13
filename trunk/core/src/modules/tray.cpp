@@ -1,7 +1,12 @@
 #include "tray.h"
 #include "../services.h"
-#include "../../../api/e_trayapi.h"
 
+
+const QLatin1String	TRAY_ADD_MENUITEM	=	QLatin1String("Tray/AddMenuItem");
+const QLatin1String	TRAY_SET_ICON		=	QLatin1String("Tray/SetIcon");
+const QLatin1String	TRAY_SINGLECLICK	=	QLatin1String("Tray/SingleClick");
+const QLatin1String	TRAY_DOUBLECLICK	=	QLatin1String("Tray/DoubleClick");
+const QLatin1String	TRAY_MIDDLECLICK	=	QLatin1String("Tray/MiddleClick");
 
 EliseTray* trayElise;
 

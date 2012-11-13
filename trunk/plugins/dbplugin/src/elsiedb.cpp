@@ -4,10 +4,14 @@
 #include "../../../api/e_database.h"
 
 //-- Types of settings
-extern const unsigned char intType;
+const unsigned char intType		=	0;	//-- int
+const unsigned char realType	=	1;	//-- double
+const unsigned char textType	=	2;	//-- QString
+const unsigned char blobType	=	3;	//-- QByteArray
+/*extern const unsigned char intType;
 extern const unsigned char realType;
 extern const unsigned char textType;
-extern const unsigned char blobType;
+extern const unsigned char blobType;*/
 
 QString qsProfile;
 

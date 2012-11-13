@@ -5,16 +5,13 @@ class QLatin1String;
 class QString;
 class QByteArray;
 
-//-- Services
-const QLatin1String	DB_WRITESETTING	=	QLatin1String("DB/WriteSetting");	/* Write to DB. */
-const QLatin1String	DB_READSETTING	=	QLatin1String("DB/ReadSetting");	/* Read from DB. */
-const QLatin1String	DB_DELSETTING	=	QLatin1String("DB/DelteSetting");	/* Delete from DB.*/
-
 //-- Types of settings
-const unsigned char intType		=	0;	//-- int
-const unsigned char realType	=	1;	//-- double
-const unsigned char textType	=	2;	//-- QString
-const unsigned char blobType	=	3;	//-- QByteArray
+/*
+  0;	int
+  1;	double
+  2;	QString
+  3;	QByteArray
+*/
 
 typedef struct {
 	unsigned char type;

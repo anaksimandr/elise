@@ -28,12 +28,11 @@ HEADERS += \
     src/tests.h \
     src/services.h \
     src/modules.h \
-    src/modules/tray.h \
+	src/modules/tray.h \
 	../api/e_pluginapi.h \
 	../api/e_dbpluginapi.h \
 	../api/e_database.h \
 	../api/e_options.h \
-	../api/e_trayapi.h \
 	src/modules/options/options.h \
     src/modules/options/treeitem.h \
     src/modules/options/treemodel.h \

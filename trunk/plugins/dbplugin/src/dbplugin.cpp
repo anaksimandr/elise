@@ -5,6 +5,10 @@
 #include "dbkey.h"
 #include "../../../api/e_database.h"
 
+const QLatin1String	DB_WRITESETTING	=	QLatin1String("DB/WriteSetting");
+const QLatin1String	DB_READSETTING	=	QLatin1String("DB/ReadSetting");
+const QLatin1String	DB_DELSETTING	=	QLatin1String("DB/DeleteSetting");
+
 ICore* core;
 
 PluginInfo pluginInfo = {

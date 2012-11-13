@@ -6,21 +6,21 @@
 class QMutex;
 class QLatin1String;
 
-
-namespace core
-{
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //-- Names of system services and events --/////////////////////////////////////////////////////////
 
-//const QLatin1String	E_SKIN_MODULE		=	QLatin1String("Skins");
-
 //-- Services
-const QLatin1String	SHUTDOWN_SERVICE	=	QLatin1String("System/Shutdown");	/* Call this method to close Elise. */
-const QLatin1String	CHANGEPROFILE_SERVICE	=	QLatin1String("System/ChangeAcc");	/* Calls unload plugins and calls login window. */
+extern const QLatin1String	SHUTDOWN_SERVICE;		//"System/Shutdown"
+extern const QLatin1String	CHANGEPROFILE_SERVICE;	//"System/ChangeAcc"
+extern const QLatin1String	DB_WRITESETTING;		//"DB/WriteSetting"
+extern const QLatin1String	DB_READSETTING;			//"DB/ReadSetting"
+extern const QLatin1String	DB_DELSETTING;			//"DB/DeleteSetting"
 
 //-- Hookable events
 //const QLatin1String	TRAY_SINGLECLICK	=	QLatin1String("Tray/SingleClick");
+
+namespace core
+{
 
 //-- Hooks
 typedef struct
@@ -54,14 +54,6 @@ typedef struct
 	//ELISEHOOK pfnHook;
 	QMutex* qmutexHook;
 } THookEvent;
-
-//-- Use this to store information about your hooks and to call UnhookEvent function
-//-- See UnhookEvent function description for more details
-/*typedef struct
-{
-	QLatin1String* name;
-	int num;
-} THook;*/
 
 //-- Services
 typedef struct
