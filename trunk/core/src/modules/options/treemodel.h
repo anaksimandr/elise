@@ -3,7 +3,7 @@
 
 #include <QtWidgets/QtWidgets>
 #include "treeitem.h"
-//#include "../../commonheaders.h"
+
 
 class TreeItemDelegate : public QStyledItemDelegate
 {
