@@ -107,7 +107,7 @@ OptionsDialog::OptionsDialog()
 	QString str;
 	TreeModel* model = new TreeModel(str, str, 0, this);
 
-	TreeItemDelegate* delegate = new TreeItemDelegate();
+	TreeItemDelegate* delegate = new TreeItemDelegate(treeView);
 	treeView->setModel(model);
 	treeView->setItemDelegate(delegate);
 	treeView->setHeaderHidden(true);

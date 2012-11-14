@@ -2,16 +2,22 @@
 
 
 CheckBoxDelegate::CheckBoxDelegate(QObject* parent)
-	: QItemDelegate(parent)
+	: QStyledItemDelegate(parent)
 {
 }
 
 QSize CheckBoxDelegate::sizeHint(const QStyleOptionViewItem&, const QModelIndex&) const
 {
-	return QSize(200,20);
+	return QSize(200,200);
 }
 
-/*QWidget* CheckBoxDelegate::createEditor(QWidget* parent,
+/*
+QSize CheckBoxDelegate::sizeHint(const QStyleOptionViewItem&, const QModelIndex&) const
+{
+	return QSize(10,10);
+}
+
+QWidget* CheckBoxDelegate::createEditor(QWidget* parent,
 	const QStyleOptionViewItem&,
 	const QModelIndex&) const
 {

@@ -3,7 +3,16 @@
 
 #include <QtWidgets/QtWidgets>
 
-class CheckBoxDelegate : public QItemDelegate
+class CheckBoxDelegate : public QStyledItemDelegate
+{
+public:
+	CheckBoxDelegate(QObject* parent);
+
+	QSize sizeHint(const QStyleOptionViewItem&, const QModelIndex&) const;
+};
+
+/*
+class CheckBoxDelegate : public QStyledItemDelegate
 {
 	Q_OBJECT
 public:
@@ -11,7 +20,7 @@ public:
 
 	QSize sizeHint(const QStyleOptionViewItem&, const QModelIndex&) const;
 
-	/*QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option,
+	QWidget* createEditor(QWidget* parent, const QStyleOptionViewItem& option,
 						  const QModelIndex& index) const;
 
 	void setEditorData(QWidget* editor, const QModelIndex& index) const;
@@ -19,7 +28,7 @@ public:
 					  const QModelIndex& index) const;
 
 	void updateEditorGeometry(QWidget* editor,
-							  const QStyleOptionViewItem& option, const QModelIndex& index) const;*/
-};
+							  const QStyleOptionViewItem& option, const QModelIndex& index) const;
+};*/
 
 #endif // ELISE_CORE_MODULES_PLUGINLOADER_CHECKBOXDELEGATE_H_

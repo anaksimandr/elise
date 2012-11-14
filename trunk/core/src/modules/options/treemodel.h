@@ -8,7 +8,8 @@
 class TreeItemDelegate : public QStyledItemDelegate
 {
 public:
-	TreeItemDelegate()
+	TreeItemDelegate(QObject* parent)
+		: QStyledItemDelegate(parent)
 	{}
 
 	QSize sizeHint(const QStyleOptionViewItem&, const QModelIndex&) const;
