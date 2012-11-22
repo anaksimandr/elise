@@ -1,4 +1,3 @@
-
 #include "../../../../api/e_pluginapi.h"
 #include "../../../../api/e_dbpluginapi.h"
 #include "../../../../api/e_options.h"
@@ -9,7 +8,7 @@
 #include "pluginloaderoptions.h"
 
 CoreAPI						PluginLoader::coreAPI;
-QMap<QString, IPlugin*>*	PluginLoader::plugins = 0;
+QMap<QString, Plugin>*		PluginLoader::plugins = 0;
 //QMap<QUuid, QString>*		PluginLoader::interfaces = 0;
 LoadedDBPlugin				PluginLoader::loadedDBPlugin;
 
@@ -82,7 +81,7 @@ int PluginLoader::loadDBPlugin(QString pluginName, IDBPlugin* dbPlugin)
 int PluginLoader::loadPlugins(QMap<QString, IPlugin*>* loadablePlugins)
 {
 	if (plugins == 0)
-		plugins = new QMap<QString, IPlugin*>();
+		plugins = new QMap<QString, Plugin>();
 	QMapIterator<QString, IPlugin*> iter(*loadablePlugins);
 	IPlugin* p;
 	while (iter.hasNext()) {
@@ -90,7 +89,11 @@ int PluginLoader::loadPlugins(QMap<QString, IPlugin*>* loadablePlugins)
 		p = iter.value();
 		if (p->Load(&coreAPI))
 			return 1;
-		plugins->insert(iter.key(), p);
+		Plugin plugin;
+		plugin.loaded = true;
+		plugin.loadable = true;
+		plugin.pluginInterface = p;
+		plugins->insert(iter.key(), plugin);
 	}
 	return 0;
 }
@@ -105,11 +108,11 @@ int PluginLoader::unloadPlugins()
 	//-- it will be automatically destroyed on fully exit
 	QDir pluginsDir = getPluginsDir();
 	QPluginLoader loader;
-	QMapIterator<QString, IPlugin*> iter(*plugins);
+	QMapIterator<QString, Plugin> iter(*plugins);
 	while (iter.hasNext()) {
 		iter.next();
 		//-- Call Elise plugin api unload
-		if (iter.value()->Unload())
+		if (iter.value().pluginInterface->Unload())
 			QMessageBox::critical(0, QStringLiteral("unloadPlugins error"),
 								  QStringLiteral("Error while unloading plugin ") + iter.key(),
 								  QMessageBox::Ok);
@@ -122,8 +125,8 @@ int PluginLoader::unloadPlugins()
 	//-- Unload DB plugin
 	if (loadedDBPlugin.plugin->Unload())
 		QMessageBox::critical(0, QStringLiteral("unloadPlugins error"),
-							 QStringLiteral("Error while unloading DB plugin") + loadedDBPlugin.name,
-							  QMessageBox::Ok);
+							QStringLiteral("Error while unloading DB plugin") + loadedDBPlugin.name,
+							QMessageBox::Ok);
 	loader.setFileName(pluginsDir.absoluteFilePath(loadedDBPlugin.name));
 	loader.unload();
 	return 0;

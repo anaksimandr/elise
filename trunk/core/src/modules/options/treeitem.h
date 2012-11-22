@@ -1,8 +1,9 @@
 #ifndef ELISE_CORE_MODULES_OPTIONS_TREEITEM_H_
 #define ELISE_CORE_MODULES_OPTIONS_TREEITEM_H_
 
-#include <QtWidgets/QtWidgets>
-//#include "../../commonheaders.h"
+class QString;
+template <typename T>
+class QList;
 
 class TreeItem
 {
@@ -23,7 +24,7 @@ public:
 	int			getLayoutIndex() const;
 	QString		getHeader() const;
 	QString		getId() const;
-	bool		insertChild(QString& headerExt, QString& idExt, int indx);
+	bool		insertChild(const QString& headerExt, const QString& idExt, int indx);
 	bool		removeChild(int position);
 	void		setHeader(const QString& value);
 };

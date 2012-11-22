@@ -1,4 +1,5 @@
 #include "treemodel.h"
+#include "treeitem.h"
 
 
 QSize TreeItemDelegate::sizeHint(const QStyleOptionViewItem&, const QModelIndex&) const
@@ -154,7 +155,8 @@ QModelIndex TreeModel::parent(const QModelIndex& itemIndex) const
 	return createIndex(parent->childNumber(), 0, parent);
 }
 
-bool TreeModel::insert(const QModelIndex& parentIndex, QString& header, QString& id, int index)
+bool TreeModel::insert(const QString& header, const QString& id, int index,
+					   const QModelIndex& parentIndex)
 {
 	if (header.isEmpty())
 		return false;

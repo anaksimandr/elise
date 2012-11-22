@@ -22,7 +22,8 @@ SOURCES += \
     src/modules/profilemanager.cpp \
     src/modules/pluginloader/coreapi.cpp \
     src/modules/pluginloader/pluginloaderoptions.cpp \
-    src/modules/pluginloader/checkboxdelegate.cpp
+    src/modules/pluginloader/pluginstreeitem.cpp \
+    src/modules/pluginloader/pluginstreemodel.cpp
 
 
 HEADERS += \
@@ -42,7 +43,8 @@ HEADERS += \
     src/elise.h \
     src/modules/pluginloader/coreapi.h \
     src/modules/pluginloader/pluginloaderoptions.h \
-    src/modules/pluginloader/checkboxdelegate.h
+    src/modules/pluginloader/pluginstreeitem.h \
+    src/modules/pluginloader/pluginstreemodel.h
 
 RESOURCES += \
 	res/resources.qrc

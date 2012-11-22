@@ -12,11 +12,17 @@ typedef struct {
 	IDBPlugin* plugin;
 } LoadedDBPlugin;
 
+typedef struct {
+	bool		loaded;
+	bool		loadable;
+	IPlugin*	pluginInterface;
+} Plugin;
+
 class PluginLoader
 {
 private:
 	static CoreAPI		coreAPI;
-	static QMap<QString, IPlugin*>*	plugins;
+	static QMap<QString, Plugin>*	plugins;
 	//static QMap<QUuid, QString>*	interfaces;
 	static LoadedDBPlugin	loadedDBPlugin;
 public:

@@ -46,9 +46,9 @@ int shutDown(intptr_t result, intptr_t)
 } // namespace core
 
 #ifndef NDEBUG
-
 #include <QFile>
-void messageOutput(QtMsgType type, const char *msg)
+//void messageOutput(QtMsgType type, const char* msg) //for Qt5 beta 2
+void messageOutput(QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
 	QFile file("log.txt");
 	file.open(QIODevice::Append | QIODevice::Text);
@@ -76,7 +76,8 @@ void messageOutput(QtMsgType type, const char *msg)
 int main(int argc, char* argv[])
 {
 #ifndef NDEBUG
-	qInstallMsgHandler(messageOutput);
+	qInstallMessageHandler(messageOutput); //Qt5 beta 2
+	//qInstallMsgHandler(messageOutput);
 #endif //NDEBUG
 	QApplication app(argc, argv);
 	app.setQuitOnLastWindowClosed(false);
