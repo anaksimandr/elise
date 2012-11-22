@@ -65,9 +65,9 @@ void messageOutput(QtMsgType type, const QMessageLogContext& context, const QStr
 			break;
 		case QtFatalMsg:
 			log << "Fatal: " << msg << "\n";
-			//abort();
 	}
-	log << "\n";
+	log << "File:		" << context.file << "\n" << "Function:	" << context.function << "\n";
+	log << "Line:		" << context.line << "\n\n";
 	file.close();
 }
 

@@ -3,7 +3,6 @@
 
 #include <QtCore>
 
-
 //-- Store information about version here
 typedef struct {
 	union

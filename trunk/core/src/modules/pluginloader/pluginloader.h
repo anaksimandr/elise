@@ -23,7 +23,7 @@ class PluginLoader
 private:
 	static CoreAPI		coreAPI;
 	static QMap<QString, Plugin>*	plugins;
-	//static QMap<QUuid, QString>*	interfaces;
+	static QMap<QUuid, QString>*	interfaces;
 	static LoadedDBPlugin	loadedDBPlugin;
 public:
 	static QDir			getPluginsDir();
