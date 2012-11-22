@@ -61,7 +61,7 @@ int OptionsDialog::addPage(OptionsPage* newPage)
 	int layoutIndex = options->layout->addWidget(newPage->page);
 
 	//-- Insert to rootItem if parent not found
-	if (!model->insert(parent, newPage->title, newPage->id, layoutIndex)) {
+	if (!model->insert(newPage->title, newPage->id, layoutIndex, parent)) {
 		options->layout->takeAt(layoutIndex);
 		return -1;
 	}

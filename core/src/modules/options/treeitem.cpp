@@ -1,9 +1,10 @@
+#include <QtWidgets/QtWidgets>
 #include "treeitem.h"
 
 
 TreeItem::TreeItem(const QString& headerExt, const QString& idExt, const int indx, TreeItem* parent)
 {
-	parentItem = parent;
+	this->parentItem = parent;
 	this->header = headerExt;
 	this->id = idExt;
 	this->index = indx;
@@ -52,7 +53,7 @@ QString TreeItem::getId() const
 	return id;
 }
 
-bool TreeItem::insertChild(QString& headerExt, QString& idExt, int indx)
+bool TreeItem::insertChild(const QString& headerExt, const QString& idExt, int indx)
 {
 	TreeItem* item = new TreeItem(headerExt, idExt, indx, this);
 

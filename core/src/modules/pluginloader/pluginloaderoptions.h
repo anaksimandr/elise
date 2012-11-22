@@ -1,8 +1,6 @@
 #ifndef ELISE_CORE_MODULES_PLUGINLOADER_PLUGINLOADEROPTIONS_H_
 #define ELISE_CORE_MODULES_PLUGINLOADER_PLUGINLOADEROPTIONS_H_
 
-#include <QtWidgets/QtWidgets>
-
 class PluginLoaderOptions
 {
 public:

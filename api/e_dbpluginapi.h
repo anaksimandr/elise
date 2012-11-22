@@ -9,26 +9,10 @@ typedef struct {
 	QString	password;
 } Profile;
 
-class IDBPlugin
+class IDBPlugin : public IPlugin
 {
 public:
 	virtual						~IDBPlugin() {}
-
-	//-- If this function return not NULL then the plugin is valid and can be load.
-	virtual	PluginInfo*			ElisePluginInfo() = 0;
-
-	//--
-	virtual	const QUuid*		ElisePluginInterfaces(void) = 0;
-
-	//-- Load plugin.
-	//-- Must be called after login function.
-	//-- Return 0 on success, non-zero on failure.
-	//-- NOTE: if this function return non-zero then Elise loading wiil be aborted.
-	virtual	int					Load(ICore*) = 0;
-
-	//-- Unload plugin.
-	//-- Return 0 on success, non-zero on failure.
-	virtual	int					Unload(void) = 0;
 
 	//-- Return list of accounts names that already exists
 	//-- The key in returned QMap is a name of account.

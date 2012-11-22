@@ -55,7 +55,6 @@ public:
 	virtual int			ServiceExists(const QLatin1String*) = 0;
 };
 
-#ifndef ELISE_API_E_DBPLUGINAPI_H_
 class IPlugin
 {
 public:
@@ -79,6 +78,5 @@ public:
 };
 
 Q_DECLARE_INTERFACE(IPlugin, "Elise.basicPluginInterface/1.0")
-#endif // ELISE_API_E_DBPLUGINAPI_H_
 
 #endif // ELISE_API_E_PLUGINAPI_H_

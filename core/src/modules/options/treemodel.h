@@ -2,8 +2,8 @@
 #define ELISE_CORE_MODULES_OPTIONS_TREEMODEL_H_
 
 #include <QtWidgets/QtWidgets>
-#include "treeitem.h"
 
+class TreeItem;
 
 class TreeItemDelegate : public QStyledItemDelegate
 {
@@ -44,8 +44,8 @@ public:
 	Qt::ItemFlags flags(const QModelIndex& itemIndex) const;
 
 	bool setData(const QModelIndex& itemIndex, const QVariant& value, int role = Qt::EditRole);
-	bool insert(const QModelIndex& parentIndex = QModelIndex(), QString& header = QString(),
-				QString& id = QString(), int index = 0);
+	bool insert(const QString& header, const QString& id, int index,
+				const QModelIndex& parentIndex = QModelIndex());
 	bool remove(const QModelIndex& itemIndex = QModelIndex());
 
 };
