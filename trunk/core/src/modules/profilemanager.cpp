@@ -4,7 +4,8 @@
 
 ProfileManager::ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins)
 {
-	DBPlugins = availableDBPlugins;
+	//DBPlugins = availableDBPlugins;
+	DBPlugins = new QMap<QString, IDBPlugin*>();
 	profiles = 0;
 	this->setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowTitleHint);
 
@@ -121,6 +122,7 @@ ProfileManager::ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins)
 
 ProfileManager::~ProfileManager()
 {
+	delete DBPlugins;
 	//-- Destroy profiles list if exists
 	if (profiles != 0) {
 		QMapIterator<QString, Profile*> iter(*profiles);

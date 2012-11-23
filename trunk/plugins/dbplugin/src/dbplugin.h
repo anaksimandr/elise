@@ -7,10 +7,11 @@
 #include "../../../api/e_dbpluginapi.h"
 #include "../../../api/e_pluginapi.h"
 
-class DBPlugin : public QObject, IDBPlugin
+class DBPlugin : public QObject, IPlugin, IDBPlugin
 {
 	Q_OBJECT
 	Q_INTERFACES(IDBPlugin)
+	Q_INTERFACES(IPlugin)
 	Q_PLUGIN_METADATA(IID "elise.IDBPlugin")
 private:
 	int							openSysDB();

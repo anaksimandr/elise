@@ -64,7 +64,7 @@ intptr_t ChangeProfile(intptr_t, intptr_t)
 
 int LoadProfile(bool launchApp)
 {
-	//-- First, unload all plugins
+	//-- First, unload all plugins, if there is
 	PluginLoader::unloadPlugins();
 
 	//-- Now we will load the profile, do it befor loading plugins, because we must know which
