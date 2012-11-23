@@ -56,6 +56,7 @@ int PluginLoader::getAvailablePlugins(QMap<QString, IDBPlugin*>* dbPlugins,
 			if (validPlugin) {
 				//if (validPlugin->ElisePluginInfo(Core::g_eliseVersion) != NULL)
 				loadablePlugins->insert(fileName, validPlugin);
+				//QMessageBox::information(0, "Debug", fileName, QMessageBox::Ok);
 			}
 			//-- Elise DB plugin
 			else {
@@ -75,7 +76,7 @@ int PluginLoader::loadDBPlugin(QString pluginName, IDBPlugin* dbPlugin)
 	loadedDBPlugin.name = pluginName;
 	loadedDBPlugin.plugin = dbPlugin;
 	//QMessageBox::information(0, "Debug", loadedDBPlugin.name, QMessageBox::Ok);
-	return dbPlugin->Load(&coreAPI);
+	return 0;//dbPlugin->Load(&coreAPI);
 }
 
 int PluginLoader::loadPlugins(QMap<QString, IPlugin*>* loadablePlugins)
@@ -123,7 +124,7 @@ int PluginLoader::unloadPlugins()
 		plugins->remove(iter.key());
 	} //while
 	//-- Unload DB plugin
-	if (loadedDBPlugin.plugin->Unload())
+	if (0)//loadedDBPlugin.plugin->Unload())
 		QMessageBox::critical(0, QStringLiteral("unloadPlugins error"),
 							QStringLiteral("Error while unloading DB plugin") + loadedDBPlugin.name,
 							QMessageBox::Ok);

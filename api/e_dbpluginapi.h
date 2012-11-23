@@ -9,7 +9,7 @@ typedef struct {
 	QString	password;
 } Profile;
 
-class IDBPlugin : public IPlugin
+class IDBPlugin
 {
 public:
 	virtual						~IDBPlugin() {}
