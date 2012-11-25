@@ -2,10 +2,9 @@
 #include "pluginloader/pluginloader.h"
 
 
-ProfileManager::ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins)
+ProfileManager::ProfileManager(const QMap<QString, IDBPlugin*>* availableDBPlugins)
 {
-	//DBPlugins = availableDBPlugins;
-	DBPlugins = new QMap<QString, IDBPlugin*>();
+	DBPlugins = availableDBPlugins;
 	profiles = 0;
 	this->setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowTitleHint);
 
@@ -34,8 +33,6 @@ ProfileManager::ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins)
 	cmbProfiles->setMinimumSize(120, 18);
 	cmbProfiles->setEditable(true);
 	vboxACC->addWidget(cmbProfiles);
-	//connect(cmbProfiles, SIGNAL(currentIndexChanged(const QString&)),
-	//		this, SLOT(loadProfileDetails(const QString&)));
 	connect(cmbProfiles,
 			static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged),
 			this,
@@ -46,14 +43,12 @@ ProfileManager::ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins)
 	lePassword->setPlaceholderText(QStringLiteral("password"));
 	lePassword->setEchoMode(QLineEdit::Password);
 	vboxACC->addWidget(lePassword);
-	//connect(lePassword, SIGNAL(returnPressed()), this, SLOT(ok()));
 	connect (lePassword, &QLineEdit::returnPressed, this, &ProfileManager::ok);
 
 	//-- Checkboxes, don't ask password on login
 	cbSavePassword = new QCheckBox(this);
 	cbSavePassword->setText(QStringLiteral("Save password"));
 	vboxACC->addWidget(cbSavePassword);
-	//connect(cbSavePassword, SIGNAL(stateChanged(int)), this, SLOT(setCBEnable(int)));
 	connect(cbSavePassword, &QCheckBox::stateChanged, this, &ProfileManager::setCBEnable);
 
 	//-- Use as default profile
@@ -65,7 +60,6 @@ ProfileManager::ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins)
 	//-- OK, load profile
 	QPushButton* button = new QPushButton(this);
 	button->setText(QStringLiteral("OK"));
-	//connect(button, SIGNAL(clicked()), this, SLOT(ok()));
 	connect(button, &QPushButton::clicked, this, &ProfileManager::ok);
 	vboxACC->addWidget(button);
 
@@ -78,8 +72,6 @@ ProfileManager::ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins)
 		iter.next();
 		cmbDBPlugins->addItem(iter.key());
 	}
-	//connect(cmbDBPlugins, SIGNAL(currentIndexChanged(const QString&)),
-	//		this, SLOT(loadProfiles(const QString&)));
 	connect(cmbDBPlugins,
 			static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged),
 			this,
@@ -88,14 +80,12 @@ ProfileManager::ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins)
 	//-- Create profile button
 	button = new QPushButton(this);
 	button->setText(QStringLiteral("Create"));
-	//connect(button, SIGNAL(clicked()), this, SLOT(createProfile()));
 	connect(button, &QPushButton::clicked, this, &ProfileManager::createProfile);
 	vboxDB->addWidget(button);
 
 	//-- Import profile button
 	button = new QPushButton(this);
 	button->setText(QStringLiteral("Import"));
-	//connect(button, SIGNAL(clicked()), this, SLOT(importProfile()));
 	connect(button, &QPushButton::clicked, this, &ProfileManager::importProfile);
 	vboxDB->addWidget(button);
 	vboxDB->setAlignment(button, Qt::AlignTop);
@@ -103,7 +93,6 @@ ProfileManager::ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins)
 	//-- Cancel
 	button = new QPushButton(this);
 	button->setText(QStringLiteral("Cancel"));
-	//connect(button, SIGNAL(clicked()), this, SLOT(abort()));
 	connect(button, &QPushButton::clicked, this, &ProfileManager::abort);
 	button->resize(120, 23);
 	button->move(21, 132);
@@ -122,7 +111,7 @@ ProfileManager::ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins)
 
 ProfileManager::~ProfileManager()
 {
-	delete DBPlugins;
+	//delete DBPlugins;
 	//-- Destroy profiles list if exists
 	if (profiles != 0) {
 		QMapIterator<QString, Profile*> iter(*profiles);
@@ -130,7 +119,7 @@ ProfileManager::~ProfileManager()
 			iter.next();
 			delete iter.value();
 		}
-		profiles->~QMap();
+		delete profiles;
 	}
 }
 
@@ -157,6 +146,8 @@ void ProfileManager::loadProfiles(const QString& text)
 		profiles->~QMap();
 	}
 	//-- Getting list of profiles from plugin
+	//if (!DBPlugins->value(text))
+	//	QMessageBox::critical(0, QStringLiteral("Debug"), "pichal", QMessageBox::Cancel);
 	profiles = DBPlugins->value(text)->GetProfiles();
 	if (profiles != 0) {
 		if (profiles->count() != 0) {
@@ -178,11 +169,10 @@ void ProfileManager::loadProfiles(const QString& text)
 
 void ProfileManager::loadProfileDetails(const QString& name)
 {
-	Profile* p = profiles->value(name);
-	//QMessageBox::critical(0, QStringLiteral("Debug"), name, QMessageBox::Cancel);
-	if ( p != 0) {
-		//-- Note: we can't use cbSavePassword->setCheckState(bool) because checkbox
-		//-- can be at one of three states and Qt::Checked is '2'.
+	if (profiles->contains(name)) {
+		Profile* p = profiles->value(name);
+		//QMessageBox::critical(0, QStringLiteral("Debug"), name, QMessageBox::Cancel);
+
 		if (p->savePassword) {
 			lePassword->setText(p->password);
 			cbSavePassword->setCheckState(Qt::Checked);
@@ -217,35 +207,12 @@ int ProfileManager::loadDefaultProfile()
 					QMessageBox::Cancel);
 		return 1;
 	}
-	//moved to destructor
-	//-- Destroy list if exists
-	//if (profiles != 0) {
-	//	QMapIterator<QString, PROFILE*> iter(*profiles);
-	//	while (iter.hasNext()) {
-	//		iter.next();
-	//		delete iter.value();
-	//	}
-	//	profiles->~QMap();
-	//}
 
-	return PluginLoader::loadDBPlugin(cmbDBPlugins->currentText(), dbPlugin);
+	return PluginLoader::loadDBPlugin(cmbDBPlugins->currentText());
 }
 
 void ProfileManager::abort()
 {
-	//moved to destructor
-	//-- Destroy profiles list if exists
-	//if (profiles != 0) {
-	//	QMapIterator<QString, PROFILE*> iter(*profiles);
-	//	PROFILE* p;
-	//	while (iter.hasNext()) {
-	//		iter.next();
-	//		p = iter.value();
-	//		delete p;
-	//	}
-	//	profiles->~QMap();
-	//}
-
 	//-- Abort Elise loading and exit
 	done(1);
 }
@@ -262,18 +229,9 @@ void ProfileManager::ok()
 							  QMessageBox::Cancel);
 		return;
 	}
-	//moved to destructor
-	//-- Destroy profiles list if exists
-	//if (profiles != 0) {
-	//	QMapIterator<QString, PROFILE*> iter(*profiles);
-	//	while (iter.hasNext()) {
-	//		iter.next();
-	//		delete iter.value();
-	//	}
-	//	profiles->~QMap();
-	//}
+
 	//-- if success then try fully load the plugin	
-	done(PluginLoader::loadDBPlugin(cmbDBPlugins->currentText(), dbPlugin));
+	done(PluginLoader::loadDBPlugin(cmbDBPlugins->currentText()));
 }
 
 void ProfileManager::createProfile()
