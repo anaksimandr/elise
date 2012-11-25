@@ -65,26 +65,28 @@ intptr_t ChangeProfile(intptr_t, intptr_t)
 int LoadProfile(bool launchApp)
 {
 	//-- First, unload all plugins, if there is
-	PluginLoader::unloadPlugins();
+	PluginLoader::unloadAllPlugins();
 
 	//-- Now we will load the profile, do it befor loading plugins, because we must know which
 	//-- plugins must be loaded for this profile.
 
-	QMap<QString, IPlugin*>* loadablePlugins = new QMap<QString, IPlugin*>();
-	QMap<QString, IDBPlugin*>* dbPlugins	= new QMap<QString, IDBPlugin*>();
-
-	if (PluginLoader::getAvailablePlugins(dbPlugins, loadablePlugins)
-			|| loadablePlugins->count() == 0
-			|| dbPlugins->count() == 0)
-	{
+	if (PluginLoader::getAvailablePlugins()) {
 		QMessageBox::critical(0,
 						QStringLiteral("getAvailablePlugins error"),
 						QStringLiteral("Failed to get plugins list or no one plugin was found."),
 						QMessageBox::Cancel);
-		dbPlugins->~QMap();
-		loadablePlugins->~QMap();
 		return 1;
-		//return shutDown(-1, 0);
+	}
+
+	const QMap<QString, IDBPlugin*>* dbPlugins = PluginLoader::getDBPlugins();
+
+	if (!dbPlugins) {
+		QMessageBox::critical(0,
+						QStringLiteral("getDBPlugins error"),
+						QStringLiteral("Failed to get DBPlugins or no one DBPlugin was found."),
+						QMessageBox::Cancel);
+		delete dbPlugins;
+		return 1;
 	}
 
 	ProfileManager* manager =  new ProfileManager(dbPlugins);
@@ -96,22 +98,20 @@ int LoadProfile(bool launchApp)
 		result = manager->loadDefaultProfile();
 
 	if (result) {
-		//-- Show login window on fail
+		//-- Show login window on loadDefaultProfile fail
 		if (manager->exec()) {
-			manager->~ProfileManager();
-			dbPlugins->~QMap();
-			loadablePlugins->~QMap();
+			delete manager;
+			delete dbPlugins;
 			return 1;
 			//return shutDown(-1, 0);
 		}
 	}
 
 	//-- Loading plugins.
-	result = PluginLoader::loadPlugins(loadablePlugins);
+	result = PluginLoader::loadPlugins();
 
-	manager->~ProfileManager();
-	loadablePlugins->~QMap();
-	dbPlugins->~QMap();
+	delete manager;
+	delete dbPlugins;
 
 	if (result)
 		return 1;

@@ -15,7 +15,7 @@ private:
 	QLineEdit*		lePassword;
 	QCheckBox*		cbSavePassword;
 	QCheckBox*		cbDefaultProfile;
-	QMap<QString, IDBPlugin*>* DBPlugins;
+	const QMap<QString, IDBPlugin*>* DBPlugins;
 	QMap<QString, Profile*>* profiles;
 	QString			qsDefaultProfile;
 protected:
@@ -30,7 +30,7 @@ private slots:
 public slots:
 	void			loadProfileDetails(const QString& name);
 public:
-	ProfileManager(QMap<QString, IDBPlugin*>* availableDBPlugins);
+	ProfileManager(const QMap<QString, IDBPlugin*>* availableDBPlugins);
 	~ProfileManager();
 	int				loadDefaultProfile();
 };
