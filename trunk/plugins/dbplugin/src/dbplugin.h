@@ -18,9 +18,10 @@ private:
 	QDir						getProfileDir();
 	QDir						getProfileDir(const QString& name);
 	int							loadProfile(const QString& name, const QString& passwd);
+	static QSet<QUuid>*			interfaces;
 public:
 	PluginInfo*					ElisePluginInfo();
-	const QUuid*				ElisePluginInterfaces(void);
+	const QSet<QUuid>*			ElisePluginInterfaces(void);
 	int							Load(ICore* coreAPI);
 	int							Unload(void);
 	QMap<QString, Profile*>*	GetProfiles();

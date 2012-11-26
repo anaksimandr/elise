@@ -27,10 +27,10 @@ typedef struct {
 //-- And at some other places
 //-- Note: you must delete SETTING and its DBVARIANT when it becomes not necessary
 typedef struct {
-	int				contact;
-	QLatin1String*	qsModule;
-	QLatin1String*	qsSetting;
-	DBVariant*		var;
+	int			contact;
+	QString*	qsModule;
+	QString*	qsSetting;
+	DBVariant*	var;
 } Setting;
 
 

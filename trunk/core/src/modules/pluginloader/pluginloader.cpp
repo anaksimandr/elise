@@ -1,6 +1,7 @@
 #include "../../../../api/e_pluginapi.h"
 #include "../../../../api/e_dbpluginapi.h"
 #include "../../../../api/e_options.h"
+#include "../../../../api/e_database.h"
 #include "../options/options.h"
 #include "coreapi.h"
 #include "pluginloader.h"
@@ -79,12 +80,23 @@ int PluginLoader::getAvailablePlugins()
 	return 0;
 }
 
-void PluginLoader::loadInterfacesFromProfile()
+bool PluginLoader::loadingPluginDisabled(const QString& plugin)
 {
-	if (interfaces == 0)
-		interfaces = new QMap<QUuid, QString>();
-
-
+	QString module = QStringLiteral("core");
+	QString setting = QStringLiteral("pluginDisabled") + plugin;
+	bool result = 0;
+	Setting* set = new Setting;
+	set->contact = 0;
+	set->qsModule = &module;
+	set->qsSetting = &setting;
+	set->var = new DBVariant;
+	set->var->type = 0;
+	if (!core::CallService(&DB_READSETTING, reinterpret_cast<intptr_t>(set), 0)) {
+		result = static_cast<bool>(set->var->intValue);
+	}
+	delete set->var;
+	delete set;
+	return result;
 }
 
 int PluginLoader::loadDBPlugin(QString pluginName)
@@ -104,13 +116,49 @@ int PluginLoader::loadPlugins()
 	if (plugins == 0)
 		return 1;
 
-	QMapIterator<QString, Plugin> iter(*plugins);
+	if (interfaces == 0)
+		interfaces = new QMap<QUuid, QString>();
+
 	const Plugin* p;
-	while (iter.hasNext()) {
-		iter.next();
-		p = &iter.value();
+	const QSet<QUuid>* pluginInterfaces;
+
+	QMap<QString, Plugin>::const_iterator iterPlugins = plugins->constBegin();
+	QMap<QString, Plugin>::const_iterator pluginsEnd = plugins->constEnd();
+
+	while (iterPlugins != pluginsEnd) {
+		p = &iterPlugins.value();
+
+		//-- If plugin disabled by user earlier - break
+		if (loadingPluginDisabled(iterPlugins.key()))
+			continue;
+
+		pluginInterfaces = p->pluginInterface->ElisePluginInterfaces();
+
+
+		//-- Iterate all interfaces of current plugin
+		QSet<QUuid>::const_iterator i = pluginInterfaces->constBegin();
+		QSet<QUuid>::const_iterator iEnd = pluginInterfaces->constEnd();
+		bool dontLoadPlugin = false;
+		while (i != iEnd) {
+			//-- if one of the interfaces is already registered - break
+			if (interfaces->contains(*i))
+				dontLoadPlugin = true;
+			++i;
+		}
+		if (dontLoadPlugin)
+			continue;
+
 		if (p->pluginInterface->Load(&coreAPI))
 			return 1;
+
+		//-- Register loaded interfaces
+		i = pluginInterfaces->constBegin();
+		while (i != iEnd) {
+			interfaces->insert(*i, iterPlugins.key());
+			//QMessageBox::information(0, iterPlugins.key(), (*i).toString(), QMessageBox::Ok);
+			++i;
+		}
+	++iterPlugins;
 	}
 	return 0;
 }

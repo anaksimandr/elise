@@ -9,6 +9,8 @@ const QLatin1String	DB_WRITESETTING	=	QLatin1String("DB/WriteSetting");
 const QLatin1String	DB_READSETTING	=	QLatin1String("DB/ReadSetting");
 const QLatin1String	DB_DELSETTING	=	QLatin1String("DB/DeleteSetting");
 
+QSet<QUuid>* DBPlugin::interfaces = 0;
+
 ICore* core;
 
 PluginInfo pluginInfo = {
@@ -392,9 +394,14 @@ PluginInfo* DBPlugin::ElisePluginInfo()
 	return &pluginInfo;
 }
 
-const QUuid* DBPlugin::ElisePluginInterfaces(void)
+const QSet<QUuid> *DBPlugin::ElisePluginInterfaces(void)
 {
-	return &pluginInfo.uuid;
+	if (interfaces == 0) {
+		interfaces = new QSet<QUuid>();
+		interfaces->insert("{ca0ae4d0-ea7c-4743-b34e-1a2c9c61992d}");
+	}
+
+	return interfaces;
 }
 
 int DBPlugin::Load(ICore* coreAPI)

@@ -63,7 +63,7 @@ public:
 	virtual	PluginInfo*			ElisePluginInfo() = 0;
 
 	//--
-	virtual	const QUuid*		ElisePluginInterfaces(void) = 0;
+	virtual	const QSet<QUuid>*	ElisePluginInterfaces(void) = 0;
 
 	//-- Load plugin
 	//-- Must be called after login function
