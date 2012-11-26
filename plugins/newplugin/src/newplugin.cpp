@@ -3,6 +3,7 @@
 
 const QLatin1String	TESTPLUGIN_SERVICE	=	QLatin1String("TESTPLUGIN_SERVICE");
 ICore* core;
+QSet<QUuid>* NewPlugin::interfaces = 0;
 
 PluginInfo pluginInfo = {
 	"NewPlugin",
@@ -16,9 +17,14 @@ PluginInfo* NewPlugin::ElisePluginInfo()
 	return &pluginInfo;
 }
 
-const QUuid* NewPlugin::ElisePluginInterfaces(void)
+const QSet<QUuid>* NewPlugin::ElisePluginInterfaces(void)
 {
-	return &pluginInfo.uuid;
+	if (interfaces == 0) {
+		interfaces = new QSet<QUuid>();
+		interfaces->insert("{ca0ae4d0-ea7c-4743-b34e-1a2c9c61991d}");
+	}
+
+	return interfaces;
 }
 
 intptr_t testPluginFunction(intptr_t, intptr_t)

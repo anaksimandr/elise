@@ -301,8 +301,8 @@ void QTestWindow::setTrayIcon()
 
 void QTestWindow::saveSetting()
 {
-	QLatin1String module = QLatin1String(v1->text().toLatin1());
-	QLatin1String setting = QLatin1String(v2->text().toLatin1());
+	QString module = QString(v1->text().toLatin1());
+	QString setting = QString(v2->text().toLatin1());
 	Setting* set = new Setting;
 	set->contact = 0;
 	set->qsModule = &module;
@@ -339,8 +339,8 @@ void QTestWindow::saveSetting()
 
 void QTestWindow::readSetting()
 {
-	QLatin1String module = QLatin1String(v1->text().toLatin1());
-	QLatin1String setting = QLatin1String(v2->text().toLatin1());
+	QString module = QString(v1->text().toLatin1());
+	QString setting = QString(v2->text().toLatin1());
 	Setting* set = new Setting;
 	set->contact = 0;
 	set->qsModule = &module;
@@ -378,8 +378,8 @@ void QTestWindow::readSetting()
 
 void QTestWindow::delSetting()
 {
-	QLatin1String module = QLatin1String(v1->text().toLatin1());
-	QLatin1String setting = QLatin1String(v2->text().toLatin1());
+	QString module = QString(v1->text().toLatin1());
+	QString setting = QString(v2->text().toLatin1());
 	Setting* set = new Setting;
 	set->contact = 0;
 	set->qsModule = &module;

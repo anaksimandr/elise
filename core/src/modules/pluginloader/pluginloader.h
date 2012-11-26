@@ -25,7 +25,7 @@ private:
 	static QMap<QString, Plugin>*	plugins;
 	static QMap<QUuid, QString>*	interfaces;
 	//static LoadedDBPlugin			loadedDBPlugin;
-	static void			loadInterfacesFromProfile();
+	static bool			loadingPluginDisabled(const QString& plugin);
 public:
 	static QDir			getPluginsDir();
 	static int			getAvailablePlugins();
