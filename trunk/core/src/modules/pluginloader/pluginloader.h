@@ -27,14 +27,14 @@ private:
 	static bool			isLoadingPluginDisabled(const QString& pluginModuleName);
 public:
 	static QDir			getPluginsDir();
-	static int			LoadPluginLoader();
-	static int			loadDBPlugin(const QString& pluginModuleName);
+	static int			loadPluginLoader();
+	//static int			loadDBPlugin(const QString& pluginModuleName);
 	static int			loadPlugins();
-	static int			loadPlugin();
-	static int			unloadPlugin();
+	static int			loadPlugin(const QString& pluginModuleName);
+	static int			unloadPlugin(const QString& pluginModuleName);
 	static int			unloadAllPlugins();
-	static bool			isPluginLoaded(const QString& pluginModuleName) const;
-	static bool			isPluginLoadable(const QString& pluginModuleName) const;
+	static bool			isPluginLoaded(const QString& pluginModuleName);
+	static bool			isPluginLoadable(const QString& pluginModuleName);
 	static const QMap<QString, Plugin>*	getAvailablePlugins();
 	static const QMap<QString, IDBPlugin*>*	getDBPlugins();
 };

@@ -28,12 +28,16 @@ public:
 	~OptionsDialog();
 
 	static int			addPage(OptionsPage* newPage);
-	static void			addDefaultPages();
+	//static void			addDefaultPages();
 	void				selectPage(const QModelIndex& current, const QModelIndex&);
 
 	void				applay();
 
 	void				okButton();
+
+	static int			showOptions(intptr_t, intptr_t);
+	static int			loadOptionsModule();
+	static int			unloadOptionsModule();
 };
 
 int LoadOptionsModule();

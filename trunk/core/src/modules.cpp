@@ -33,9 +33,9 @@ int LoadDefaultModules()
 {
 	if (LoadSystemModule())
 		return 1;
-	if (LoadOptionsModule())
+	if (OptionsDialog::loadOptionsModule())
 		return 1;
-	if (PluginLoader::LoadPluginLoader())
+	if (PluginLoader::loadPluginLoader())
 		return 1;
 	if (LoadTrayModule())
 		return 1;

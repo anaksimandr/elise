@@ -14,14 +14,14 @@ Note: DBPlugin should not implements any other interfaces.
 
 */
 
-//-- Store information about version here
+/*//-- Store information about version here
 typedef struct {
 	union
 	{
 		unsigned char chars[4];		// [3] - major version, [2] - minor version
 		qint32 value;				// [1] - release num, [0] - build num
 	};
-} EVersion;
+} EVersion;*/
 
 //-- Hook functions
 typedef int (*EliseHook)(intptr_t,intptr_t);
@@ -31,7 +31,7 @@ typedef intptr_t (*EliseService)(intptr_t,intptr_t);
 
 typedef struct {
 	QString name;
-	EVersion version;
+	unsigned char version[4];
 	//char *description;
 	//char *author;
 	//char *authorEmail;
