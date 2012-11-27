@@ -8,11 +8,11 @@ const QLatin1String	OPTIONS_CLOSE		=	QLatin1String("Options/Close");
 
 OptionsDialog* OptionsDialog::options = 0;
 
-int ShowOptions(intptr_t, intptr_t)
+int OptionsDialog::showOptions(intptr_t, intptr_t)
 {
 	if (OptionsDialog::options == 0) {
 		OptionsDialog::options = new OptionsDialog();
-		OptionsDialog::addDefaultPages();
+		//OptionsDialog::addDefaultPages();
 		core::NotifyEventHooks(&OPTIONS_SHOW,
 							   reinterpret_cast<intptr_t>(&OptionsDialog::addPage), 0);
 	}
@@ -22,15 +22,15 @@ int ShowOptions(intptr_t, intptr_t)
 	return 0;
 }
 
-int LoadOptionsModule()
+int OptionsDialog::loadOptionsModule()
 {
 	OptionsDialog::options = 0;
 	core::CreateHookableEvent(&OPTIONS_SHOW);
-	core::CreateServiceFunction(&OPTIONS_SHOW, &ShowOptions);
+	core::CreateServiceFunction(&OPTIONS_SHOW, &showOptions);
 	return 0;
 }
 
-int UnloadOptionsModule()
+int OptionsDialog::unloadOptionsModule()
 {
 	if (OptionsDialog::options != 0)
 		OptionsDialog::options->~OptionsDialog();
@@ -187,13 +187,14 @@ OptionsDialog::OptionsDialog()
 
 OptionsDialog::~OptionsDialog()
 {
+	saveFunctions.clear();
 	core::NotifyEventHooks(&OPTIONS_CLOSE, 0, 0);
 	OptionsDialog::options = 0;
 	core::DestroyHookableEvent(&OPTIONS_CLOSE);
 	//core::DestroyServiceFunction(&OPTIONS_ADD_PAGE);
 }
 
-void OptionsDialog::addDefaultPages()
+/*void OptionsDialog::addDefaultPages()
 {
 	QString str;
 	QWidget* wi;
@@ -278,4 +279,6 @@ void OptionsDialog::addDefaultPages()
 	wi->setToolTip(str);
 	page->page = wi;
 	addPage(page);
-}
+
+	delete page;
+}*/

@@ -107,7 +107,11 @@ Qt::ItemFlags PluginsTreeModel::flags(const QModelIndex& itemIndex) const
 	if (!itemIndex.isValid())
 		return 0;
 
-	Qt::ItemFlags flags = Qt::ItemIsEnabled | Qt::ItemIsSelectable;
+	Qt::ItemFlags flags = Qt::ItemIsSelectable;
+
+	PluginsTreeItem* item = getItem(itemIndex);
+	if (item->isPluginLoadable())
+		flags |=  Qt::ItemIsEnabled;
 
 	if (itemIndex.column() == 0 )
 		flags |= Qt::ItemIsUserCheckable;
@@ -131,7 +135,7 @@ bool PluginsTreeModel::setData(const QModelIndex& itemIndex, const QVariant& val
 bool PluginsTreeModel::insert(const QString& pluginModuleName, const QString& pluginName,
 							  const QString& pluginVersion, const QModelIndex& parentIndex)
 {
-	if (pluginName.isEmpty() || pluginVersion.isEmpty() || pluginUuid.isEmpty())
+	if (pluginName.isEmpty() || pluginVersion.isEmpty() || pluginModuleName.isEmpty())
 		return false;
 
 	PluginsTreeItem* parent = getItem(parentIndex);

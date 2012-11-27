@@ -12,9 +12,7 @@ CoreAPI						PluginLoader::coreAPI;
 QMap<QString, Plugin>*		PluginLoader::plugins = 0;
 QMap<QUuid, QString>*		PluginLoader::interfaces = 0;
 
-const QUuid EUUID_DATABASE = "{4df3e270-fb8b-4654-9271-2f0f31e0eb84}";
-
-int PluginLoader::LoadPluginLoader()
+int PluginLoader::loadPluginLoader()
 {
 	core::HookEvent(&OPTIONS_SHOW, &PluginLoaderOptions::createLoaderOptionsPage);
 
@@ -57,26 +55,34 @@ const QMap<QString, Plugin>* PluginLoader::getAvailablePlugins()
 	plugin.loaded = false;
 	//-- Trying to load each file in dir as plugin
 	foreach (QString fileName, pluginsDir.entryList(QDir::Files)) {
-		if (!plugins->contains(fileName)) {
-			loader.setFileName(pluginsDir.absoluteFilePath(fileName));
-			pluginObject = loader.instance();
-			if (pluginObject) {
-				IPlugin* validPlugin = qobject_cast<IPlugin*>(pluginObject);
-				//-- Note: qobject_cast<IPlugin*>(pluginObject) does not work for plugins that
-				//-- inherited from interfaces which inherits IPlugin.
-				//-- Elise plugin
-				if (validPlugin) {
-					plugin.pluginInterface = validPlugin;
+
+		if (plugins->contains(fileName)) {
+			Plugin* pl = &(*plugins)[fileName];
+			if (pl->pluginInterface)
+				continue;
+			//-- If pluginInterface == 0 i.e. the plugin does not loaded by QPluginLoader - remove
+			//-- the old entry from the list of plugins
+			plugins->take(fileName);
+		}
+
+		loader.setFileName(pluginsDir.absoluteFilePath(fileName));
+		pluginObject = loader.instance();
+		if (pluginObject) {
+			IPlugin* validPlugin = qobject_cast<IPlugin*>(pluginObject);
+			//-- Note: qobject_cast<IPlugin*>(pluginObject) does not work for plugins that
+			//-- inherited from interfaces which inherits IPlugin.
+			//-- Elise plugin
+			if (validPlugin) {
+				plugin.pluginInterface = validPlugin;
+				plugins->insert(fileName, plugin);
+			} else {
+				IDBPlugin* validDBPlugin = qobject_cast<IDBPlugin*>(pluginObject);
+				if (validDBPlugin) {
+					plugin.pluginInterface = dynamic_cast<IPlugin*>(validDBPlugin);
 					plugins->insert(fileName, plugin);
-				} else {
-					IDBPlugin* validDBPlugin = qobject_cast<IDBPlugin*>(pluginObject);
-					if (validDBPlugin) {
-						plugin.pluginInterface = dynamic_cast<IPlugin*>(validDBPlugin);
-						plugins->insert(fileName, plugin);
-					}
 				}
-			} //if plugin
-		} //if !contains
+			}
+		} //if plugin
 	} //foreach
 
 	if (plugins->isEmpty())
@@ -105,20 +111,21 @@ bool PluginLoader::isLoadingPluginDisabled(const QString& pluginModuleName)
 	return 0;
 }
 
-bool PluginLoader::isPluginLoaded(const QString& pluginModuleName) const
+bool PluginLoader::isPluginLoaded(const QString& pluginModuleName)
 {
 	if (plugins->contains(pluginModuleName)) {
-		Plugin* p = plugins->value(plaginModuleName);
+		const Plugin* p = &plugins->value(pluginModuleName);
 		return p->loaded;
 	}
 	return false;
 }
-bool PluginLoader::isPluginLoadable(const QString& pluginModuleName) const
+
+bool PluginLoader::isPluginLoadable(const QString& pluginModuleName)
 {
 	if (!plugins->contains(pluginModuleName))
 		return false;
 
-	Plugin* p = plugins->value(plaginModuleName);
+	const Plugin* p = &plugins->value(pluginModuleName);
 	if (p->loaded)
 		return true;
 
@@ -135,24 +142,81 @@ bool PluginLoader::isPluginLoadable(const QString& pluginModuleName) const
 	return true;
 }
 
-int PluginLoader::loadDBPlugin(const QString& pluginModuleName)
+/*int PluginLoader::loadDBPlugin(const QString& pluginModuleName)
 {
 	Plugin* plugin = &(*plugins)[pluginModuleName];
 	if (plugin->pluginInterface->Load(&coreAPI))
 		return 1;
 	plugin->loaded = true;
-	interfaces->insert(EUUID_DATABASE, pluginModuleName);
+	//interfaces->insert(EUUID_DATABASE, pluginModuleName);
 	return 0;
-}
+}*/
 
-int PluginLoader::loadPlugins()
+int PluginLoader::loadPlugin(const QString& pluginModuleName)
 {
+	Plugin* plugin = &(*plugins)[pluginModuleName];
+	if (!plugin->pluginInterface) {
+		QDir pluginsDir = getPluginsDir();
+		QPluginLoader loader;
+		loader.setFileName(pluginsDir.absoluteFilePath(pluginModuleName));
+		QObject* pluginObject = loader.instance();
+		if (pluginObject) {
+			IPlugin* validPlugin = qobject_cast<IPlugin*>(pluginObject);
+			//-- Elise plugin
+			if (validPlugin) {
+				plugin->pluginInterface = validPlugin;
+				//plugins->insert(fileName, plugin);
+			} else {
+				IDBPlugin* validDBPlugin = qobject_cast<IDBPlugin*>(pluginObject);
+				if (validDBPlugin) {
+					plugin->pluginInterface = dynamic_cast<IPlugin*>(validDBPlugin);
+					//plugins->insert(fileName, plugin);
+				}
+			}
+		} //if plugin
+	}
+
+	if (plugin->pluginInterface->Load(&coreAPI))
+		return 1;
+	plugin->loaded = true;
+	const QSet<QUuid>* pluginInterfaces = plugin->pluginInterface->ElisePluginInterfaces();
+	QSet<QUuid>::const_iterator i = pluginInterfaces->constBegin();
+	QSet<QUuid>::const_iterator iEnd = pluginInterfaces->constEnd();
+	while (i != iEnd) {
+		interfaces->insert(*i, pluginModuleName);
+		++i;
+	}
+
 	QMessageBox::information(0, "Debug", "loadPlugin", QMessageBox::Ok);
 	return 0;
 }
 
-int PluginLoader::unloadPlugins()
+int PluginLoader::unloadPlugin(const QString& pluginModuleName)
 {
+	QDir pluginsDir = getPluginsDir();
+	QPluginLoader loader;
+	Plugin* plugin = &(*plugins)[pluginModuleName];
+	//-- Call Elise plugin api unload
+	if (plugin->pluginInterface->Unload())
+		QMessageBox::critical(0, QStringLiteral("unloadPlugins error"),
+							  QStringLiteral("Error while unloading plugin ") + pluginModuleName,
+							  QMessageBox::Ok);
+
+	const QSet<QUuid>* pluginInterfaces = plugin->pluginInterface->ElisePluginInterfaces();
+	QSet<QUuid>::const_iterator i = pluginInterfaces->constBegin();
+	QSet<QUuid>::const_iterator iEnd = pluginInterfaces->constEnd();
+	while (i != iEnd) {
+		interfaces->take(*i);
+		++i;
+	}
+
+	loader.setFileName(pluginsDir.absoluteFilePath(pluginModuleName));
+	//-- Free plugin
+	loader.unload();
+
+	plugin->pluginInterface = 0;
+	plugin->loaded = false;
+
 	QMessageBox::information(0, "Debug", "unloadPlugin", QMessageBox::Ok);
 	return 0;
 }
@@ -220,19 +284,21 @@ int PluginLoader::unloadAllPlugins()
 	//-- it will be automatically destroyed on fully exit
 	QDir pluginsDir = getPluginsDir();
 	QPluginLoader loader;
-	QMapIterator<QString, Plugin> iter(*plugins);
-	while (iter.hasNext()) {
-		iter.next();
+	QMap<QString, Plugin>::iterator iteratorPlugins = plugins->begin();
+	QMap<QString, Plugin>::iterator pluginsEnd = plugins->end();
+	while (iteratorPlugins != pluginsEnd) {
 		//-- Call Elise plugin api unload
-		if (iter.value().pluginInterface->Unload())
+		if (iteratorPlugins.value().pluginInterface->Unload())
 			QMessageBox::critical(0, QStringLiteral("unloadPlugins error"),
-								  QStringLiteral("Error while unloading plugin ") + iter.key(),
+								  QStringLiteral("Error while unloading plugin ")
+								  + iteratorPlugins.key(),
 								  QMessageBox::Ok);
-		loader.setFileName(pluginsDir.absoluteFilePath(iter.key()));
+		loader.setFileName(pluginsDir.absoluteFilePath(iteratorPlugins.key()));
 		//-- Free plugin
 		loader.unload();
 		//-- Remove it from list
 		//plugins->remove(iter.key());
+		++iteratorPlugins;
 	} //while
 	plugins->clear();
 	interfaces->clear();

@@ -3,6 +3,7 @@
 #include "../../services.h"
 #include "../../../../api/e_options.h"
 #include "pluginstreemodel.h"
+#include "pluginloader.h"
 
 
 void PluginLoaderOptions::saveLoaderOptions()
@@ -22,10 +23,19 @@ int PluginLoaderOptions::createLoaderOptionsPage(intptr_t pfnPageAdder, intptr_t
 	treeView->setRootIsDecorated(false);
 	treeView->setItemDelegate(new CheckBoxDelegate(treeView));
 
-
-	//QString str = "test";
-	//model->insert(0, str, str, str);
-
+	PluginInfo* pluginInfo;
+	const QMap<QString, Plugin>* plugins = PluginLoader::getAvailablePlugins();
+	QMap<QString, Plugin>::const_iterator i = plugins->constBegin();
+	QMap<QString, Plugin>::const_iterator iEnd = plugins->constEnd();
+	while (i != iEnd) {
+		pluginInfo = (*i).pluginInterface->ElisePluginInfo();
+		model->insert(i.key(), pluginInfo->name,
+					  QString::number(pluginInfo->version[0]) + "."
+					+ QString::number(pluginInfo->version[1]) + "."
+					+ QString::number(pluginInfo->version[2]) + "."
+					+ QString::number(pluginInfo->version[3]));
+		++i;
+	}
 
 	widget->setToolTip("Plugins");
 
@@ -37,6 +47,8 @@ int PluginLoaderOptions::createLoaderOptionsPage(intptr_t pfnPageAdder, intptr_t
 	page->page = widget;
 
 	reinterpret_cast<PageAdder>(pfnPageAdder)(page);
+
+	delete page;
 
 	return 0;
 }
