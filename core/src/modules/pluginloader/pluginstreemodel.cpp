@@ -10,7 +10,7 @@ PluginsTreeModel::PluginsTreeModel(QObject* parent)
 	: QAbstractItemModel(parent)
 {
 	QString str;
-	rootItem = new PluginsTreeItem(false, str, str, str);
+	rootItem = new PluginsTreeItem(str, str, str);
 }
 
 PluginsTreeModel::~PluginsTreeModel()
@@ -72,9 +72,12 @@ QVariant PluginsTreeModel::data(const QModelIndex& itemIndex, int role) const
 
 	switch (itemIndex.column()) {
 		case 0:
-			return item->getPluginName();
+			return item->getPluginModuleName();
 			break;
 		case 1:
+			return item->getPluginName();
+			break;
+		case 2:
 			return item->getPluginVersion();
 			break;
 		default:
@@ -95,7 +98,7 @@ int PluginsTreeModel::rowCount(const QModelIndex& parentIndex) const
 
 int PluginsTreeModel::columnCount(const QModelIndex&) const
 {
-	return 2;
+	return 3;
 }
 
 
@@ -125,9 +128,8 @@ bool PluginsTreeModel::setData(const QModelIndex& itemIndex, const QVariant& val
 	return true;
 }
 
-bool PluginsTreeModel::insert(bool pluginLoaded, const QString& pluginName,
-							  const QString& pluginVersion, const QString pluginUuid,
-							  const QModelIndex& parentIndex)
+bool PluginsTreeModel::insert(const QString& pluginModuleName, const QString& pluginName,
+							  const QString& pluginVersion, const QModelIndex& parentIndex)
 {
 	if (pluginName.isEmpty() || pluginVersion.isEmpty() || pluginUuid.isEmpty())
 		return false;
@@ -136,7 +138,7 @@ bool PluginsTreeModel::insert(bool pluginLoaded, const QString& pluginName,
 	bool success;
 
 	beginInsertRows(parentIndex, 0, 0);
-	success = parent->insertChild(pluginLoaded, pluginName, pluginVersion, pluginUuid);
+	success = parent->insertChild(pluginModuleName, pluginName, pluginVersion);
 	endInsertRows();
 
 	return success;

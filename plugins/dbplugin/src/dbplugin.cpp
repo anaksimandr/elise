@@ -16,7 +16,7 @@ ICore* core;
 PluginInfo pluginInfo = {
 	QLatin1String("DBPlugin"),
 	{0,0,0,1},
-	"{ca0ae4d0-ea7c-4743-b34e-1a2c9c61991d}"
+	//"{ca0ae4d0-ea7c-4743-b34e-1a2c9c61991d}"
 };
 
 QDir DBPlugin::getProfileDir()
@@ -394,11 +394,11 @@ PluginInfo* DBPlugin::ElisePluginInfo()
 	return &pluginInfo;
 }
 
-const QSet<QUuid> *DBPlugin::ElisePluginInterfaces(void)
+const QSet<QUuid>* DBPlugin::ElisePluginInterfaces(void)
 {
 	if (interfaces == 0) {
 		interfaces = new QSet<QUuid>();
-		interfaces->insert("{ca0ae4d0-ea7c-4743-b34e-1a2c9c61992d}");
+		interfaces->insert("{4df3e270-fb8b-4654-9271-2f0f31e0eb84}");
 	}
 
 	return interfaces;

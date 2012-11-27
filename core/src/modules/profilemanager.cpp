@@ -102,8 +102,6 @@ ProfileManager::ProfileManager(const QMap<QString, IDBPlugin*>* availableDBPlugi
 
 	hboxMain->setSizeConstraint(QLayout::SetFixedSize);
 
-	profiles = 0;
-
 	//-- First time initialize cmbAccount programmatically
 	loadProfiles(cmbDBPlugins->currentText());
 	loadProfileDetails(cmbProfiles->currentText());
@@ -143,11 +141,9 @@ void ProfileManager::loadProfiles(const QString& text)
 			iter.next();
 			delete iter.value();
 		}
-		profiles->~QMap();
+		delete profiles;
 	}
 	//-- Getting list of profiles from plugin
-	//if (!DBPlugins->value(text))
-	//	QMessageBox::critical(0, QStringLiteral("Debug"), "pichal", QMessageBox::Cancel);
 	profiles = DBPlugins->value(text)->GetProfiles();
 	if (profiles != 0) {
 		if (profiles->count() != 0) {
@@ -185,6 +181,7 @@ void ProfileManager::loadProfileDetails(const QString& name)
 			cbDefaultProfile->setCheckState(Qt::Checked);
 		else
 			cbDefaultProfile->setCheckState(Qt::Unchecked);
+		//delete p;
 	}
 }
 

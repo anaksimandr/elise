@@ -18,7 +18,8 @@ class PluginsTreeModel : public QAbstractItemModel
 {
 	Q_OBJECT
 private:
-	PluginsTreeItem*	rootItem;
+	PluginsTreeItem*		rootItem;
+	//QMap<QString, Plugin>*	plugins;
 
 	PluginsTreeItem*	getItem(const QModelIndex& itemIndex) const;
 
@@ -37,8 +38,8 @@ public:
 	Qt::ItemFlags flags(const QModelIndex& itemIndex) const;
 
 	bool setData(const QModelIndex& itemIndex, const QVariant& value, int role = Qt::EditRole);
-	bool insert(bool pluginLoaded, const QString& pluginName, const QString& pluginVersion,
-				const QString pluginUuid, const QModelIndex& parentIndex = QModelIndex());
+	bool insert(const QString& pluginModuleName, const QString& pluginName,
+				const QString& pluginVersion, const QModelIndex& parentIndex = QModelIndex());
 	bool remove(const QModelIndex& itemIndex = QModelIndex());
 };
 

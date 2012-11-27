@@ -23,8 +23,8 @@ int PluginLoaderOptions::createLoaderOptionsPage(intptr_t pfnPageAdder, intptr_t
 	treeView->setItemDelegate(new CheckBoxDelegate(treeView));
 
 
-	QString str = "test";
-	model->insert(0, str, str, str);
+	//QString str = "test";
+	//model->insert(0, str, str, str);
 
 
 	widget->setToolTip("Plugins");

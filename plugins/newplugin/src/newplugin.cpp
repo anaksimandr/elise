@@ -8,7 +8,7 @@ QSet<QUuid>* NewPlugin::interfaces = 0;
 PluginInfo pluginInfo = {
 	"NewPlugin",
 	{0,0,0,1},
-	"{ca0ae4d0-ea7c-4743-b34e-1a2c9c61991d}"
+	//"{ca0ae4d0-ea7c-4743-b34e-1a2c9c61991d}"
 };
 
 
@@ -30,7 +30,7 @@ const QSet<QUuid>* NewPlugin::ElisePluginInterfaces(void)
 intptr_t testPluginFunction(intptr_t, intptr_t)
 {
 	QMessageBox qmes;
-	qmes.setText("Call test plugin success! uuid is\n" + pluginInfo.uuid.toString());
+	qmes.setText("Call test plugin success! uuid is\n");
 	qmes.exec();
 	return 0;
 }
