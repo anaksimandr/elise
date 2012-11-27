@@ -3,6 +3,17 @@
 
 #include <QtCore>
 
+/* Replaceable plugin interfaces.
+
+This is unique IDs for standart interfaces. If your plugin implements one of standart
+interfaces it must return this interface in IPlugin::ElisePluginInterfaces(void) method.
+But non standard interfaces must be returned too.
+
+Note: DBPlugin should not implements any other interfaces.
+	QUuid EUUID_DATABASE = "{4df3e270-fb8b-4654-9271-2f0f31e0eb84}";
+
+*/
+
 //-- Store information about version here
 typedef struct {
 	union
@@ -26,7 +37,7 @@ typedef struct {
 	//char *authorEmail;
 	//char *copyright;
 	//char *homepage;
-	QUuid uuid;
+	//QUuid uuid;
 } PluginInfo;
 
 //-- Use this to store information about your hooks and to call UnhookEvent() function

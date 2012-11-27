@@ -70,7 +70,7 @@ int LoadProfile(bool launchApp)
 	//-- Now we will load the profile, do it befor loading plugins, because we must know which
 	//-- plugins must be loaded for this profile.
 
-	if (PluginLoader::getAvailablePlugins()) {
+	if (!PluginLoader::getAvailablePlugins()) {
 		QMessageBox::critical(0,
 						QStringLiteral("getAvailablePlugins error"),
 						QStringLiteral("Failed to get plugins list or no one plugin was found."),

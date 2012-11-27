@@ -1,6 +1,8 @@
 #ifndef ELISE_CORE_MODULES_PLUGINLOADER_PLUGINSTABLEITEM_H_
 #define ELISE_CORE_MODULES_PLUGINLOADER_PLUGINSTABLEITEM_H_
 
+#include "pluginloader.h"
+
 class QString;
 template <typename T> class QList;
 class QVariant;
@@ -8,23 +10,28 @@ class QVariant;
 class PluginsTreeItem
 {
 private:
-	bool					pluginLoaded;
+	QString					pluginModuleName;
 	QString					pluginName;
 	QString					pluginVersion;
-	QString					pluginUuid;
 	QList<PluginsTreeItem*>	childItems;
 	PluginsTreeItem*		parentItem;
 public:
-	PluginsTreeItem(bool pluginLoadedExt, const QString& pluginNameExt,
-					const QString& pluginVersionExt, const QString pluginUuidExt,
-					PluginsTreeItem* parentExt = 0);
+	PluginsTreeItem(const QString& pluginModuleNameExt, const QString& pluginNameExt,
+					const QString& pluginVersionExt, PluginsTreeItem* parentExt = 0);
 	~PluginsTreeItem() { qDeleteAll(childItems); }
 
+	inline QString		getPluginModuleName() const { return pluginModuleName; }
 	inline QString		getPluginName() const { return pluginName; }
 	inline QString		getPluginVersion() const { return pluginVersion; }
-	inline QString		getPluginUuid() const { return pluginUuid; }
-	inline bool		isPluginLoaded() const { return pluginLoaded; }
-	inline void		setPluginLoaded(bool pluginLoadedExt) { pluginLoaded = pluginLoadedExt; }
+	inline bool		isPluginLoaded() { return PluginLoader::isPluginLoaded(pluginModuleName); }
+	inline bool		isPluginLoadable() { return PluginLoader::isPluginLoadable(pluginModuleName); }
+	inline void		setPluginLoaded(bool pluginLoadedExt)
+	{
+		if (pluginLoadedExt)
+			PluginLoader::loadPlugin(pluginModuleName);
+		else
+			PluginLoader::unloadPlugin(pluginModuleName);
+	}
 	inline PluginsTreeItem*	parent() { return parentItem; }
 	inline PluginsTreeItem*	child(int number) { return childItems.value(number); }
 	inline int			childCount() const { return childItems.count(); }
@@ -37,8 +44,8 @@ public:
 	}
 
 	//QVariant	getData(int column) const;
-	bool		insertChild(bool pluginLoadedExt, const QString& pluginNameExt,
-							const QString& pluginVersionExt, const QString pluginUuidExt);
+	bool		insertChild(const QString& pluginModuleNameExt, const QString& pluginNameExt,
+							const QString& pluginVersionExt);
 	bool		removeChild(int position);
 };
 

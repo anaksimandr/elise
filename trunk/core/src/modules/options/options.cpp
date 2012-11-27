@@ -67,7 +67,8 @@ int OptionsDialog::addPage(OptionsPage* newPage)
 	}
 
 	//--
-	options->saveFunctions.insert(newPage->savePage);
+	if (newPage->savePage != 0)
+		options->saveFunctions.insert(newPage->savePage);
 
 	return 0;
 }
@@ -81,9 +82,9 @@ void OptionsDialog::selectPage(const QModelIndex& current, const QModelIndex&)
 void OptionsDialog::applay()
 {
 	QSet<OptionsSaver>::const_iterator i = saveFunctions.constBegin();
-	while (i != saveFunctions.constEnd()) {
-		if (*i != 0)
-			(*i)();
+	QSet<OptionsSaver>::const_iterator iEnd = saveFunctions.constEnd();
+	while (i != iEnd) {
+		(*i)();
 		++i;
 	}
 }

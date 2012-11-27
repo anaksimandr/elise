@@ -1,22 +1,21 @@
 #include <QtWidgets/QtWidgets>
 #include "pluginstreeitem.h"
 
-PluginsTreeItem::PluginsTreeItem(bool pluginLoadedExt, const QString& pluginNameExt,
-								 const QString& pluginVersionExt, const QString pluginUuidExt,
+PluginsTreeItem::PluginsTreeItem(const QString& pluginModuleNameExt, const QString& pluginNameExt,
+								 const QString& pluginVersionExt,
 								 PluginsTreeItem* parentExt)
 {
-	this->pluginLoaded = pluginLoadedExt;
+	this->pluginModuleName = pluginModuleNameExt;
 	this->pluginName = pluginNameExt;
 	this->pluginVersion = pluginVersionExt;
-	this->pluginUuid = pluginUuidExt;
 	this->parentItem = parentExt;
 }
 
-bool PluginsTreeItem::insertChild(bool pluginLoadedExt, const QString& pluginNameExt,
-								  const QString& pluginVersionExt, const QString pluginUuidExt)
+bool PluginsTreeItem::insertChild(const QString& pluginModuleNameExt, const QString& pluginNameExt,
+								  const QString& pluginVersionExt)
 {
-	PluginsTreeItem* item = new PluginsTreeItem(pluginLoadedExt, pluginNameExt, pluginVersionExt,
-												pluginUuidExt, this);
+	PluginsTreeItem* item = new PluginsTreeItem(pluginModuleNameExt, pluginNameExt,
+												pluginVersionExt, this);
 
 	if (childItems.count() == 0)
 		childItems.insert(0, item);

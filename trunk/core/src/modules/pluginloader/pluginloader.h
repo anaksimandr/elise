@@ -14,7 +14,6 @@ class CoreAPI;
 
 typedef struct {
 	bool		loaded;
-	bool		loadable;
 	IPlugin*	pluginInterface;
 } Plugin;
 
@@ -25,17 +24,18 @@ private:
 	static QMap<QString, Plugin>*	plugins;
 	static QMap<QUuid, QString>*	interfaces;
 	//static LoadedDBPlugin			loadedDBPlugin;
-	static bool			loadingPluginDisabled(const QString& plugin);
+	static bool			isLoadingPluginDisabled(const QString& pluginModuleName);
 public:
 	static QDir			getPluginsDir();
-	static int			getAvailablePlugins();
-	static int			loadDBPlugin(QString pluginName);
-	static int			loadPlugins();
-	static int			unloadAllPlugins();
 	static int			LoadPluginLoader();
-	//static Plugin		getPlugin(const QString& name);
-	//static QString		getInterfacePlugin(const QUuid& interfacePlugin);
-	//static const QMap<QString, Plugin>*		getPlugins();
+	static int			loadDBPlugin(const QString& pluginModuleName);
+	static int			loadPlugins();
+	static int			loadPlugin();
+	static int			unloadPlugin();
+	static int			unloadAllPlugins();
+	static bool			isPluginLoaded(const QString& pluginModuleName) const;
+	static bool			isPluginLoadable(const QString& pluginModuleName) const;
+	static const QMap<QString, Plugin>*	getAvailablePlugins();
 	static const QMap<QString, IDBPlugin*>*	getDBPlugins();
 };
 
