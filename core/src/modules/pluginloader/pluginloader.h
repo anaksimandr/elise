@@ -14,7 +14,7 @@ class CoreAPI;
 
 typedef struct {
 	bool		loaded;
-	IPlugin*	pluginInterface;
+	QObject*	instance;
 } Plugin;
 
 class PluginLoader
