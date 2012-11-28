@@ -9,11 +9,13 @@
 #include "pluginloaderoptions.h"
 
 CoreAPI						PluginLoader::coreAPI;
+QDir						PluginLoader::pluginsDir;
 QMap<QString, Plugin>*		PluginLoader::plugins = 0;
 QMap<QUuid, QString>*		PluginLoader::interfaces = 0;
 
 int PluginLoader::loadPluginLoader()
 {
+	pluginsDir = getPluginsDir();
 	core::HookEvent(&OPTIONS_SHOW, &PluginLoaderOptions::createLoaderOptionsPage);
 
 	return 0;
@@ -154,27 +156,32 @@ bool PluginLoader::isPluginLoadable(const QString& pluginModuleName)
 
 int PluginLoader::loadPlugin(const QString& pluginModuleName)
 {
+	QPluginLoader loader;
 	Plugin* plugin = &(*plugins)[pluginModuleName];
-	if (!plugin->pluginInterface) {
-		QDir pluginsDir = getPluginsDir();
-		QPluginLoader loader;
-		loader.setFileName(pluginsDir.absoluteFilePath(pluginModuleName));
-		QObject* pluginObject = loader.instance();
-		if (pluginObject) {
-			IPlugin* validPlugin = qobject_cast<IPlugin*>(pluginObject);
-			//-- Elise plugin
-			if (validPlugin) {
-				plugin->pluginInterface = validPlugin;
-				//plugins->insert(fileName, plugin);
-			} else {
-				IDBPlugin* validDBPlugin = qobject_cast<IDBPlugin*>(pluginObject);
-				if (validDBPlugin) {
-					plugin->pluginInterface = dynamic_cast<IPlugin*>(validDBPlugin);
-					//plugins->insert(fileName, plugin);
-				}
-			}
-		} //if plugin
+
+#ifndef NDEBUG
+	if (plugin->pluginInterface)
+		QMessageBox::information(0, "Debug",
+								 "Plugin interface already indicates to a valid(?) instance\n"
+								 "Memory leak?",
+								 QMessageBox::Ok);
+#endif
+
+	loader.setFileName(pluginsDir.absoluteFilePath(pluginModuleName));
+	QObject* pluginObject = loader.instance();
+	IPlugin* validPlugin = qobject_cast<IPlugin*>(pluginObject);
+	//-- Elise plugin
+	if (validPlugin) {
+		plugin->pluginInterface = validPlugin;
+		//plugins->insert(fileName, plugin);
+	} else {
+		IDBPlugin* validDBPlugin = qobject_cast<IDBPlugin*>(pluginObject);
+		if (validDBPlugin) {
+			plugin->pluginInterface = dynamic_cast<IPlugin*>(validDBPlugin);
+			//plugins->insert(fileName, plugin);
+		}
 	}
+
 
 	if (plugin->pluginInterface->Load(&coreAPI))
 		return 1;
@@ -193,7 +200,6 @@ int PluginLoader::loadPlugin(const QString& pluginModuleName)
 
 int PluginLoader::unloadPlugin(const QString& pluginModuleName)
 {
-	QDir pluginsDir = getPluginsDir();
 	QPluginLoader loader;
 	Plugin* plugin = &(*plugins)[pluginModuleName];
 	//-- Call Elise plugin api unload
