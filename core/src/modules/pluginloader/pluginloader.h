@@ -29,7 +29,8 @@ private:
 public:
 	static QDir			getPluginsDir();
 	static int			loadPluginLoader();
-	//static int			loadDBPlugin(const QString& pluginModuleName);
+	static int			loadDBPlugin(const QString& pluginModuleName,
+									 const QMap<QString, IDBPlugin*>* dbPlugins);
 	static int			loadPlugins();
 	static int			loadPlugin(const QString& pluginModuleName);
 	static int			unloadPlugin(const QString& pluginModuleName);
