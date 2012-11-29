@@ -51,40 +51,39 @@ const QMap<QString, Plugin>* PluginLoader::getAvailablePlugins()
 		interfaces = new QMap<QUuid, QString>();
 
 	QPluginLoader loader;
-	QObject* pluginObject = 0;
+	QObject* pluginInstance = 0;
 	Plugin plugin;
 	plugin.loaded = false;
-	//-- Trying to load each file in dir as plugin
-	foreach (QString fileName, pluginsDir.entryList(QDir::Files)) {
+	plugin.instance = 0;
 
-		if (plugins->contains(fileName)) {
-			Plugin* pl = &(*plugins)[fileName];
-			if (pl->pluginInterface)
-				continue;
-			//-- If pluginInterface == 0 i.e. the plugin does not loaded by QPluginLoader - remove
-			//-- the old entry from the list of plugins
-			plugins->take(fileName);
-		}
+	//-- First of all validate current list of plugins
+	QMap<QString, Plugin>::const_iterator iteratorPlugins = plugins->constBegin();
+	QMap<QString, Plugin>::const_iterator pluginsEnd = plugins->constEnd();
+	while (iteratorPlugins != pluginsEnd) {
+		if (!pluginsDir.exists(iteratorPlugins.key()))
+				plugins->take(iteratorPlugins.key());
+		++iteratorPlugins;
+	}
 
-		loader.setFileName(pluginsDir.absoluteFilePath(fileName));
-		pluginObject = loader.instance();
-		if (pluginObject) {
-			IPlugin* validPlugin = qobject_cast<IPlugin*>(pluginObject);
-			//-- Note: qobject_cast<IPlugin*>(pluginObject) does not work for plugins that
-			//-- inherited from interfaces which inherits IPlugin.
-			//-- Elise plugin
-			if (validPlugin) {
-				plugin.pluginInterface = validPlugin;
-				plugins->insert(fileName, plugin);
-			} else {
-				IDBPlugin* validDBPlugin = qobject_cast<IDBPlugin*>(pluginObject);
-				if (validDBPlugin) {
-					plugin.pluginInterface = dynamic_cast<IPlugin*>(validDBPlugin);
-					plugins->insert(fileName, plugin);
-				}
+	//-- Update the list of plugins
+	QStringList files = pluginsDir.entryList(QDir::Files);
+	QStringList::const_iterator i = files.constBegin();
+	QStringList::const_iterator iEnd = files.constEnd();
+	while (i != iEnd) {
+		if (!plugins->contains(*i)) {
+			loader.setFileName(pluginsDir.absoluteFilePath(*i));
+			pluginInstance = loader.instance();
+			if (pluginInstance) {
+				IPlugin* validPlugin = qobject_cast<IPlugin*>(pluginInstance);
+				//-- Note: qobject_cast<IPlugin*>(pluginObject) does not work for plugins that
+				//-- inherited from interfaces which inherits IPlugin.
+				if (validPlugin)
+					plugins->insert(*i, plugin);
 			}
-		} //if plugin
-	} //foreach
+			loader.unload();
+		}
+		++i;
+	}
 
 	if (plugins->isEmpty())
 		return 0;
@@ -114,46 +113,68 @@ bool PluginLoader::isLoadingPluginDisabled(const QString& pluginModuleName)
 
 bool PluginLoader::isPluginLoaded(const QString& pluginModuleName)
 {
-	if (plugins->contains(pluginModuleName)) {
-		const Plugin* p = &plugins->value(pluginModuleName);
-		return p->loaded;
-	}
-	return false;
+	//if (plugins->contains(pluginModuleName)) {
+	const Plugin* p = &plugins->value(pluginModuleName);
+	return p->loaded;
+	//}
+	//return false;
 }
 
 bool PluginLoader::isPluginLoadable(const QString& pluginModuleName)
 {
-	if (!plugins->contains(pluginModuleName))
-		return false;
+	//if (!plugins->contains(pluginModuleName))
+		//return false;
 
 	const Plugin* p = &plugins->value(pluginModuleName);
 	if (p->loaded)
 		return true;
 
-	IPlugin* pluginInterface = qobject_cast<IPlugin*>(p->instance);
+	QPluginLoader loader;
+	loader.setFileName(pluginsDir.absoluteFilePath(pluginModuleName));
+	IPlugin* pluginInterface = qobject_cast<IPlugin*>(loader.instance());
 
 	//-- Iterate all interfaces of current plugin
 	const QSet<QUuid>* pluginInterfaces = pluginInterface->ElisePluginInterfaces();
 	QSet<QUuid>::const_iterator i = pluginInterfaces->constBegin();
 	QSet<QUuid>::const_iterator iEnd = pluginInterfaces->constEnd();
+	bool result = true;
 	while (i != iEnd) {
 		//-- if one of the interfaces is already registered - break
-		if (interfaces->contains(*i))
-			return false;
+		if (interfaces->contains(*i)) {
+			result = false;
+			break;
+		}
 		++i;
 	}
-	return true;
+	loader.unload();
+	return result;
 }
 
-/*int PluginLoader::loadDBPlugin(const QString& pluginModuleName)
+int PluginLoader::loadDBPlugin(const QString& pluginModuleName,
+							   const QMap<QString, IDBPlugin*> *dbPlugins)
 {
+	QMap<QString, IDBPlugin*>::const_iterator iteratorPlugins = dbPlugins->constBegin();
+	QMap<QString, IDBPlugin*>::const_iterator pluginsEnd = dbPlugins->constEnd();
+	QPluginLoader loader;
+
+	while (iteratorPlugins != pluginsEnd) {
+		loader.setFileName(pluginsDir.absoluteFilePath(pluginModuleName));
+		if (iteratorPlugins.key() == pluginModuleName) {
+			IDBPlugin* pluginInterface = qobject_cast<IDBPlugin*>(loader.instance());
+			/////
+		} else {
+			loader.unload();
+		}
+	}
+
+
 	Plugin* plugin = &(*plugins)[pluginModuleName];
 	if (plugin->pluginInterface->Load(&coreAPI))
 		return 1;
 	plugin->loaded = true;
 	//interfaces->insert(EUUID_DATABASE, pluginModuleName);
 	return 0;
-}*/
+}
 
 int PluginLoader::loadPlugin(const QString& pluginModuleName)
 {
@@ -209,7 +230,7 @@ int PluginLoader::unloadPlugin(const QString& pluginModuleName)
 								 QMessageBox::Ok);
 #endif
 
-	IPlugin* pluginInterface = qobject_cast<IPlugin*>(pluginObject);
+	IPlugin* pluginInterface = qobject_cast<IPlugin*>(plugin->instance);
 
 	//-- Call Elise plugin api unload
 	if (pluginInterface->Unload())
@@ -243,27 +264,20 @@ int PluginLoader::loadPlugins()
 		return 1;
 
 	QString pluginModuleName;
-	QMap<QString, Plugin>::iterator iterPlugins = plugins->begin();
+	QMap<QString, Plugin>::iterator iteratorPlugins = plugins->begin();
 	QMap<QString, Plugin>::iterator pluginsEnd = plugins->end();
 
-	while (iterPlugins != pluginsEnd) {
-		pluginModuleName = iterPlugins.key();
+	while (iteratorPlugins != pluginsEnd) {
+		pluginModuleName = iteratorPlugins.key();
 
 		//-- If plugin disabled by user earlier - break
-		if (isLoadingPluginDisabled(pluginModuleName)) {
-			++iterPlugins;
-			continue;
+		if (!isLoadingPluginDisabled(pluginModuleName)) {
+
+			//-- Check existing interfaces
+			if (isPluginLoadable(pluginModuleName))
+				loadPlugin(pluginModuleName);
 		}
-
-		//-- Check existing interfaces
-		if (!isPluginLoadable(pluginModuleName)) {
-			++iterPlugins;
-			continue;
-		}
-
-		loadPlugin(pluginModuleName);
-
-		++iterPlugins;
+		++iteratorPlugins;
 	}
 	return 0;
 }
@@ -276,7 +290,6 @@ int PluginLoader::unloadAllPlugins()
 
 	//-- NOTE: we are not destroying QMap plugins here because we need it for new loading and
 	//-- it will be automatically destroyed on fully exit
-	QPluginLoader loader;
 	QMap<QString, Plugin>::iterator iteratorPlugins = plugins->begin();
 	QMap<QString, Plugin>::iterator pluginsEnd = plugins->end();
 	while (iteratorPlugins != pluginsEnd) {
@@ -291,14 +304,26 @@ int PluginLoader::unloadAllPlugins()
 
 const QMap<QString, IDBPlugin*>* PluginLoader::getDBPlugins()
 {
+	QPluginLoader loader;
 	QMap<QString, IDBPlugin*>* dbPlugins = new QMap<QString, IDBPlugin*>();
-	QMapIterator<QString, Plugin> iter(*plugins);
-	while (iter.hasNext()) {
-		iter.next();
-		IDBPlugin* pl = qobject_cast<IDBPlugin*>(iter.value().instance);
-		if (pl)
-			dbPlugins->insert(iter.key(), pl);
+	QMap<QString, Plugin>::iterator iteratorPlugins = plugins->begin();
+	QMap<QString, Plugin>::iterator pluginsEnd = plugins->end();
+	IDBPlugin* pluginInterface = 0;
+
+	while (iteratorPlugins != pluginsEnd) {
+		if (!iteratorPlugins.value().loaded) {
+			loader.setFileName(pluginsDir.absoluteFilePath(iteratorPlugins.key()));
+			pluginInterface = qobject_cast<IDBPlugin*>(loader.instance());
+		} else {
+			pluginInterface = qobject_cast<IDBPlugin*>(iteratorPlugins.value().instance);
+		}
+		if (pluginInterface)
+			dbPlugins->insert(iteratorPlugins.key(), pluginInterface);
+		else
+			loader.unload();
+		++iteratorPlugins;
 	}
+
 	if (dbPlugins->isEmpty()) {
 		delete dbPlugins;
 		return 0;

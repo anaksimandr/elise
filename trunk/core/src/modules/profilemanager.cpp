@@ -205,7 +205,7 @@ int ProfileManager::loadDefaultProfile()
 		return 1;
 	}
 
-	return PluginLoader::loadPlugin(cmbDBPlugins->currentText());
+	return PluginLoader::loadDBPlugin(cmbDBPlugins->currentText(), DBPlugins);
 }
 
 void ProfileManager::abort()
@@ -228,7 +228,7 @@ void ProfileManager::ok()
 	}
 
 	//-- if success then try fully load the plugin	
-	done(PluginLoader::loadPlugin(cmbDBPlugins->currentText()));
+	done(PluginLoader::loadDBPlugin(cmbDBPlugins->currentText(), DBPlugins));
 }
 
 void ProfileManager::createProfile()
