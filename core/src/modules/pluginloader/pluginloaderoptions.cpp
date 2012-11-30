@@ -28,15 +28,14 @@ int PluginLoaderOptions::createLoaderOptionsPage(intptr_t pfnPageAdder, intptr_t
 	const QMap<QString, Plugin>* plugins = PluginLoader::getAvailablePlugins();
 	QMap<QString, Plugin>::const_iterator i = plugins->constBegin();
 	QMap<QString, Plugin>::const_iterator iEnd = plugins->constEnd();
-	IPlugin* pluginInterface;
 	while (i != iEnd) {
-		pluginInterface = qobject_cast<IPlugin*>((*i).instance);
-		pluginInfo = pluginInterface->ElisePluginInfo();
+		pluginInfo = PluginLoader::getElisePluginInfo(i.key());
 		model->insert(i.key(), pluginInfo->name,
 					  QString::number(pluginInfo->version[0]) + "."
 					+ QString::number(pluginInfo->version[1]) + "."
 					+ QString::number(pluginInfo->version[2]) + "."
 					+ QString::number(pluginInfo->version[3]));
+		delete pluginInfo;
 		++i;
 	}
 

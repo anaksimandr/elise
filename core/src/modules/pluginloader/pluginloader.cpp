@@ -42,6 +42,24 @@ QDir PluginLoader::getPluginsDir()
 	return pluginsDir;
 }
 
+PluginInfo* PluginLoader::getElisePluginInfo(const QString &pluginModuleName)
+{
+	PluginInfo* result = new PluginInfo;
+	QPluginLoader loader;
+	loader.setFileName(pluginsDir.absoluteFilePath(pluginModuleName));
+	bool doNotUnload = loader.isLoaded();
+	IPlugin* pluginInterface = qobject_cast<IPlugin*>(loader.instance());
+	const PluginInfo* buf = pluginInterface->ElisePluginInfo();
+	result->name = buf->name;
+	result->version[0] = buf->version[0];
+	result->version[1] = buf->version[1];
+	result->version[2] = buf->version[2];
+	result->version[3] = buf->version[3];
+	if (!doNotUnload)
+		loader.unload();
+	return result;
+}
+
 const QMap<QString, Plugin>* PluginLoader::getAvailablePlugins()
 {
 	if (plugins == 0)
@@ -127,10 +145,11 @@ bool PluginLoader::isPluginLoadable(const QString& pluginModuleName)
 
 	const Plugin* p = &plugins->value(pluginModuleName);
 	if (p->loaded)
-		return true;
+		return false;
 
 	QPluginLoader loader;
 	loader.setFileName(pluginsDir.absoluteFilePath(pluginModuleName));
+	//bool doNotUnload = loader.isLoaded();
 	IPlugin* pluginInterface = qobject_cast<IPlugin*>(loader.instance());
 
 	//-- Iterate all interfaces of current plugin
@@ -146,7 +165,9 @@ bool PluginLoader::isPluginLoadable(const QString& pluginModuleName)
 		}
 		++i;
 	}
+	//if (!doNotUnload)
 	loader.unload();
+
 	return result;
 }
 
@@ -159,40 +180,35 @@ int PluginLoader::loadDBPlugin(const QString& pluginModuleName,
 
 	while (iteratorPlugins != pluginsEnd) {
 		loader.setFileName(pluginsDir.absoluteFilePath(pluginModuleName));
-		if (iteratorPlugins.key() == pluginModuleName) {
-			IDBPlugin* pluginInterface = qobject_cast<IDBPlugin*>(loader.instance());
-			/////
-		} else {
+
+		if (iteratorPlugins.key() == pluginModuleName)
+			loadPlugin(pluginModuleName);
+		else
 			loader.unload();
-		}
+
+		++iteratorPlugins;
 	}
 
-
-	Plugin* plugin = &(*plugins)[pluginModuleName];
-	if (plugin->pluginInterface->Load(&coreAPI))
-		return 1;
-	plugin->loaded = true;
-	//interfaces->insert(EUUID_DATABASE, pluginModuleName);
 	return 0;
 }
 
 int PluginLoader::loadPlugin(const QString& pluginModuleName)
 {
-	QPluginLoader loader;
 	Plugin* plugin = &(*plugins)[pluginModuleName];
+	QObject* pluginInstance = plugin->instance;
 
-#ifndef NDEBUG
-	if (plugin->instance)
-		QMessageBox::information(0, "Debug loadPlugin",
-								 "Plugin interface already indicates to a valid(?) instance\n"
-								 "Memory leak?\n" + pluginModuleName,
-								 QMessageBox::Ok);
-#endif
+	if (!pluginInstance) {
+		QPluginLoader loader;
+		//QMessageBox::information(0, "Debug loadPlugin",
+		//						 "Plugin interface already indicates to a valid(?) instance\n"
+		//						 "Memory leak?\n" + pluginModuleName,
+		//						 QMessageBox::Ok);
 
-	loader.setFileName(pluginsDir.absoluteFilePath(pluginModuleName));
-	QObject* pluginObject = loader.instance();
+		loader.setFileName(pluginsDir.absoluteFilePath(pluginModuleName));
+		pluginInstance = loader.instance();
+	}
 	//-- Elise plugin
-	IPlugin* pluginInterface = qobject_cast<IPlugin*>(pluginObject);
+	IPlugin* pluginInterface = qobject_cast<IPlugin*>(pluginInstance);
 	if (!pluginInterface) {
 		return 1;
 	}
@@ -202,7 +218,7 @@ int PluginLoader::loadPlugin(const QString& pluginModuleName)
 		return 1;
 
 	plugin->loaded = true;
-	plugin->instance = pluginObject;
+	plugin->instance = pluginInstance;
 
 	//-- Register loaded interfaces
 	const QSet<QUuid>* pluginInterfaces = pluginInterface->ElisePluginInterfaces();

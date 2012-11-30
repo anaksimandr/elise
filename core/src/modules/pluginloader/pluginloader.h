@@ -2,15 +2,11 @@
 #define ELISE_CORE_MODULES_PLUGINLOADER_PLUGINLOADER_H_
 
 #include <QtWidgets/QtWidgets>
+#include "../../../../api/e_pluginapi.h"
 
 class IPlugin;
 class IDBPlugin;
 class CoreAPI;
-
-/*typedef struct {
-	QString name;
-	IDBPlugin* plugin;
-} LoadedDBPlugin;*/
 
 typedef struct {
 	bool		loaded;
@@ -28,6 +24,7 @@ private:
 	static bool			isLoadingPluginDisabled(const QString& pluginModuleName);
 public:
 	static QDir			getPluginsDir();
+	static PluginInfo*	getElisePluginInfo(const QString& pluginModuleName);
 	static int			loadPluginLoader();
 	static int			loadDBPlugin(const QString& pluginModuleName,
 									 const QMap<QString, IDBPlugin*>* dbPlugins);

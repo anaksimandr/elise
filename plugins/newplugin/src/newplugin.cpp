@@ -5,14 +5,13 @@ const QLatin1String	TESTPLUGIN_SERVICE	=	QLatin1String("TESTPLUGIN_SERVICE");
 ICore* core;
 QSet<QUuid>* NewPlugin::interfaces = 0;
 
-PluginInfo pluginInfo = {
+const PluginInfo pluginInfo = {
 	"NewPlugin",
-	{0,0,0,1},
-	//"{ca0ae4d0-ea7c-4743-b34e-1a2c9c61991d}"
+	{0,0,0,1}
 };
 
 
-PluginInfo* NewPlugin::ElisePluginInfo()
+const PluginInfo* NewPlugin::ElisePluginInfo()
 {
 	return &pluginInfo;
 }

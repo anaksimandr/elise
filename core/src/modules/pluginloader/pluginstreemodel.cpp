@@ -110,7 +110,7 @@ Qt::ItemFlags PluginsTreeModel::flags(const QModelIndex& itemIndex) const
 	Qt::ItemFlags flags = Qt::ItemIsSelectable;
 
 	PluginsTreeItem* item = getItem(itemIndex);
-	if (item->isPluginLoadable())
+	if (item->isPluginLoaded() || item->isPluginLoadable())
 		flags |=  Qt::ItemIsEnabled;
 
 	if (itemIndex.column() == 0 )

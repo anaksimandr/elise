@@ -13,10 +13,9 @@ QSet<QUuid>* DBPlugin::interfaces = 0;
 
 ICore* core;
 
-PluginInfo pluginInfo = {
+const PluginInfo pluginInfo = {
 	QLatin1String("DBPlugin"),
-	{0,0,0,1},
-	//"{ca0ae4d0-ea7c-4743-b34e-1a2c9c61991d}"
+	{0,0,0,1}
 };
 
 QDir DBPlugin::getProfileDir()
@@ -389,7 +388,7 @@ int DBPlugin::CreateProfile(const QString& name, const QString& password)
 	return 0;
 }
 
-PluginInfo* DBPlugin::ElisePluginInfo()
+const PluginInfo* DBPlugin::ElisePluginInfo()
 {
 	return &pluginInfo;
 }

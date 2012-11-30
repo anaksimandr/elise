@@ -20,7 +20,7 @@ private:
 	int							loadProfile(const QString& name, const QString& passwd);
 	static QSet<QUuid>*			interfaces;
 public:
-	PluginInfo*					ElisePluginInfo();
+	const PluginInfo*			ElisePluginInfo();
 	const QSet<QUuid>*			ElisePluginInterfaces(void);
 	int							Load(ICore* coreAPI);
 	int							Unload(void);

@@ -14,6 +14,7 @@ SOURCES += \
 
 HEADERS += \
 	../../api/e_dbpluginapi.h \
+	../../api/e_pluginapi.h \
 	src/dbplugin.h \
     src/dbkey.h \
 	src/elisedb.h \
