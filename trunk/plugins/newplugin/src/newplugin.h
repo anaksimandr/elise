@@ -11,7 +11,7 @@ class NewPlugin : public QObject, IPlugin
 	Q_PLUGIN_METADATA(IID "elise.IPlugin")
 	static QSet<QUuid>*		interfaces;
 public:
-	PluginInfo*				ElisePluginInfo();
+	const PluginInfo*		ElisePluginInfo();
 	const QSet<QUuid>*		ElisePluginInterfaces(void);
 	int						Load(ICore* coreAPI);
 	int						Unload(void);

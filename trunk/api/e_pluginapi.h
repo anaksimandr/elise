@@ -14,12 +14,12 @@ Note: DBPlugin should not implements any other interfaces.
 
 */
 
-/*//-- Store information about version here
+/*/-- Store information about version here
 typedef struct {
 	union
 	{
 		unsigned char chars[4];		// [3] - major version, [2] - minor version
-		qint32 value;				// [1] - release num, [0] - build num
+		qint32 intValue;				// [1] - release num, [0] - build num
 	};
 } EVersion;*/
 
@@ -71,7 +71,7 @@ public:
 	virtual						~IPlugin() {}
 
 	//-- If this function return not NULL then the plugin is valid and can be load
-	virtual	PluginInfo*			ElisePluginInfo() = 0;
+	virtual	const PluginInfo*	ElisePluginInfo() = 0;
 
 	//--
 	virtual	const QSet<QUuid>*	ElisePluginInterfaces(void) = 0;
