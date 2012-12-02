@@ -6,23 +6,47 @@
 #include "pluginstreemodel.h"
 #include "pluginloader.h"
 
+QTreeView*	PluginLoaderOptions::treeView = 0;
+QLabel* PluginLoaderOptions::description = 0;
+QLabel* PluginLoaderOptions::author = 0;
+QLabel* PluginLoaderOptions::authorEmail = 0;
+QLabel* PluginLoaderOptions::copyright = 0;
+QLabel* PluginLoaderOptions::homepage = 0;
 
 void PluginLoaderOptions::saveLoaderOptions()
 {
 	//return 1;
 }
 
+void PluginLoaderOptions::loadSelectedPluginInfo(const QModelIndex& current, const QModelIndex&)
+{
+	PluginInfo* pluginInfo;
+	PluginsTreeModel* model = dynamic_cast<PluginsTreeModel*>(treeView->model());
+	pluginInfo = PluginLoader::getElisePluginInfo(model->data(model->index(current.row(), 1),
+															  Qt::DisplayRole).toString());
+	description->setText(pluginInfo->description);
+}
+
 int PluginLoaderOptions::createLoaderOptionsPage(intptr_t pfnPageAdder, intptr_t)
 {
 	QWidget* widget = new QWidget();
 
-
-	QTreeView* treeView = new QTreeView(widget);
+	treeView = new QTreeView(widget);
+	treeView->resize(474, 200);
+	treeView->move(2, 2);
 	PluginsTreeModel* model = new PluginsTreeModel(treeView);
 	treeView->setModel(model);
+	treeView->setColumnWidth(0, 15);
+	treeView->setColumnWidth(1, 185);
+	treeView->setColumnWidth(2, 212);
+	treeView->setColumnWidth(3, 60);
 	treeView->setHeaderHidden(true);
 	treeView->setRootIsDecorated(false);
-	treeView->setItemDelegate(new CheckBoxDelegate(treeView));
+	CheckBoxDelegate* dl = new CheckBoxDelegate(treeView);
+	treeView->setItemDelegate(dl);
+
+	QObject::connect(treeView->selectionModel(), &QItemSelectionModel::currentChanged,
+					 &PluginLoaderOptions::loadSelectedPluginInfo);
 
 	PluginInfo* pluginInfo;
 	const QMap<QString, Plugin>* plugins = PluginLoader::getAvailablePlugins();
@@ -38,6 +62,12 @@ int PluginLoaderOptions::createLoaderOptionsPage(intptr_t pfnPageAdder, intptr_t
 		delete pluginInfo;
 		++i;
 	}
+	//-- First call of this function. false = insert controls
+	model->updateLoadControls(false);
+
+	description = new QLabel(widget);
+	description->move(10, 222);
+	description->setText("sd");
 
 	widget->setToolTip("Plugins");
 

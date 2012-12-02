@@ -1,31 +1,54 @@
 #include <QtWidgets/QtWidgets>
 #include "pluginstreeitem.h"
+#include "pluginstreemodel.h"
 
 PluginsTreeItem::PluginsTreeItem(const QString& pluginModuleNameExt, const QString& pluginNameExt,
-								 const QString& pluginVersionExt,
+								 const QString& pluginVersionExt, PluginsTreeModel* modelExt,
 								 PluginsTreeItem* parentExt)
 {
-	this->pluginModuleName = pluginModuleNameExt;
-	this->pluginName = pluginNameExt;
-	this->pluginVersion = pluginVersionExt;
-	this->parentItem = parentExt;
+	pluginModuleName = pluginModuleNameExt;
+	pluginName = pluginNameExt;
+	pluginVersion = pluginVersionExt;
+	parentItem = parentExt;
+	model = modelExt;
+	if (pluginModuleName.isEmpty())
+		return;
+	QCheckBox* cb = new QCheckBox();
+	loadControl = cb;
+	if (isPluginLoaded())
+		cb->setChecked(true);
+	cb->setEnabled(isPluginLoadable());
+	connect(cb, &QCheckBox::toggled, this, &PluginsTreeItem::dataChange);
+	//loadControl->setAutoFillBackground(true);
+}
+
+void PluginsTreeItem::dataChange(bool checked)
+{
+	//-- Param "true" means update of controls, not create
+	if (checked)
+		PluginLoader::loadPlugin(pluginModuleName);
+	else
+		PluginLoader::unloadPlugin(pluginModuleName);
+	model->updateLoadControls(true);
 }
 
 bool PluginsTreeItem::insertChild(const QString& pluginModuleNameExt, const QString& pluginNameExt,
-								  const QString& pluginVersionExt)
+								  const QString& pluginVersionExt, PluginsTreeModel* modelExt)
 {
 	PluginsTreeItem* item = new PluginsTreeItem(pluginModuleNameExt, pluginNameExt,
-												pluginVersionExt, this);
+												pluginVersionExt, modelExt, this);
 
 	if (childItems.count() == 0)
 		childItems.insert(0, item);
 	else {
-		QList<PluginsTreeItem*>::iterator i;
-		for (i = childItems.begin(); i != childItems.end(); ++i) {
-			if ((*i)->getPluginName().toUpper() > pluginNameExt.toUpper()) {
+		QList<PluginsTreeItem*>::iterator i = childItems.begin();
+		QList<PluginsTreeItem*>::iterator iEnd = childItems.end();
+		while (i != iEnd) {
+			if ((*i)->getPluginModuleName().toUpper() > pluginModuleNameExt.toUpper()) {
 				childItems.insert(i, item);
-				return true;
+				break;
 			}
+			++i;
 		}
 		childItems.insert(i, item);
 	}

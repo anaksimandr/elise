@@ -140,47 +140,6 @@ OptionsDialog::OptionsDialog()
 	btn->move(620, 467);
 	connect(btn, &QPushButton::clicked, this, &OptionsDialog::applay);
 
-	/*
-	//treeView->setRootIsDecorated(true);
-	//this->setStyleSheet("QTreeView::item {border-bottom: 1px solid #bfcde4;}"
-		//				"QTreeView::item::selected {border-bottom: 1px solid #bfcde4;}");
-	this->setStyleSheet(
-						"QTreeView::branch:has-siblings:adjoins-item {background: red;}"
-				"QTreeView::branch:!has-children:!has-siblings:adjoins-item {background: blue;}"
-				"QTreeView::branch:closed:has-children:has-siblings {background: pink;}");
-
-	edit = new QLineEdit(widgetClientArea);
-	edit->move(20, 20);
-
-	QPushButton* btn = new QPushButton("create", widgetClientArea);
-	btn->move(50, 200);
-	connect(btn, &QPushButton::clicked, this, &OptionsDialog::addChild);
-
-	btn = new QPushButton("search", widgetClientArea);
-	btn->move(130, 200);
-	connect(btn, &QPushButton::clicked, this, &OptionsDialog::findItem);
-
-	btn = new QPushButton("sort selected", widgetClientArea);
-	btn->move(50, 240);
-	connect(btn, &QPushButton::clicked, this, &OptionsDialog::sort);
-
-	btn = new QPushButton("delete", widgetClientArea);
-	btn->move(130, 240);
-	connect(btn, &QPushButton::clicked, this, &OptionsDialog::deleteChild);
-
-	QPalette p = widgetClientArea->palette();
-	p.setColor(QPalette::Window, Qt::red);
-	p.setColor(QPalette::WindowText, Qt::red);
-	//p.setColor(QPalette::Base, Qt::red);
-	//p.setColor(QPalette::AlternateBase, Qt::red);
-	p.setColor(QPalette::Text, Qt::red);
-	widgetClientArea->setPalette(p);
-	//if (widgetClientArea->palette(). == QPalette::NoRole)
-		//QMessageBox::critical(0, "Debug", "bingo nahui", QMessageBox::Ok);
-	//widgetClientArea->show();
-	//QTreeView* vv = new QTreeView(widgetClientArea);
-	//vv->resize(vv->parentWidget()->size());*/
-
 	//core::CreateServiceFunction(&OPTIONS_ADD_PAGE, &AddPage);
 	core::CreateHookableEvent(&OPTIONS_CLOSE);
 }
