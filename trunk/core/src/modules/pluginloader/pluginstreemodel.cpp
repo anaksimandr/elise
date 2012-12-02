@@ -1,31 +1,17 @@
 #include "pluginstreemodel.h"
 #include "pluginstreeitem.h"
 
-QSize CheckBoxDelegate::sizeHint(const QStyleOptionViewItem&, const QModelIndex&) const
-{
-	return QSize(50, 20);
-}
-
-PluginsTreeModel::PluginsTreeModel(QObject* parent)
+PluginsTreeModel::PluginsTreeModel(QTreeView* treeViewExt, QObject* parent)
 	: QAbstractItemModel(parent)
 {
+	treeView = treeViewExt;
 	QString str;
-	rootItem = new PluginsTreeItem(str, str, str);
+	rootItem = new PluginsTreeItem(str, str, str, this);
 }
 
 PluginsTreeModel::~PluginsTreeModel()
 {
 	delete rootItem;
-}
-
-PluginsTreeItem* PluginsTreeModel::getItem(const QModelIndex& itemIndex) const
-{
-	if (itemIndex.isValid()) {
-		PluginsTreeItem* item = static_cast<PluginsTreeItem*>(itemIndex.internalPointer());
-		if (item)
-			return item;
-	}
-	return rootItem;
 }
 
 QModelIndex PluginsTreeModel::index(int row, int column, const QModelIndex& parentIndex) const
@@ -56,7 +42,6 @@ QModelIndex PluginsTreeModel::parent(const QModelIndex& itemIndex) const
 	return createIndex(parent->childNumber(), 0, parent);
 }
 
-
 QVariant PluginsTreeModel::data(const QModelIndex& itemIndex, int role) const
 {
 	if (!itemIndex.isValid())
@@ -64,20 +49,20 @@ QVariant PluginsTreeModel::data(const QModelIndex& itemIndex, int role) const
 
 	PluginsTreeItem* item = static_cast<PluginsTreeItem*>(itemIndex.internalPointer());
 
-	if (role == Qt::CheckStateRole && itemIndex.column() == 0 )
-		return static_cast<int>(item->isPluginLoaded() ? Qt::Checked : Qt::Unchecked );
-
 	if (role != Qt::DisplayRole)
 		return QVariant();
 
 	switch (itemIndex.column()) {
 		case 0:
-			return item->getPluginModuleName();
+			return QVariant();
 			break;
 		case 1:
-			return item->getPluginName();
+			return item->getPluginModuleName();
 			break;
 		case 2:
+			return item->getPluginName();
+			break;
+		case 3:
 			return item->getPluginVersion();
 			break;
 		default:
@@ -88,7 +73,6 @@ QVariant PluginsTreeModel::data(const QModelIndex& itemIndex, int role) const
 	}
 }
 
-
 int PluginsTreeModel::rowCount(const QModelIndex& parentIndex) const
 {
 	PluginsTreeItem* parent = getItem(parentIndex);
@@ -98,38 +82,44 @@ int PluginsTreeModel::rowCount(const QModelIndex& parentIndex) const
 
 int PluginsTreeModel::columnCount(const QModelIndex&) const
 {
-	return 3;
+	return 4;
 }
-
 
 Qt::ItemFlags PluginsTreeModel::flags(const QModelIndex& itemIndex) const
 {
 	if (!itemIndex.isValid())
 		return 0;
 
-	Qt::ItemFlags flags = Qt::ItemIsSelectable;
+	Qt::ItemFlags flags = Qt::ItemIsSelectable | Qt::ItemIsEnabled;
 
-	PluginsTreeItem* item = getItem(itemIndex);
-	if (item->isPluginLoaded() || item->isPluginLoadable())
-		flags |=  Qt::ItemIsEnabled;
+	//PluginsTreeItem* item = getItem(itemIndex);
+	//if (item->isPluginLoaded() || item->isPluginLoadable())
+	//	flags |=  Qt::ItemIsEnabled;
 
-	if (itemIndex.column() == 0 )
-		flags |= Qt::ItemIsUserCheckable;
+	//if (itemIndex.column() == 0 )
+	//	flags |= Qt::ItemIsUserCheckable;
 
 	return flags;
 }
 
-bool PluginsTreeModel::setData(const QModelIndex& itemIndex, const QVariant& value, int role)
+void PluginsTreeModel::updateLoadControls(bool update) const
 {
-	if (role != Qt::CheckStateRole || itemIndex.column() != 0)
-		return false;
+	QModelIndex itemIndex;
+	QModelIndex p = parent(index(0,0));
+	int to = rowCount(p);
 
-	PluginsTreeItem* item = static_cast<PluginsTreeItem*>(itemIndex.internalPointer());
-	item->setPluginLoaded(value.toBool());
+	for (int r = 0; r < to; ++r) {
+		itemIndex = index(r, 0, p);
 
-	emit dataChanged(itemIndex, itemIndex);
+		PluginsTreeItem* item = getItem(itemIndex);
+		if (update)
+			//-- Update state
+			item->isPluginLoadable();
+		else
+			//-- Insert control in model
+			treeView->setIndexWidget(itemIndex, item->getLoadControl());
 
-	return true;
+	}
 }
 
 bool PluginsTreeModel::insert(const QString& pluginModuleName, const QString& pluginName,
@@ -139,10 +129,9 @@ bool PluginsTreeModel::insert(const QString& pluginModuleName, const QString& pl
 		return false;
 
 	PluginsTreeItem* parent = getItem(parentIndex);
-	bool success;
 
 	beginInsertRows(parentIndex, 0, 0);
-	success = parent->insertChild(pluginModuleName, pluginName, pluginVersion);
+	bool success = parent->insertChild(pluginModuleName, pluginName, pluginVersion, this);
 	endInsertRows();
 
 	return success;

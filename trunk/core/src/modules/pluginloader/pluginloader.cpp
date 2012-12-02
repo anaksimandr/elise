@@ -55,6 +55,11 @@ PluginInfo* PluginLoader::getElisePluginInfo(const QString &pluginModuleName)
 	result->version[1] = buf->version[1];
 	result->version[2] = buf->version[2];
 	result->version[3] = buf->version[3];
+	result->description = buf->description;
+	result->author = buf->author;
+	result->authorEmail = buf->authorEmail;
+	result->copyright = buf->copyright;
+	result->homepage = buf->homepage;
 	if (!doNotUnload)
 		loader.unload();
 	return result;
@@ -140,7 +145,7 @@ bool PluginLoader::isPluginLoaded(const QString& pluginModuleName)
 
 bool PluginLoader::isPluginLoadable(const QString& pluginModuleName)
 {
-	//if (!plugins->contains(pluginModuleName))
+	//if (pluginModuleName.isEmpty())
 		//return false;
 
 	const Plugin* p = &plugins->value(pluginModuleName);
@@ -229,7 +234,7 @@ int PluginLoader::loadPlugin(const QString& pluginModuleName)
 		++i;
 	}
 
-	QMessageBox::information(0, "Debug", "loadPlugin " + pluginModuleName, QMessageBox::Ok);
+	//QMessageBox::information(0, "Debug", "loadPlugin " + pluginModuleName, QMessageBox::Ok);
 	return 0;
 }
 
@@ -270,7 +275,7 @@ int PluginLoader::unloadPlugin(const QString& pluginModuleName)
 	plugin->instance = 0;
 	plugin->loaded = false;
 
-	QMessageBox::information(0, "Debug", "unloadPlugin " + pluginModuleName, QMessageBox::Ok);
+	//QMessageBox::information(0, "Debug", "unloadPlugin " + pluginModuleName, QMessageBox::Ok);
 	return 0;
 }
 

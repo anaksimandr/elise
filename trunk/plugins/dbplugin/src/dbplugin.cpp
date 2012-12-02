@@ -15,7 +15,12 @@ ICore* core;
 
 const PluginInfo pluginInfo = {
 	QLatin1String("DBPlugin"),
-	{0,0,0,1}
+	{0,0,0,1},
+	"Basic DB plugin",
+	"Andreenko Sergey",
+	"s.andreenko@gmail.com",
+	"(c) 2012 Andreenko Sergey",
+	"http://"
 };
 
 QDir DBPlugin::getProfileDir()
