@@ -8,11 +8,12 @@ QSet<QUuid>* NewPlugin::interfaces = 0;
 const PluginInfo pluginInfo = {
 	"NewPlugin",
 	{0,0,0,1},
-	"simple plugin",
-	"author",
-	"exa@mple.org",
-	"(c) example copyright",
-	"http://simple"
+	"Simple plugin",
+	"http://code.google.com/p/elise/",
+	"somebody",
+	"somebody@nomail.com",
+	"© me",
+	"{792e2ede-6e43-4891-9ab1-a9eb8f88cc09}"
 };
 
 

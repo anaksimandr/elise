@@ -17,10 +17,11 @@ const PluginInfo pluginInfo = {
 	QLatin1String("DBPlugin"),
 	{0,0,0,1},
 	"Basic DB plugin",
+	"http://code.google.com/p/elise/",
 	"Andreenko Sergey",
 	"s.andreenko@gmail.com",
-	"(c) 2012 Andreenko Sergey",
-	"http://"
+	"© 2012 Andreenko Sergey",
+	"{708acd4b-bda3-45a0-b2c6-290f9c7cfce3}"
 };
 
 QDir DBPlugin::getProfileDir()

@@ -4,6 +4,8 @@
 #include <QtWidgets/QtWidgets>
 #include "../../../../api/e_pluginapi.h"
 
+extern const QLatin1String	core_IsPluginLoaded;			//"DB/DeleteSetting"
+
 class IPlugin;
 class IDBPlugin;
 class CoreAPI;
@@ -11,6 +13,7 @@ class CoreAPI;
 typedef struct {
 	bool		loaded;
 	QObject*	instance;
+	QUuid*		uuid;
 } Plugin;
 
 class PluginLoader
@@ -32,8 +35,9 @@ public:
 	static int			loadPlugin(const QString& pluginModuleName);
 	static int			unloadPlugin(const QString& pluginModuleName);
 	static int			unloadAllPlugins();
-	static bool			isPluginLoaded(const QString& pluginModuleName);
 	static bool			isPluginLoadable(const QString& pluginModuleName);
+	static bool			isPluginLoaded(const QString& pluginModuleName);
+	static intptr_t		isPluginLoaded(intptr_t, intptr_t);
 	static const QMap<QString, Plugin>*	getAvailablePlugins();
 	static const QMap<QString, IDBPlugin*>*	getDBPlugins();
 };

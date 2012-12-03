@@ -30,13 +30,14 @@ typedef int (*EliseHook)(intptr_t,intptr_t);
 typedef intptr_t (*EliseService)(intptr_t,intptr_t);
 
 typedef struct {
-	QString name;
+	QString	name;
 	unsigned char version[4];
-	QString description;
-	QString author;
-	QString authorEmail;
-	QString copyright;
-	QString homepage;
+	QString	description;
+	QString	homepage;
+	QString	author;
+	QString	authorEmail;
+	QString	copyright;
+	QUuid	uuid;
 } PluginInfo;
 
 //-- Use this to store information about your hooks and to call UnhookEvent() function

@@ -97,6 +97,7 @@ void OptionsDialog::okButton()
 
 OptionsDialog::OptionsDialog()
 {
+	this->setWindowTitle("Options");
 	this->setAttribute(Qt::WA_DeleteOnClose);
 	this->setFixedSize(700, 500);
 
