@@ -80,12 +80,13 @@ const QMap<QString, Plugin>* PluginLoader::getAvailablePlugins()
 	plugin.instance = 0;
 
 	//-- First of all validate current list of plugins
-	QMap<QString, Plugin>::const_iterator iteratorPlugins = plugins->constBegin();
-	QMap<QString, Plugin>::const_iterator pluginsEnd = plugins->constEnd();
+	QMap<QString, Plugin>::iterator iteratorPlugins = plugins->begin();
+	QMap<QString, Plugin>::iterator pluginsEnd = plugins->end();
 	while (iteratorPlugins != pluginsEnd) {
 		if (!pluginsDir.exists(iteratorPlugins.key()))
-				plugins->take(iteratorPlugins.key());
-		++iteratorPlugins;
+			iteratorPlugins = plugins->erase(iteratorPlugins);
+		else
+			++iteratorPlugins;
 	}
 
 	//-- Update the list of plugins
@@ -222,8 +223,11 @@ int PluginLoader::loadPlugin(const QString& pluginModuleName)
 	if (pluginInterface->Load(&coreAPI))
 		return 1;
 
+	const PluginInfo* pluginInfo = pluginInterface->ElisePluginInfo();
+
 	plugin->loaded = true;
 	plugin->instance = pluginInstance;
+	plugin->uuid = const_cast<QUuid*>(&(pluginInfo->uuid));
 
 	//-- Register loaded interfaces
 	const QSet<QUuid>* pluginInterfaces = pluginInterface->ElisePluginInterfaces();
@@ -274,6 +278,7 @@ int PluginLoader::unloadPlugin(const QString& pluginModuleName)
 
 	plugin->instance = 0;
 	plugin->loaded = false;
+	plugin->uuid = 0;
 
 	//QMessageBox::information(0, "Debug", "unloadPlugin " + pluginModuleName, QMessageBox::Ok);
 	return 0;
