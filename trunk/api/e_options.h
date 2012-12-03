@@ -5,12 +5,17 @@ class QLatin1String;
 class QString;
 class QWidget;
 
-/*/-- Services
-extern const QLatin1String	OPTIONS_SHOW;		//"Options/Show"
-//-- Hookable events
-//-- There is also OPTIONS_SHOW event
-extern const QLatin1String	OPTIONS_SAVE;		//"Options/Save"
-extern const QLatin1String	OPTIONS_CLOSE;		//"Options/Close"*/
+/* Use this in your code if need
+ *
+ * //-- Services
+ * const QLatin1String	kOptionsShow_service	=	QLatin1String("Options/Show");
+ *
+ * //-- Hookable events
+ * //-- There is also "Options/Show" event
+ * #define kOptionsShow_event kOptionsShow_service
+ * const QLatin1String	kOptionsSave_event		=	QLatin1String("Options/Save");
+ * const QLatin1String	kOptionsClose_event		=	QLatin1String("Options/Close");
+*/
 
 //-- Functions that will be called during the save settings
 typedef void (*OptionsSaver)();

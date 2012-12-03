@@ -8,22 +8,23 @@
 class QModelIndex;
 
 //-- Services
-extern const QLatin1String	OPTIONS_SHOW;		//"Options/Show"
+extern const QLatin1String	kOptionsShow_service;		//"Options/Show"
 //-- Hookable events
-//-- There is also OPTIONS_SHOW event
-extern const QLatin1String	OPTIONS_SAVE;		//"Options/Save"
-extern const QLatin1String	OPTIONS_CLOSE;		//"Options/Close"
+//-- There is also "Options/Show" event
+#define kOptionsShow_event kOptionsShow_service
+extern const QLatin1String	kOptionsSave_event;			//"Options/Save"
+extern const QLatin1String	kOptionsClose_event;		//"Options/Close"
 
 class OptionsDialog : public QWidget
 {
 	Q_OBJECT
 private:
-	QTreeView*				treeView;
-	QStackedLayout*			layout;
-	QSet<OptionsSaver>		saveFunctions;
+	QTreeView*				treeView_;
+	QStackedLayout*			layout_;
+	QSet<OptionsSaver>		saveFunctions_;
 
 public:
-	static OptionsDialog*	options;
+	static OptionsDialog*	options_;
 	OptionsDialog();
 	~OptionsDialog();
 

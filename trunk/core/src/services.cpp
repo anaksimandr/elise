@@ -3,11 +3,11 @@
 #include <QLatin1String>
 #include "services.h"
 
-const QLatin1String	SHUTDOWN_SERVICE	=	QLatin1String("System/Shutdown");
-const QLatin1String	CHANGEPROFILE_SERVICE	=	QLatin1String("System/ChangeAcc");
-const QLatin1String	DB_WRITESETTING	=	QLatin1String("DB/WriteSetting");
-const QLatin1String	DB_READSETTING	=	QLatin1String("DB/ReadSetting");
-const QLatin1String	DB_DELSETTING	=	QLatin1String("DB/DeleteSetting");
+const QLatin1String	kShutdown_service		=	QLatin1String("System/Shutdown");
+const QLatin1String	kChangeProfile_service	=	QLatin1String("System/ChangeAcc");
+const QLatin1String	kDBWriteSetting_service	=	QLatin1String("DB/WriteSetting");
+const QLatin1String	kDBReadSetting_service	=	QLatin1String("DB/ReadSetting");
+const QLatin1String	kDBDellSetting_service	=	QLatin1String("DB/DeleteSetting");
 
 namespace core
 {

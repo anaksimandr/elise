@@ -5,9 +5,9 @@
 #include "dbkey.h"
 #include "../../../api/e_database.h"
 
-const QLatin1String	DB_WRITESETTING	=	QLatin1String("DB/WriteSetting");
-const QLatin1String	DB_READSETTING	=	QLatin1String("DB/ReadSetting");
-const QLatin1String	DB_DELSETTING	=	QLatin1String("DB/DeleteSetting");
+const QLatin1String	kDBWriteSetting_service	=	QLatin1String("DB/WriteSetting");
+const QLatin1String	kDBReadSetting_service	=	QLatin1String("DB/ReadSetting");
+const QLatin1String	kDBDellSetting_service	=	QLatin1String("DB/DeleteSetting");
 
 QSet<QUuid>* DBPlugin::interfaces = 0;
 
@@ -413,9 +413,9 @@ int DBPlugin::Load(ICore* coreAPI)
 {
 	core = coreAPI;
 
-	core->CreateServiceFunction(&DB_WRITESETTING, &WriteSettingToBase);
-	core->CreateServiceFunction(&DB_READSETTING, &ReadSettingFromBase);
-	core->CreateServiceFunction(&DB_DELSETTING, &DelteSettingFromBase);
+	core->CreateServiceFunction(&kDBWriteSetting_service, &WriteSettingToBase);
+	core->CreateServiceFunction(&kDBReadSetting_service, &ReadSettingFromBase);
+	core->CreateServiceFunction(&kDBDellSetting_service, &DelteSettingFromBase);
 
 	return 0;
 }
