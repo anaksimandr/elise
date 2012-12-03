@@ -2,87 +2,87 @@
 #include "treemodel.h"
 #include "../../services.h"
 
-const QLatin1String	OPTIONS_SHOW		=	QLatin1String("Options/Show");
-const QLatin1String	OPTIONS_SAVE		=	QLatin1String("Options/Save");
-const QLatin1String	OPTIONS_CLOSE		=	QLatin1String("Options/Close");
+const QLatin1String	kOptionsShow_service	=	QLatin1String("Options/Show");
+const QLatin1String	kOptionsSave_event		=	QLatin1String("Options/Save");
+const QLatin1String	kOptionsClose_event		=	QLatin1String("Options/Close");
 
-OptionsDialog* OptionsDialog::options = 0;
+OptionsDialog* OptionsDialog::options_ = 0;
 
 int OptionsDialog::showOptions(intptr_t, intptr_t)
 {
-	if (OptionsDialog::options == 0) {
-		OptionsDialog::options = new OptionsDialog();
+	if (OptionsDialog::options_ == 0) {
+		OptionsDialog::options_ = new OptionsDialog();
 		//OptionsDialog::addDefaultPages();
-		core::NotifyEventHooks(&OPTIONS_SHOW,
+		core::NotifyEventHooks(&kOptionsShow_event,
 							   reinterpret_cast<intptr_t>(&OptionsDialog::addPage), 0);
 	}
 
-	OptionsDialog::options->show();
+	OptionsDialog::options_->show();
 
 	return 0;
 }
 
 int OptionsDialog::loadOptionsModule()
 {
-	OptionsDialog::options = 0;
-	core::CreateHookableEvent(&OPTIONS_SHOW);
-	core::CreateServiceFunction(&OPTIONS_SHOW, &showOptions);
+	OptionsDialog::options_ = 0;
+	core::CreateHookableEvent(&kOptionsShow_event);
+	core::CreateServiceFunction(&kOptionsShow_service, &showOptions);
 	return 0;
 }
 
 int OptionsDialog::unloadOptionsModule()
 {
-	if (OptionsDialog::options != 0)
-		OptionsDialog::options->~OptionsDialog();
-	core::DestroyHookableEvent(&OPTIONS_SHOW);
-	core::DestroyServiceFunction(&OPTIONS_SHOW);
+	if (OptionsDialog::options_ != 0)
+		OptionsDialog::options_->~OptionsDialog();
+	core::DestroyHookableEvent(&kOptionsShow_event);
+	core::DestroyServiceFunction(&kOptionsShow_service);
 	return 0;
 }
 
 int OptionsDialog::addPage(OptionsPage* newPage)
 {
-	if (OptionsDialog::options == 0)
+	if (OptionsDialog::options_ == 0)
 		return -1;
 
-	TreeModel* model = dynamic_cast<TreeModel*>(options->treeView->model());
+	TreeModel* model = dynamic_cast<TreeModel*>(options_->treeView_->model());
 	QModelIndex index = model->index(0, 0);
 	QModelIndex parent = model->match(index, newPage->parentId);
 
 	if (newPage->page == 0) {
 		//-- Create default widget for blank pages
-		newPage->page = new QWidget(options);
+		newPage->page = new QWidget(options_);
 		QLabel* label = new QLabel("Please select a subentry from the list", newPage->page);
 		label->move(150, 220);
 	}
 	else
 		//-- Set OptionsDialog as parent to delete widget on exit
-		newPage->page->setParent(options);
+		newPage->page->setParent(options_);
 
-	int layoutIndex = options->layout->addWidget(newPage->page);
+	int layoutIndex = options_->layout_->addWidget(newPage->page);
 
 	//-- Insert to rootItem if parent not found
 	if (!model->insert(newPage->title, newPage->id, layoutIndex, parent)) {
-		options->layout->takeAt(layoutIndex);
+		options_->layout_->takeAt(layoutIndex);
 		return -1;
 	}
 
 	//--
 	if (newPage->savePage != 0)
-		options->saveFunctions.insert(newPage->savePage);
+		options_->saveFunctions_.insert(newPage->savePage);
 
 	return 0;
 }
 
 void OptionsDialog::selectPage(const QModelIndex& current, const QModelIndex&)
 {
-	TreeModel* model = dynamic_cast<TreeModel*>(treeView->model());
-	layout->setCurrentIndex(model->getLayoutIndex(current));
+	TreeModel* model = dynamic_cast<TreeModel*>(treeView_->model());
+	layout_->setCurrentIndex(model->getLayoutIndex(current));
 }
 
 void OptionsDialog::applay()
 {
-	QSet<OptionsSaver>::const_iterator i = saveFunctions.constBegin();
-	QSet<OptionsSaver>::const_iterator iEnd = saveFunctions.constEnd();
+	QSet<OptionsSaver>::const_iterator i = saveFunctions_.constBegin();
+	QSet<OptionsSaver>::const_iterator iEnd = saveFunctions_.constEnd();
 	while (i != iEnd) {
 		(*i)();
 		++i;
@@ -102,28 +102,28 @@ OptionsDialog::OptionsDialog()
 	this->setFixedSize(700, 500);
 
 	//-- Options tree
-	treeView = new QTreeView(this);
-	treeView->move(-1, -1);
-	treeView->resize(200, this->height() + 2);
+	treeView_ = new QTreeView(this);
+	treeView_->move(-1, -1);
+	treeView_->resize(200, this->height() + 2);
 
 	QString str;
 	TreeModel* model = new TreeModel(str, str, 0, this);
 
-	TreeItemDelegate* delegate = new TreeItemDelegate(treeView);
-	treeView->setModel(model);
-	treeView->setItemDelegate(delegate);
-	treeView->setHeaderHidden(true);
+	TreeItemDelegate* delegate = new TreeItemDelegate(treeView_);
+	treeView_->setModel(model);
+	treeView_->setItemDelegate(delegate);
+	treeView_->setHeaderHidden(true);
 
 	//-- Client area for current settings
 	QGroupBox* widgetArea = new QGroupBox(this);
-	widgetArea->move(treeView->width() + 10, 10);
-	widgetArea->resize(this->width() - treeView->width() - 10 - 10,
+	widgetArea->move(treeView_->width() + 10, 10);
+	widgetArea->resize(this->width() - treeView_->width() - 10 - 10,
 							 this->height() - 10 - 40);
-	layout = new QStackedLayout(this);
+	layout_ = new QStackedLayout(this);
 	//layout->setAlignment(Qt::AlignCenter);
-	widgetArea->setLayout(layout);
+	widgetArea->setLayout(layout_);
 
-	connect(treeView->selectionModel(), &QItemSelectionModel::currentChanged,
+	connect(treeView_->selectionModel(), &QItemSelectionModel::currentChanged,
 			this, &OptionsDialog::selectPage);
 
 	QPushButton* btn = new QPushButton(QStringLiteral("Ok"), this);
@@ -142,15 +142,15 @@ OptionsDialog::OptionsDialog()
 	connect(btn, &QPushButton::clicked, this, &OptionsDialog::applay);
 
 	//core::CreateServiceFunction(&OPTIONS_ADD_PAGE, &AddPage);
-	core::CreateHookableEvent(&OPTIONS_CLOSE);
+	core::CreateHookableEvent(&kOptionsClose_event);
 }
 
 OptionsDialog::~OptionsDialog()
 {
-	saveFunctions.clear();
-	core::NotifyEventHooks(&OPTIONS_CLOSE, 0, 0);
-	OptionsDialog::options = 0;
-	core::DestroyHookableEvent(&OPTIONS_CLOSE);
+	saveFunctions_.clear();
+	core::NotifyEventHooks(&kOptionsClose_event, 0, 0);
+	OptionsDialog::options_ = 0;
+	core::DestroyHookableEvent(&kOptionsClose_event);
 	//core::DestroyServiceFunction(&OPTIONS_ADD_PAGE);
 }
 

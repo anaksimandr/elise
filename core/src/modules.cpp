@@ -18,9 +18,9 @@ int LoadProfile(bool);
 
 int LoadSystemModule()
 {
-	if (CreateServiceFunction(&SHUTDOWN_SERVICE, &shutDown))
+	if (CreateServiceFunction(&kShutdown_service, &shutDown))
 		return 1;
-	if (CreateServiceFunction(&CHANGEPROFILE_SERVICE, &ChangeProfile))
+	if (CreateServiceFunction(&kChangeProfile_service, &ChangeProfile))
 		return 1;
 	//if (CreateHookableEvent(&hkevName))
 		//return 1;

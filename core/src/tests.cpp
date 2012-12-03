@@ -279,13 +279,13 @@ void QTestWindow::testNewPlugin()
 void QTestWindow::changeAcc()
 {
 	this->~QTestWindow();
-	if (core::CallService(&CHANGEPROFILE_SERVICE, 0, 0) == -2)
+	if (core::CallService(&kChangeProfile_service, 0, 0) == -2)
 		QMessageBox::critical(this, "Error", "Service not found.", QMessageBox::Ok);
 }
 
 void QTestWindow::showOptions()
 {
-	core::CallService(&OPTIONS_SHOW, 0, 0);
+	core::CallService(&kOptionsShow_service, 0, 0);
 }
 
 void QTestWindow::setTrayIcon()
@@ -331,7 +331,7 @@ void QTestWindow::saveSetting()
 			break;
 	}
 
-	core::CallService(&DB_WRITESETTING, reinterpret_cast<intptr_t>(set), 0);
+	core::CallService(&kDBWriteSetting_service, reinterpret_cast<intptr_t>(set), 0);
 
 	delete set->var;
 	delete set;
@@ -351,7 +351,7 @@ void QTestWindow::readSetting()
 		set->var->textValue = new QString;
 	else if (set->var->type == blobType)
 		set->var->blobValue = new QByteArray;
-	if (!core::CallService(&DB_READSETTING, reinterpret_cast<intptr_t>(set), 0)) {
+	if (!core::CallService(&kDBReadSetting_service, reinterpret_cast<intptr_t>(set), 0)) {
 		switch (set->var->type) {
 			case intType:
 				setOutput(QString::number(set->var->intValue));
@@ -387,7 +387,7 @@ void QTestWindow::delSetting()
 	set->var = new DBVariant;
 	set->var->type = (unsigned char)v4->text().toInt();
 
-	if (!core::CallService(&DB_DELSETTING, reinterpret_cast<intptr_t>(set), 0))
+	if (!core::CallService(&kDBDellSetting_service, reinterpret_cast<intptr_t>(set), 0))
 		setOutput("Setting deleted");
 	else
 		setOutput("Error");
@@ -567,7 +567,7 @@ void QTestWindow::simpleTest()
 //-- Exit
 void QTestWindow::buttonExit()
 {
-	core::CallService(&SHUTDOWN_SERVICE, 0, 0);
+	core::CallService(&kShutdown_service, 0, 0);
 }
 
 void QTestWindow::setOutput(QString text)

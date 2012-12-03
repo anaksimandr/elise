@@ -10,11 +10,11 @@ class QLatin1String;
 //-- Names of system services and events --/////////////////////////////////////////////////////////
 
 //-- Services
-extern const QLatin1String	SHUTDOWN_SERVICE;		//"System/Shutdown"
-extern const QLatin1String	CHANGEPROFILE_SERVICE;	//"System/ChangeAcc"
-extern const QLatin1String	DB_WRITESETTING;		//"DB/WriteSetting"
-extern const QLatin1String	DB_READSETTING;			//"DB/ReadSetting"
-extern const QLatin1String	DB_DELSETTING;			//"DB/DeleteSetting"
+extern const QLatin1String	kShutdown_service;		//"System/Shutdown"
+extern const QLatin1String	kChangeProfile_service;	//"System/ChangeAcc"
+extern const QLatin1String	kDBWriteSetting_service;//"DB/WriteSetting"
+extern const QLatin1String	kDBReadSetting_service;	//"DB/ReadSetting"
+extern const QLatin1String	kDBDellSetting_service;	//"DB/DeleteSetting"
 
 //-- Hookable events
 //const QLatin1String	TRAY_SINGLECLICK	=	QLatin1String("Tray/SingleClick");
