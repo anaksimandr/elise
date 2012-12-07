@@ -17,7 +17,7 @@ extern const QLatin1String	kDBDellSetting_service;	//"DB/DeleteSetting"
 //-- Hookable events
 //const QLatin1String	TRAY_SINGLECLICK	=	QLatin1String("Tray/SingleClick");
 
-/*typedef struct
+typedef struct
 {
 	int num;
 	int type;
@@ -42,26 +42,25 @@ typedef struct
 	union {
 		EliseService pfnService;
 	};
-} TService;*/
+} TService;
 
+extern ICore* core;
 
 class Core : public ICore
 {
 private:
 	//-- Critical sections
-	QMutex qmutexHooks;
-	QMutex qmutexServices;
+	QMutex qmutexHooks_;
+	QMutex qmutexServices_;
 
 	//-- Arrays of hookable events and services
-	QMap <QLatin1String, THookEvent*> qmapHooks;
-	QMap <QLatin1String, TService*> qmapServices;
+	QMap <QLatin1String, THookEvent*> qmapHooks_;
+	QMap <QLatin1String, TService*> qmapServices_;
 
 public:
 
-	static ICore* interface;
-
-	Core() { interface = this; }
-	~Core() { interface = 0; }
+	Core() {}
+	~Core() {}
 
 	//-- Basic core functions
 	inline static intptr_t	changeProfile(intptr_t, intptr_t)
@@ -73,12 +72,19 @@ public:
 	}
 	static int		loadCore();
 	static int		loadProfile(bool);
+	static int		unloadCore();
 	//-- 'true' means that this is launch of the application
 	static int		shutDown(intptr_t result, intptr_t);
 
 	//-- Modules --/////////////////////////////////////////////////////////////////////////////////
-	static int	loadDefaultModules();
-	static int	unloadDefaultModules();
+	inline static int	launchElise()
+	{
+		if (loadCore())
+			return 1;
+		//-- 'true' means that this is launch of the application
+		return loadProfile(true);
+	}
+	//static int	unloadDefaultModules();
 
 
 	//-- Hook functions --//////////////////////////////////////////////////////////////////////////

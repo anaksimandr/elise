@@ -222,7 +222,7 @@ QTestWindow::QTestWindow()
 	layoutV->setAlignment(button, Qt::AlignBottom);
 
 	//-- Work with tray
-	thTray.num =  core::hookEvent(&TRAY_SINGLECLICK, &hideMainWindow);
+	thTray.num =  core->hookEvent(&TRAY_SINGLECLICK, &hideMainWindow);
 	thTray.name = new QLatin1String(TRAY_SINGLECLICK);
 
 	wii = this;
@@ -231,11 +231,11 @@ QTestWindow::QTestWindow()
 
 	QAction* action = new QAction("Call testQStringCalls", 0);
 	connect(action, SIGNAL(triggered()), this, SLOT(testQStringCalls()));
-	core::callService(&TRAY_ADD_MENUITEM, (uintptr_t)action, 0);
+	core->callService(&TRAY_ADD_MENUITEM, (uintptr_t)action, 0);
 
 	action = new QAction("Exit", 0);
 	connect(action, SIGNAL(triggered()), this, SLOT(buttonExit()));
-	core::callService(&TRAY_ADD_MENUITEM, (uintptr_t)action, 0);
+	core->callService(&TRAY_ADD_MENUITEM, (uintptr_t)action, 0);
 }
 
 int hideMainWindow(intptr_t, intptr_t)
@@ -254,7 +254,7 @@ int hideMainWindow(intptr_t, intptr_t)
 
 QTestWindow::~QTestWindow()
 {
-	core::unhookEvent(thTray);
+	core->unhookEvent(thTray);
 }
 
 void QTestWindow::setBarValue(int val)
@@ -273,19 +273,19 @@ void QTestWindow::uuidCreate()
 const QLatin1String testplugin_service = QLatin1String("TESTPLUGIN_SERVICE");
 void QTestWindow::testNewPlugin()
 {
-	core::callService(&testplugin_service, 0, 0);
+	core->callService(&testplugin_service, 0, 0);
 }
 
 void QTestWindow::changeAcc()
 {
 	this->~QTestWindow();
-	if (core::callService(&kChangeProfile_service, 0, 0) == -2)
+	if (core->callService(&kChangeProfile_service, 0, 0) == -2)
 		QMessageBox::critical(this, "Error", "Service not found.", QMessageBox::Ok);
 }
 
 void QTestWindow::showOptions()
 {
-	core::callService(&kOptionsShow_service, 0, 0);
+	core->callService(&kOptionsShow_service, 0, 0);
 }
 
 void QTestWindow::setTrayIcon()
@@ -293,7 +293,7 @@ void QTestWindow::setTrayIcon()
 	QString filename = QFileDialog::getOpenFileName(this, "Open file", "", "SVG (*.svg);; Files (*.*)");
 	//QMessageBox::critical(this, "Debug", "2", QMessageBox::Ok);
 	QIcon* icon = new QIcon(filename);
-	core::callService(&TRAY_SET_ICON, (uintptr_t)icon, 0);
+	core->callService(&TRAY_SET_ICON, (uintptr_t)icon, 0);
 	delete icon;
 }
 
@@ -331,7 +331,7 @@ void QTestWindow::saveSetting()
 			break;
 	}
 
-	core::callService(&kDBWriteSetting_service, reinterpret_cast<intptr_t>(set), 0);
+	core->callService(&kDBWriteSetting_service, reinterpret_cast<intptr_t>(set), 0);
 
 	delete set->var;
 	delete set;
@@ -351,7 +351,7 @@ void QTestWindow::readSetting()
 		set->var->textValue = new QString;
 	else if (set->var->type == blobType)
 		set->var->blobValue = new QByteArray;
-	if (!core::callService(&kDBReadSetting_service, reinterpret_cast<intptr_t>(set), 0)) {
+	if (!core->callService(&kDBReadSetting_service, reinterpret_cast<intptr_t>(set), 0)) {
 		switch (set->var->type) {
 			case intType:
 				setOutput(QString::number(set->var->intValue));
@@ -387,7 +387,7 @@ void QTestWindow::delSetting()
 	set->var = new DBVariant;
 	set->var->type = (unsigned char)v4->text().toInt();
 
-	if (!core::callService(&kDBDellSetting_service, reinterpret_cast<intptr_t>(set), 0))
+	if (!core->callService(&kDBDellSetting_service, reinterpret_cast<intptr_t>(set), 0))
 		setOutput("Setting deleted");
 	else
 		setOutput("Error");
@@ -412,7 +412,7 @@ int testHook(intptr_t, intptr_t lParam)
 
 void QTestWindow::createHookblEvent()
 {
-	if (!core::createHookableEvent(&hkevName))
+	if (!core->createHookableEvent(&hkevName))
 		setOutput("Hookable event created");
 	else
 		setOutput("Create hookable event FAIL!");
@@ -420,7 +420,7 @@ void QTestWindow::createHookblEvent()
 
 void QTestWindow::hookEvent()
 {
-	hookEv.num = core::hookEvent(&hkevName, &testHook);
+	hookEv.num = core->hookEvent(&hkevName, &testHook);
 	hookEv.name = &hkevName;
 	if (hookEv.num != -1)
 		setOutput("Hook event success, num is " + QString::number(hookEv.num));
@@ -430,7 +430,7 @@ void QTestWindow::hookEvent()
 
 void QTestWindow::notifyEventHooks()
 {
-	int ret = core::notifyEventHooks(&hkevName, 0, 137);
+	int ret = core->notifyEventHooks(&hkevName, 0, 137);
 	if (ret)
 		setOutput("Notify event FAILED!");
 	else
@@ -439,7 +439,7 @@ void QTestWindow::notifyEventHooks()
 
 void QTestWindow::unhookEvent()
 {
-	int ret = core::unhookEvent(hookEv);
+	int ret = core->unhookEvent(hookEv);
 	if (ret != -1)
 		setOutput("Unhook event success, num was " + QString::number(hookEv.num));
 	else
@@ -448,7 +448,7 @@ void QTestWindow::unhookEvent()
 
 void QTestWindow::deleteHokableEvent()
 {
-	if (!core::destroyHookableEvent(&hkevName))
+	if (!core->destroyHookableEvent(&hkevName))
 		setOutput("Hookable event destroed");
 	else
 		setOutput("Destroy hookable event FAIL!");
@@ -465,7 +465,7 @@ int testService(intptr_t wParam, intptr_t)
 
 void QTestWindow::createService()
 {
-	if (!core::createServiceFunction(&name, &testService))
+	if (!core->createServiceFunction(&name, &testService))
 		setOutput("Service created");
 	else
 		setOutput("Create service FAIL!");
@@ -473,7 +473,7 @@ void QTestWindow::createService()
 
 void QTestWindow::checkService()
 {
-	if (core::serviceExists(&name))
+	if (core->serviceExists(&name))
 		setOutput("Test service exists");
 	else
 		setOutput("Test service not found");
@@ -481,7 +481,7 @@ void QTestWindow::checkService()
 
 void QTestWindow::testtService()
 {
-	int res = core::callService(&name, 111, 0);
+	int res = core->callService(&name, 111, 0);
 	if (res == 111)
 		setOutput("Test service returned valid result");
 	else if (res == -2)
@@ -492,7 +492,7 @@ void QTestWindow::testtService()
 
 void QTestWindow::delService()
 {
-	int res = core::destroyServiceFunction(&name);
+	int res = core->destroyServiceFunction(&name);
 	if (!res)
 		setOutput("Test service destroed");
 	else if (res == -2)
@@ -564,7 +564,7 @@ void QTestWindow::simpleTest()
 {
 	QUuid uuid = v1->text();
 	intptr_t id = reinterpret_cast<intptr_t>(&uuid);
-	if (core::callService(&kCoreIsPluginLoaded, id, 0))
+	if (core->callService(&kCoreIsPluginLoaded, id, 0))
 		setOutput("loaded");
 	else
 		setOutput("not loaded");
@@ -573,7 +573,7 @@ void QTestWindow::simpleTest()
 //-- Exit
 void QTestWindow::buttonExit()
 {
-	core::callService(&kShutdown_service, 0, 0);
+	core->callService(&kShutdown_service, 0, 0);
 }
 
 void QTestWindow::setOutput(QString text)

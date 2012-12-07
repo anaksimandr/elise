@@ -43,13 +43,13 @@ intptr_t testPluginFunction(intptr_t, intptr_t)
 int NewPlugin::Load(ICore* coreAPI)
 {
 	core = coreAPI;
-	core->CreateServiceFunction(&TESTPLUGIN_SERVICE, &testPluginFunction);
+	core->createServiceFunction(&TESTPLUGIN_SERVICE, &testPluginFunction);
 	return 0;
 }
 
 int NewPlugin::Unload(void)
 {
-	core->DestroyServiceFunction(&TESTPLUGIN_SERVICE);
+	core->destroyServiceFunction(&TESTPLUGIN_SERVICE);
 	return 0;
 }
 
