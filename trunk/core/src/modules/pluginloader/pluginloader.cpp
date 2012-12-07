@@ -8,7 +8,7 @@
 #include "../../services.h"
 #include "pluginloaderoptions.h"
 
-const QLatin1String	kCoreIsPluginLoaded	=	QLatin1String("/Core/IsPluginLoaded");
+const QLatin1String	kCoreIsPluginLoaded	=	QLatin1String("Core/IsPluginLoaded");
 
 CoreAPI						PluginLoader::coreAPI_;
 QDir						PluginLoader::pluginsDir_;
@@ -18,7 +18,8 @@ QMap<QUuid, QString>*		PluginLoader::interfaces_ = 0;
 int PluginLoader::loadPluginLoader()
 {
 	pluginsDir_ = getPluginsDir();
-	core::HookEvent(&kOptionsShow_event, &PluginLoaderOptions::createLoaderOptionsPage);
+	core::hookEvent(&kOptionsShow_event, &PluginLoaderOptions::createLoaderOptionsPage);
+	core::createServiceFunction(&kCoreIsPluginLoaded, &PluginLoader::isPluginLoaded);
 
 	return 0;
 }
@@ -62,6 +63,7 @@ PluginInfo* PluginLoader::getElisePluginInfo(const QString &pluginModuleName)
 	result->authorEmail = buf->authorEmail;
 	result->copyright = buf->copyright;
 	result->homepage = buf->homepage;
+	result->uuid = buf->uuid;
 	if (!doNotUnload)
 		loader.unload();
 	return result;
@@ -80,6 +82,7 @@ const QMap<QString, Plugin>* PluginLoader::getAvailablePlugins()
 	Plugin plugin;
 	plugin.loaded = false;
 	plugin.instance = 0;
+	plugin.uuid = 0;
 
 	//-- First of all validate current list of plugins
 	QMap<QString, Plugin>::iterator iteratorPlugins = plugins_->begin();
@@ -117,23 +120,77 @@ const QMap<QString, Plugin>* PluginLoader::getAvailablePlugins()
 	return plugins_;
 }
 
+int PluginLoader::savePluginStateOrDelete(const QString &pluginModuleName, bool disableOrDelete)
+{
+	QString qsUuid;
+	if (disableOrDelete) {
+		const Plugin* plugin = &plugins_->value(pluginModuleName);
+		qsUuid = plugin->uuid->toString();
+	}
+	else {
+		PluginInfo* pluginInfo = getElisePluginInfo(pluginModuleName);
+		qsUuid = pluginInfo->uuid.toString();
+		delete pluginInfo;
+	}
+
+	int result = 0;
+	QString module = QStringLiteral("core");
+	QString setting = QStringLiteral("pluginDisabled_") + qsUuid;
+	Setting* set = new Setting;
+	set->contact = 0;
+	set->qsModule = &module;
+	set->qsSetting = &setting;
+	set->var = new DBVariant;
+	set->var->type = 0; //-- int
+	if (disableOrDelete) {
+		//-- Disable plugin
+		set->var->intValue = 1;
+		result = core::callService(&kDBWriteSetting_service, reinterpret_cast<intptr_t>(set), 0);
+	} else {
+		//-- Remove breaker from the profile
+		result = core::callService(&kDBDellSetting_service, reinterpret_cast<intptr_t>(set), 0);
+	}
+
+	delete set->var;
+	delete set;
+	return result;
+}
+
 bool PluginLoader::isLoadingPluginDisabled(const QString& pluginModuleName)
 {
+	PluginInfo* pluginInfo = getElisePluginInfo(pluginModuleName);
+
 	QString module = QStringLiteral("core");
-	QString setting = QStringLiteral("pluginDisabled") + pluginModuleName;
+	QString setting = QStringLiteral("pluginDisabled_") + pluginInfo->uuid.toString();
 	bool result = 0;
 	Setting* set = new Setting;
 	set->contact = 0;
 	set->qsModule = &module;
 	set->qsSetting = &setting;
 	set->var = new DBVariant;
-	set->var->type = 0;
-	if (!core::CallService(&kDBReadSetting_service, reinterpret_cast<intptr_t>(set), 0)) {
+	set->var->type = 0; //-- int
+	if (!core::callService(&kDBReadSetting_service, reinterpret_cast<intptr_t>(set), 0)) {
 		result = static_cast<bool>(set->var->intValue);
 	}
 	delete set->var;
 	delete set;
+	delete pluginInfo;
 	return result;
+}
+
+intptr_t PluginLoader::isPluginLoaded(intptr_t id, intptr_t)
+{
+	QUuid* uuid = reinterpret_cast<QUuid*>(id);
+
+	QMap<QString, Plugin>::const_iterator iteratorPlugins = plugins_->constBegin();
+	QMap<QString, Plugin>::const_iterator pluginsEnd = plugins_->constEnd();
+
+	while (iteratorPlugins != pluginsEnd) {
+		if (iteratorPlugins.value().loaded == true && *(iteratorPlugins.value().uuid) == *uuid)
+			return 1;
+		++iteratorPlugins;
+	}
+
 	return 0;
 }
 
@@ -154,6 +211,10 @@ bool PluginLoader::isPluginLoadable(const QString& pluginModuleName)
 	const Plugin* p = &plugins_->value(pluginModuleName);
 	if (p->loaded)
 		return false;
+
+	//-- hmmm... plugin is not loaded and QUuid* == 0
+	//if (isPluginLoaded(reinterpret_cast<intptr_t>(p->uuid), 0))
+		//return false;
 
 	QPluginLoader loader;
 	loader.setFileName(pluginsDir_.absoluteFilePath(pluginModuleName));
@@ -177,6 +238,26 @@ bool PluginLoader::isPluginLoadable(const QString& pluginModuleName)
 	loader.unload();
 
 	return result;
+}
+
+bool PluginLoader::isPluginUnloadable(const QString& pluginModuleName)
+{
+	//if (pluginModuleName.isEmpty())
+		//return false;
+
+	const Plugin* p = &plugins_->value(pluginModuleName);
+
+	//-- Moved to unloadPlugin
+	//if (!p->loaded)
+		//return false;
+
+	//-- We can't unload the DBPlugin
+	IDBPlugin* pluginInterface = qobject_cast<IDBPlugin*>(p->instance);
+
+	if (pluginInterface)
+		return false;
+
+	return true;
 }
 
 int PluginLoader::loadDBPlugin(const QString& pluginModuleName,
@@ -287,8 +368,8 @@ int PluginLoader::loadPlugins()
 		return 1;
 
 	QString pluginModuleName;
-	QMap<QString, Plugin>::iterator iteratorPlugins = plugins_->begin();
-	QMap<QString, Plugin>::iterator pluginsEnd = plugins_->end();
+	QMap<QString, Plugin>::const_iterator iteratorPlugins = plugins_->constBegin();
+	QMap<QString, Plugin>::const_iterator pluginsEnd = plugins_->constEnd();
 
 	while (iteratorPlugins != pluginsEnd) {
 		pluginModuleName = iteratorPlugins.key();

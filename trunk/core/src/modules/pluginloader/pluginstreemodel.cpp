@@ -114,7 +114,7 @@ void PluginsTreeModel::updateLoadControls(bool update) const
 		PluginsTreeItem* item = getItem(itemIndex);
 		if (update)
 			//-- Update state
-			item->isPluginLoadable();
+			item->isControlActive();
 		else
 			//-- Insert control in model
 			treeView->setIndexWidget(itemIndex, item->getLoadControl());

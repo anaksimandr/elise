@@ -1,16 +1,12 @@
 #include <cstdlib>
 #include <ctime>
 #include <QtWidgets/QtWidgets>
-#include "elise.h"
-#include "modules.h"
+#include "core.h"
 
-
-namespace core
-{
 
 //int InitialiseModularEngine(void);
 
-int shutDown(intptr_t result, intptr_t)
+int Core::shutDown(intptr_t result, intptr_t)
 {
 	//-- PreShut down stage
 	//SetEvent(hMirandaShutdown);
@@ -37,13 +33,12 @@ int shutDown(intptr_t result, intptr_t)
 	//if (bufferedPaintUninit) bufferedPaintUninit();
 
 	//window->~QTestWindow();
-	UnloadDefaultModules();
+	unloadDefaultModules();
 
 	QApplication::exit(result);
 	return result;
 }
 
-} // namespace core
 
 #ifndef NDEBUG
 #include <QFile>
@@ -93,8 +88,8 @@ int main(int argc, char* argv[])
 	//InitialiseModularEngine();
 
 	//-- Load default modules; shut down if failed
-	if (core::LoadDefaultModules())
-		return core::shutDown(-1, 0);
+	if (Core::loadDefaultModules())
+		return Core::shutDown(-1, 0);
 
 	//CreateServiceFunction(&SHUTDOWN_SERVICE, (ELISESERVICE)shutDown);
 

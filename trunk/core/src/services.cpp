@@ -1,7 +1,7 @@
 #include <QMap>
 #include <QMutex>
 #include <QLatin1String>
-#include "services.h"
+#include "core.h"
 
 const QLatin1String	kShutdown_service		=	QLatin1String("System/Shutdown");
 const QLatin1String	kChangeProfile_service	=	QLatin1String("System/ChangeAcc");
@@ -9,34 +9,29 @@ const QLatin1String	kDBWriteSetting_service	=	QLatin1String("DB/WriteSetting");
 const QLatin1String	kDBReadSetting_service	=	QLatin1String("DB/ReadSetting");
 const QLatin1String	kDBDellSetting_service	=	QLatin1String("DB/DeleteSetting");
 
-namespace core
-{
-
-//-- Critical sections
-static QMutex qmutexHooks;
-static QMutex qmutexServices;
-
-//-- Arrays of hookable events and services
-static QMap <QLatin1String, THookEvent*> qmapHooks;
-static QMap <QLatin1String, TService*> qmapServices;
-
-
-/*int InitialiseModularEngine(void)
-{
-	//mainThreadId=GetCurrentThreadId();
-	//DuplicateHandle(GetCurrentProcess(),GetCurrentThread(),GetCurrentProcess(),&hMainThread,0,FALSE,DUPLICATE_SAME_ACCESS);
-
-	//hMissingService = CreateHookableEvent(ME_SYSTEM_MISSINGSERVICE);
-
-	//intptr_t reinterpret_cast<intptr_t>(ptr);
-
-	return 0;
-}*/
-
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //-- HOOKS --///////////////////////////////////////////////////////////////////////////////////////
 
-int CreateHookableEvent(const QLatin1String* name)
+typedef struct
+{
+	int num;
+	int type;
+	struct {
+		union {
+			EliseHook pfnHook;
+		};
+	};
+
+} THookSubscriber;
+
+typedef struct
+{
+	int  subscriberCount;
+	QMap<int, THookSubscriber*>* qmapSubscribers;
+	QMutex* qmutexHook;
+} THookEvent;
+
+int Core::createHookableEvent(const QLatin1String* name)
 {
 	//if (name->isEmpty())
 	//	return -1;
@@ -65,7 +60,7 @@ int CreateHookableEvent(const QLatin1String* name)
 	return 0;
 }
 
-int DestroyHookableEvent(const QLatin1String* name)
+int Core::destroyHookableEvent(const QLatin1String* name)
 {
 	//if (name->isEmpty())
 	//	return -1;
@@ -108,7 +103,7 @@ int DestroyHookableEvent(const QLatin1String* name)
 	return 0;
 }
 
-int NotifyEventHooks(const QLatin1String* name, uintptr_t wParam, uintptr_t lParam )
+int Core::notifyEventHooks(const QLatin1String* name, uintptr_t wParam, uintptr_t lParam )
 {
 	//qmutexHooks.lock();
 	if (!qmapHooks.contains(*name))
@@ -158,7 +153,7 @@ int NotifyEventHooks(const QLatin1String* name, uintptr_t wParam, uintptr_t lPar
 	return returnErr;
 }
 
-int HookEventInt(const QLatin1String* name, EliseHook hookProc)
+int Core::hookEvent(const QLatin1String* name, EliseHook hookProc)
 {	
 	//if (name->isEmpty())
 	//	return -2;
@@ -196,12 +191,7 @@ int HookEventInt(const QLatin1String* name, EliseHook hookProc)
 	return p->subscriberCount++;
 }
 
-int HookEvent(const QLatin1String* name, EliseHook hookProc)
-{
-	return HookEventInt(name, hookProc);
-}
-
-int UnhookEvent(const THook hook)
+int Core::unhookEvent(const THook hook)
 {
 	//if (hook.name == NULL || hook.name->isEmpty())
 	//	return -1;
@@ -244,7 +234,16 @@ int UnhookEvent(const THook hook)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //-- SERVICES --////////////////////////////////////////////////////////////////////////////////////
 
-int CreateServiceFunctionInt(const QLatin1String* name, EliseService serviceProc, int type)
+typedef struct
+{
+	int type;
+	union {
+		EliseService pfnService;
+	};
+} TService;
+
+//int Core::createServiceFunction(const QLatin1String* name, EliseService serviceProc, int type = 0)
+int Core::createServiceFunction(const QLatin1String* name, EliseService serviceProc)
 {	
 	//if (name->isEmpty())
 	//	return -1;
@@ -261,7 +260,7 @@ int CreateServiceFunctionInt(const QLatin1String* name, EliseService serviceProc
 
 	//newSer = (TService*)malloc(sizeof(TService));
 	newSer = new TService;
-	newSer->type = type;
+	/*newSer->type = type;
 	switch (type)
 	{
 		case 1:
@@ -270,24 +269,26 @@ int CreateServiceFunctionInt(const QLatin1String* name, EliseService serviceProc
 		default:
 			newSer->pfnService = serviceProc;
 			break;
-	}
+	}*/
+	newSer->type = 0;
+	newSer->pfnService = serviceProc;
 
 	qmapServices[*name] = newSer;
 	qmutexServices.unlock();
 	return 0;
 }
 
-int CreateServiceFunction(const QLatin1String* name, EliseService serviceProc)
-{
-	return CreateServiceFunctionInt(name, serviceProc, 0);
-}
+//int createServiceFunction(const QLatin1String* name, EliseService serviceProc)
+//{
+//	return CreateServiceFunctionInt(name, serviceProc, 0);
+//}
 
 //int CreateServiceFunctionWidg(const QString *name, ELISESERVICEWIDG serviceProc)
 //{
 //	return CreateServiceFunctionInt(name, (ELISESERVICE)serviceProc, 1);
 //}
 
-int ServiceExists(const QLatin1String* name)
+int Core::serviceExists(const QLatin1String* name)
 {
 	//if (name->isEmpty())
 	//	return -1;
@@ -301,7 +302,7 @@ int ServiceExists(const QLatin1String* name)
 	return is;
 }
 
-intptr_t CallService(const QLatin1String* name, uintptr_t wParam, uintptr_t lParam)
+intptr_t Core::callService(const QLatin1String* name, uintptr_t wParam, uintptr_t lParam)
 {
 	//if (name->isEmpty())
 	//	return SERVICE_NOTFOUND;
@@ -331,7 +332,7 @@ intptr_t CallService(const QLatin1String* name, uintptr_t wParam, uintptr_t lPar
 	//return qmapServices.value(*name)->pfnService(wParam, lParam);
 }
 
-int DestroyServiceFunction(const QLatin1String* name)
+int Core::destroyServiceFunction(const QLatin1String* name)
 {
 	//if (name->isEmpty())
 	//	return -1;
@@ -358,5 +359,3 @@ int DestroyServiceFunction(const QLatin1String* name)
 	qmutexServices.unlock();
 	return 0;
 }
-
-} //namespace core
