@@ -20,7 +20,6 @@ SOURCES += \
     src/modules/options/treemodel.cpp \
 	src/modules/pluginloader/pluginloader.cpp \
     src/modules/profilemanager.cpp \
-    src/modules/pluginloader/coreapi.cpp \
     src/modules/pluginloader/pluginloaderoptions.cpp \
     src/modules/pluginloader/pluginstreeitem.cpp \
     src/modules/pluginloader/pluginstreemodel.cpp
@@ -38,7 +37,6 @@ HEADERS += \
     src/modules/options/treemodel.h \
 	src/modules/pluginloader/pluginloader.h \
     src/modules/profilemanager.h \
-    src/modules/pluginloader/coreapi.h \
     src/modules/pluginloader/pluginloaderoptions.h \
     src/modules/pluginloader/pluginstreeitem.h \
     src/modules/pluginloader/pluginstreemodel.h \

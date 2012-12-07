@@ -411,9 +411,9 @@ int DBPlugin::Load(ICore* coreAPI)
 {
 	core = coreAPI;
 
-	core->CreateServiceFunction(&kDBWriteSetting_service, &WriteSettingToBase);
-	core->CreateServiceFunction(&kDBReadSetting_service, &ReadSettingFromBase);
-	core->CreateServiceFunction(&kDBDellSetting_service, &DelteSettingFromBase);
+	core->createServiceFunction(&kDBWriteSetting_service, &WriteSettingToBase);
+	core->createServiceFunction(&kDBReadSetting_service, &ReadSettingFromBase);
+	core->createServiceFunction(&kDBDellSetting_service, &DelteSettingFromBase);
 
 	return 0;
 }
@@ -425,6 +425,10 @@ int DBPlugin::Unload(void)
 		QSqlDatabase::database(qsProfile).close();
 		QSqlDatabase::removeDatabase(qsProfile);
 	}
+
+	core->destroyServiceFunction(&kDBWriteSetting_service);
+	core->destroyServiceFunction(&kDBReadSetting_service);
+	core->destroyServiceFunction(&kDBDellSetting_service);
 
 	return 0;
 }

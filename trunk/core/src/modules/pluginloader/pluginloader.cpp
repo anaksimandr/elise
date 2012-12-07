@@ -5,12 +5,11 @@
 #include "../options/options.h"
 #include "coreapi.h"
 #include "pluginloader.h"
-#include "../../services.h"
+#include "../../core.h"
 #include "pluginloaderoptions.h"
 
 const QLatin1String	kCoreIsPluginLoaded	=	QLatin1String("Core/IsPluginLoaded");
 
-CoreAPI						PluginLoader::coreAPI_;
 QDir						PluginLoader::pluginsDir_;
 QMap<QString, Plugin>*		PluginLoader::plugins_ = 0;
 QMap<QUuid, QString>*		PluginLoader::interfaces_ = 0;
@@ -18,8 +17,8 @@ QMap<QUuid, QString>*		PluginLoader::interfaces_ = 0;
 int PluginLoader::loadPluginLoader()
 {
 	pluginsDir_ = getPluginsDir();
-	core::hookEvent(&kOptionsShow_event, &PluginLoaderOptions::createLoaderOptionsPage);
-	core::createServiceFunction(&kCoreIsPluginLoaded, &PluginLoader::isPluginLoaded);
+	core->hookEvent(&kOptionsShow_event, &PluginLoaderOptions::createLoaderOptionsPage);
+	core->createServiceFunction(&kCoreIsPluginLoaded, &PluginLoader::isPluginLoaded);
 
 	return 0;
 }
@@ -145,10 +144,10 @@ int PluginLoader::savePluginStateOrDelete(const QString &pluginModuleName, bool 
 	if (disableOrDelete) {
 		//-- Disable plugin
 		set->var->intValue = 1;
-		result = core::callService(&kDBWriteSetting_service, reinterpret_cast<intptr_t>(set), 0);
+		result = core->callService(&kDBWriteSetting_service, reinterpret_cast<intptr_t>(set), 0);
 	} else {
 		//-- Remove breaker from the profile
-		result = core::callService(&kDBDellSetting_service, reinterpret_cast<intptr_t>(set), 0);
+		result = core->callService(&kDBDellSetting_service, reinterpret_cast<intptr_t>(set), 0);
 	}
 
 	delete set->var;
@@ -169,7 +168,7 @@ bool PluginLoader::isLoadingPluginDisabled(const QString& pluginModuleName)
 	set->qsSetting = &setting;
 	set->var = new DBVariant;
 	set->var->type = 0; //-- int
-	if (!core::callService(&kDBReadSetting_service, reinterpret_cast<intptr_t>(set), 0)) {
+	if (!core->callService(&kDBReadSetting_service, reinterpret_cast<intptr_t>(set), 0)) {
 		result = static_cast<bool>(set->var->intValue);
 	}
 	delete set->var;
@@ -303,7 +302,7 @@ int PluginLoader::loadPlugin(const QString& pluginModuleName)
 	}
 
 	//-- Load Elise plugin
-	if (pluginInterface->Load(&coreAPI_))
+	if (pluginInterface->Load(core))
 		return 1;
 
 	const PluginInfo* pluginInfo = pluginInterface->ElisePluginInfo();

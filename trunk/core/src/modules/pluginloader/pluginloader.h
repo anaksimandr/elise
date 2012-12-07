@@ -19,7 +19,6 @@ typedef struct {
 class PluginLoader
 {
 private:
-	static CoreAPI					coreAPI_;
 	static QDir						pluginsDir_;
 	static QMap<QString, Plugin>*	plugins_;
 	static QMap<QUuid, QString>*	interfaces_;

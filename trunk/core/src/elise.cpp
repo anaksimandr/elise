@@ -33,7 +33,7 @@ int Core::shutDown(intptr_t result, intptr_t)
 	//if (bufferedPaintUninit) bufferedPaintUninit();
 
 	//window->~QTestWindow();
-	unloadDefaultModules();
+	unloadCore();
 
 	QApplication::exit(result);
 	return result;
@@ -88,7 +88,7 @@ int main(int argc, char* argv[])
 	//InitialiseModularEngine();
 
 	//-- Load default modules; shut down if failed
-	if (Core::loadDefaultModules())
+	if (Core::launchElise())
 		return Core::shutDown(-1, 0);
 
 	//CreateServiceFunction(&SHUTDOWN_SERVICE, (ELISESERVICE)shutDown);

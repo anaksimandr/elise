@@ -2,7 +2,7 @@
 #define TESTS_H
 
 #include <QtWidgets/QtWidgets>
-#include "services.h"
+#include "core.h"
 #include "../../api/e_database.h"
 #include "modules/options/options.h"
 #include "modules/tray.h"

@@ -12,25 +12,6 @@ const QLatin1String	kDBDellSetting_service	=	QLatin1String("DB/DeleteSetting");
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //-- HOOKS --///////////////////////////////////////////////////////////////////////////////////////
 
-typedef struct
-{
-	int num;
-	int type;
-	struct {
-		union {
-			EliseHook pfnHook;
-		};
-	};
-
-} THookSubscriber;
-
-typedef struct
-{
-	int  subscriberCount;
-	QMap<int, THookSubscriber*>* qmapSubscribers;
-	QMutex* qmutexHook;
-} THookEvent;
-
 int Core::createHookableEvent(const QLatin1String* name)
 {
 	//if (name->isEmpty())
@@ -39,10 +20,10 @@ int Core::createHookableEvent(const QLatin1String* name)
 	if (name->size() < 1)
 		return -2;
 
-	qmutexHooks.lock();
+	qmutexHooks_.lock();
 	//-- If event already exists - return
-	if (qmapHooks.contains(*name)) {
-		qmutexHooks.unlock();
+	if (qmapHooks_.contains(*name)) {
+		qmutexHooks_.unlock();
 		return -1;
 	}
 
@@ -54,9 +35,9 @@ int Core::createHookableEvent(const QLatin1String* name)
 	newEvent->qmapSubscribers = NULL;
 	//newEvent->pfnHook = hokableSig;
 	newEvent->qmutexHook = new QMutex();
-	qmapHooks[*name] = newEvent;
+	qmapHooks_[*name] = newEvent;
 
-	qmutexHooks.unlock();
+	qmutexHooks_.unlock();
 	return 0;
 }
 
@@ -68,16 +49,16 @@ int Core::destroyHookableEvent(const QLatin1String* name)
 	if (name->size() < 1)
 		return -2;
 
-	qmutexHooks.lock();
+	qmutexHooks_.lock();
 	//if ( pLastHook == ( THook* )hEvent )
 	//	pLastHook = NULL;
-	if (!qmapHooks.contains(*name)) {
-		qmutexHooks.unlock();
+	if (!qmapHooks_.contains(*name)) {
+		qmutexHooks_.unlock();
 		return -1;
 	}
 
 	THookEvent* p;
-	p = qmapHooks[*name];
+	p = qmapHooks_[*name];
 
 	//-- Destroy all hooks to this event
 	if (p->qmapSubscribers != NULL) {
@@ -97,20 +78,20 @@ int Core::destroyHookableEvent(const QLatin1String* name)
 	}
 
 	p->qmutexHook->~QMutex();
-	qmapHooks.remove(*name);
+	qmapHooks_.remove(*name);
 	delete p;
-	qmutexHooks.unlock();
+	qmutexHooks_.unlock();
 	return 0;
 }
 
 int Core::notifyEventHooks(const QLatin1String* name, uintptr_t wParam, uintptr_t lParam )
 {
 	//qmutexHooks.lock();
-	if (!qmapHooks.contains(*name))
+	if (!qmapHooks_.contains(*name))
 		return -1;
 
 	int returnErr = 0;
-	THookEvent* p = qmapHooks[*name];
+	THookEvent* p = qmapHooks_[*name];
 	//qmutexHooks.unlock();
 
 	p->qmutexHook->lock();
@@ -161,16 +142,16 @@ int Core::hookEvent(const QLatin1String* name, EliseHook hookProc)
 	if (name->size() < 1)
 		return -2;
 
-	qmutexHooks.lock();
-	if (!qmapHooks.contains(*name)) {
-		qmutexHooks.unlock();
+	qmutexHooks_.lock();
+	if (!qmapHooks_.contains(*name)) {
+		qmutexHooks_.unlock();
 		return -1;
 	}
 
 	THookEvent* p;
 	THookSubscriber* newSubscr;
 
-	p = qmapHooks[*name];
+	p = qmapHooks_[*name];
 
 	//-- Create new subscriber
 	//newSubscr = (THookSubscriber*)malloc(sizeof(THookSubscriber));
@@ -187,7 +168,7 @@ int Core::hookEvent(const QLatin1String* name, EliseHook hookProc)
 
 	p->qmapSubscribers->insert(newSubscr->num, newSubscr);
 
-	qmutexHooks.unlock();
+	qmutexHooks_.unlock();
 	return p->subscriberCount++;
 }
 
@@ -199,17 +180,17 @@ int Core::unhookEvent(const THook hook)
 	if (hook.name == NULL || hook.name->size() < 1)
 		return -2;
 
-	qmutexHooks.lock();
+	qmutexHooks_.lock();
 	//-- If the event name is wrong - return
-	if (!qmapHooks.contains(*hook.name)) {
-		qmutexHooks.unlock();
+	if (!qmapHooks_.contains(*hook.name)) {
+		qmutexHooks_.unlock();
 		return -1;
 	}
 
-	THookEvent* p = qmapHooks[*hook.name];
+	THookEvent* p = qmapHooks_[*hook.name];
 	//-- If there is no subscribers or num is wrong - return
 	if (p->qmapSubscribers == NULL || !p->qmapSubscribers->contains(hook.num)) {
-		qmutexHooks.unlock();
+		qmutexHooks_.unlock();
 		return -3;
 	}
 
@@ -226,21 +207,13 @@ int Core::unhookEvent(const THook hook)
 		p->subscriberCount = 0;
 	}
 
-	qmutexHooks.unlock();
+	qmutexHooks_.unlock();
 	return 0;
 }
 
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //-- SERVICES --////////////////////////////////////////////////////////////////////////////////////
-
-typedef struct
-{
-	int type;
-	union {
-		EliseService pfnService;
-	};
-} TService;
 
 //int Core::createServiceFunction(const QLatin1String* name, EliseService serviceProc, int type = 0)
 int Core::createServiceFunction(const QLatin1String* name, EliseService serviceProc)
@@ -249,10 +222,10 @@ int Core::createServiceFunction(const QLatin1String* name, EliseService serviceP
 	//	return -1;
 	if (name->size() < 1)
 		return -2;
-	qmutexServices.lock();
+	qmutexServices_.lock();
 	//-- Return 1 if service with this name already exists.
-	if (qmapServices.contains(*name)) {
-		qmutexServices.unlock();
+	if (qmapServices_.contains(*name)) {
+		qmutexServices_.unlock();
 		return -1;
 	}
 
@@ -273,8 +246,8 @@ int Core::createServiceFunction(const QLatin1String* name, EliseService serviceP
 	newSer->type = 0;
 	newSer->pfnService = serviceProc;
 
-	qmapServices[*name] = newSer;
-	qmutexServices.unlock();
+	qmapServices_[*name] = newSer;
+	qmutexServices_.unlock();
 	return 0;
 }
 
@@ -295,9 +268,9 @@ int Core::serviceExists(const QLatin1String* name)
 	if (name->size() < 1)
 		return -2;
 
-	qmutexServices.lock();
-	bool is = qmapServices.contains(*name);
-	qmutexServices.unlock();
+	qmutexServices_.lock();
+	bool is = qmapServices_.contains(*name);
+	qmutexServices_.unlock();
 	//-- If found then return 1, else 0
 	return is;
 }
@@ -309,16 +282,16 @@ intptr_t Core::callService(const QLatin1String* name, uintptr_t wParam, uintptr_
 	if (name->size() < 1)
 		return -2;
 
-	qmutexServices.lock();
+	qmutexServices_.lock();
 	//-- Check service. Return SERVICE_NOTFOUND if service with this name not exists
-	if (!qmapServices.contains(*name)) {
-		qmutexServices.unlock();
+	if (!qmapServices_.contains(*name)) {
+		qmutexServices_.unlock();
 		return -1;
 	}
 
-	TService* ser = qmapServices.value(*name);
+	TService* ser = qmapServices_.value(*name);
 
-	qmutexServices.unlock();
+	qmutexServices_.unlock();
 	switch(ser->type)
 	{
 		case 1:
@@ -338,14 +311,14 @@ int Core::destroyServiceFunction(const QLatin1String* name)
 	//	return -1;
 	if (name->size() < 1)
 		return -2;
-	qmutexServices.lock();
+	qmutexServices_.lock();
 	//-- Return SERVICE_NOTFOUND if service with this name not exists.
-	if (!qmapServices.contains(*name)) {
-		qmutexServices.unlock();
+	if (!qmapServices_.contains(*name)) {
+		qmutexServices_.unlock();
 		return -1;
 	}
 
-	TService* ser = qmapServices.value(*name);
+	TService* ser = qmapServices_.value(*name);
 	ser->type = 0;
 	switch (ser->type)
 	{
@@ -355,7 +328,7 @@ int Core::destroyServiceFunction(const QLatin1String* name)
 			ser->pfnService = NULL;
 	}
 	delete ser;
-	qmapServices.remove(*name);
-	qmutexServices.unlock();
+	qmapServices_.remove(*name);
+	qmutexServices_.unlock();
 	return 0;
 }

@@ -1,6 +1,6 @@
 #include <QtWidgets/QtWidgets>
 #include "pluginloaderoptions.h"
-#include "../../services.h"
+#include "../../core.h"
 #include "../../../../api/e_options.h"
 #include "../../../../api/e_pluginapi.h"
 #include "pluginstreemodel.h"
