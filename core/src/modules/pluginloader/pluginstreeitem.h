@@ -36,11 +36,13 @@ public:
 		dynamic_cast<QCheckBox*>(loadControl)->setChecked(loaded);
 		return loaded;
 	}
-	inline bool		isPluginLoadable()
+	inline bool		isControlActive()
 	{
-		bool loadable = isPluginLoaded() || PluginLoader::isPluginLoadable(pluginModuleName);
-		dynamic_cast<QCheckBox*>(loadControl)->setEnabled(loadable);
-		return loadable;
+		bool isActive = (isPluginLoaded() || PluginLoader::isPluginLoadable(pluginModuleName))
+				//-- We must disable control if this plugin is not unloadable
+				&& PluginLoader::isPluginUnloadable(pluginModuleName);
+		dynamic_cast<QCheckBox*>(loadControl)->setEnabled(isActive);
+		return isActive;
 	}
 	inline PluginsTreeItem*	parent() { return parentItem; }
 	inline PluginsTreeItem*	child(int number) { return childItems.value(number); }

@@ -1,5 +1,4 @@
-#include "modules.h"
-#include "elise.h"
+#include "core.h"
 #include "modules/pluginloader/pluginloader.h"
 #include "modules/profilemanager.h"
 #include "modules/tray.h"
@@ -9,18 +8,14 @@
 //-- Temporary module for tests
 #include "tests.h"
 
+ICore* Core::interface = 0;
 
-namespace core
+int Core::loadCore()
 {
 
-intptr_t ChangeProfile(intptr_t, intptr_t);
-int LoadProfile(bool);
-
-int LoadSystemModule()
-{
-	if (CreateServiceFunction(&kShutdown_service, &shutDown))
+	if (createServiceFunction(&kShutdown_service, &shutDown))
 		return 1;
-	if (CreateServiceFunction(&kChangeProfile_service, &ChangeProfile))
+	if (createServiceFunction(&kChangeProfile_service, &changeProfile))
 		return 1;
 	//if (CreateHookableEvent(&hkevName))
 		//return 1;
@@ -29,9 +24,9 @@ int LoadSystemModule()
 }
 
 
-int LoadDefaultModules()
+int Core::loadDefaultModules()
 {
-	if (LoadSystemModule())
+	if (Core::loadCore())
 		return 1;
 	if (OptionsDialog::loadOptionsModule())
 		return 1;
@@ -41,10 +36,10 @@ int LoadDefaultModules()
 		return 1;
 
 	//-- 'true' means that this is launch of the application
-	return LoadProfile(true);
+	return Core::loadProfile(true);
 }
 
-int UnloadDefaultModules()
+int Core::unloadDefaultModules()
 {
 
 	//-- Hide tray icon
@@ -53,16 +48,7 @@ int UnloadDefaultModules()
 	return 0;
 }
 
-intptr_t ChangeProfile(intptr_t, intptr_t)
-{
-	//-- 'false' means that this is not launch of the application
-	if (LoadProfile(false))
-		return shutDown(-1, 0);
-
-	return 0;
-}
-
-int LoadProfile(bool launchApp)
+int Core::loadProfile(bool launchApp)
 {
 	//-- First, unload all plugins, if there is
 	PluginLoader::unloadAllPlugins();
@@ -122,4 +108,3 @@ int LoadProfile(bool launchApp)
 	return 0;
 }
 
-} //namespace core

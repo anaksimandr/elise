@@ -1,5 +1,3 @@
-
-//#include "commonheaders.h"
 #include "dbplugin.h"
 #include "elisedb.h"
 #include "dbkey.h"

@@ -17,18 +17,21 @@ PluginsTreeItem::PluginsTreeItem(const QString& pluginModuleNameExt, const QStri
 	loadControl = cb;
 	if (isPluginLoaded())
 		cb->setChecked(true);
-	cb->setEnabled(isPluginLoadable());
+	cb->setEnabled(isControlActive());
 	connect(cb, &QCheckBox::toggled, this, &PluginsTreeItem::dataChange);
 	//loadControl->setAutoFillBackground(true);
 }
 
 void PluginsTreeItem::dataChange(bool checked)
 {
-	//-- Param "true" means update of controls, not create
+	PluginLoader::savePluginStateOrDelete(pluginModuleName, !checked);
+
 	if (checked)
 		PluginLoader::loadPlugin(pluginModuleName);
 	else
 		PluginLoader::unloadPlugin(pluginModuleName);
+
+	//-- Param "true" means update of controls, not create
 	model->updateLoadControls(true);
 }
 

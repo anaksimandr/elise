@@ -6,12 +6,13 @@
 #include "pluginstreemodel.h"
 #include "pluginloader.h"
 
-QTreeView*	PluginLoaderOptions::treeView = 0;
-QLabel* PluginLoaderOptions::description = 0;
-QLabel* PluginLoaderOptions::author = 0;
-QLabel* PluginLoaderOptions::authorEmail = 0;
-QLabel* PluginLoaderOptions::copyright = 0;
-QLabel* PluginLoaderOptions::homepage = 0;
+QTreeView*	PluginLoaderOptions::treeView_ = 0;
+QLabel* PluginLoaderOptions::description_ = 0;
+QLabel* PluginLoaderOptions::author_ = 0;
+QLabel* PluginLoaderOptions::authorEmail_ = 0;
+QLabel* PluginLoaderOptions::copyright_ = 0;
+QLabel* PluginLoaderOptions::homepage_ = 0;
+QLabel* PluginLoaderOptions::uuid_ = 0;
 
 void PluginLoaderOptions::saveLoaderOptions()
 {
@@ -21,15 +22,16 @@ void PluginLoaderOptions::saveLoaderOptions()
 void PluginLoaderOptions::loadSelectedPluginInfo(const QModelIndex& current, const QModelIndex&)
 {
 	PluginInfo* pluginInfo;
-	PluginsTreeModel* model = dynamic_cast<PluginsTreeModel*>(treeView->model());
+	PluginsTreeModel* model = dynamic_cast<PluginsTreeModel*>(treeView_->model());
 	pluginInfo = PluginLoader::getElisePluginInfo(model->data(model->index(current.row(), 1),
 															  Qt::DisplayRole).toString());
-	description->setText(pluginInfo->description);
-	homepage->setText("<a href=\"" + pluginInfo->homepage + "\">" + pluginInfo->homepage + "</a>");
-	author->setText(pluginInfo->author);
-	authorEmail->setText("<a href=mailto:\"" + pluginInfo->authorEmail + "\">"
+	description_->setText(pluginInfo->description);
+	homepage_->setText("<a href=\"" + pluginInfo->homepage + "\">" + pluginInfo->homepage + "</a>");
+	author_->setText(pluginInfo->author);
+	authorEmail_->setText("<a href=mailto:\"" + pluginInfo->authorEmail + "\">"
 						 + pluginInfo->authorEmail + "</a>");
-	copyright->setText(pluginInfo->copyright);
+	copyright_->setText(pluginInfo->copyright);
+	uuid_->setText(pluginInfo->uuid.toString());
 }
 
 int PluginLoaderOptions::createLoaderOptionsPage(intptr_t pfnPageAdder, intptr_t)
@@ -37,21 +39,21 @@ int PluginLoaderOptions::createLoaderOptionsPage(intptr_t pfnPageAdder, intptr_t
 	QWidget* widget = new QWidget();
 
 	widget->setStyleSheet("QTreeView::item {padding-left: 3px;}");
-	treeView = new QTreeView(widget);
-	treeView->resize(472, 270);
-	treeView->move(3, 3);
-	PluginsTreeModel* model = new PluginsTreeModel(treeView);
-	treeView->setModel(model);
-	treeView->setColumnWidth(0, 18);
-	treeView->setColumnWidth(1, 168);
-	treeView->setColumnWidth(2, 207);
-	treeView->setColumnWidth(3, 60);
-	treeView->setHeaderHidden(true);
-	treeView->setRootIsDecorated(false);
-	CheckBoxDelegate* dl = new CheckBoxDelegate(treeView);
-	treeView->setItemDelegate(dl);
+	treeView_ = new QTreeView(widget);
+	treeView_->resize(472, 250);
+	treeView_->move(3, 3);
+	PluginsTreeModel* model = new PluginsTreeModel(treeView_);
+	treeView_->setModel(model);
+	treeView_->setColumnWidth(0, 18);
+	treeView_->setColumnWidth(1, 168);
+	treeView_->setColumnWidth(2, 207);
+	treeView_->setColumnWidth(3, 60);
+	treeView_->setHeaderHidden(true);
+	treeView_->setRootIsDecorated(false);
+	CheckBoxDelegate* dl = new CheckBoxDelegate(treeView_);
+	treeView_->setItemDelegate(dl);
 
-	QObject::connect(treeView->selectionModel(), &QItemSelectionModel::currentChanged,
+	QObject::connect(treeView_->selectionModel(), &QItemSelectionModel::currentChanged,
 					 &PluginLoaderOptions::loadSelectedPluginInfo);
 
 	PluginInfo* pluginInfo;
@@ -72,8 +74,8 @@ int PluginLoaderOptions::createLoaderOptionsPage(intptr_t pfnPageAdder, intptr_t
 	model->updateLoadControls(false);
 
 	QGroupBox* box = new QGroupBox(widget);
-	box->move(3, 282);
-	box->resize(472, 163);
+	box->move(3, 262);
+	box->resize(472, 183);
 
 	//-- Description
 	QLabel* label = new QLabel(box);
@@ -81,12 +83,12 @@ int PluginLoaderOptions::createLoaderOptionsPage(intptr_t pfnPageAdder, intptr_t
 	label->resize(95, 20);
 	label->setAlignment(Qt::AlignTop);
 	label->setText("Description:");
-	description = new QLabel(box);
-	description->resize(350, 65);
-	description->move(110, 10);
-	description->setWordWrap(true);
-	description->setAlignment(Qt::AlignTop);
-	description->setTextInteractionFlags(Qt::TextSelectableByMouse);
+	description_ = new QLabel(box);
+	description_->resize(350, 65);
+	description_->move(110, 10);
+	description_->setWordWrap(true);
+	description_->setAlignment(Qt::AlignTop);
+	description_->setTextInteractionFlags(Qt::TextSelectableByMouse);
 
 	//-- Homepage
 	label = new QLabel(box);
@@ -94,13 +96,13 @@ int PluginLoaderOptions::createLoaderOptionsPage(intptr_t pfnPageAdder, intptr_t
 	label->resize(95, 20);
 	label->setAlignment(Qt::AlignTop);
 	label->setText("Homepage:");
-	homepage = new QLabel(box);
-	homepage->move(110, 83);
-	homepage->resize(350, 20);
-	homepage->setAlignment(Qt::AlignTop);
-	homepage->setTextFormat(Qt::RichText);
-	homepage->setTextInteractionFlags(Qt::TextBrowserInteraction);
-	homepage->setOpenExternalLinks(true);
+	homepage_ = new QLabel(box);
+	homepage_->move(110, 83);
+	homepage_->resize(350, 20);
+	homepage_->setAlignment(Qt::AlignTop);
+	homepage_->setTextFormat(Qt::RichText);
+	homepage_->setTextInteractionFlags(Qt::TextBrowserInteraction);
+	homepage_->setOpenExternalLinks(true);
 
 	//-- Author
 	label = new QLabel(box);
@@ -108,11 +110,11 @@ int PluginLoaderOptions::createLoaderOptionsPage(intptr_t pfnPageAdder, intptr_t
 	label->resize(95, 20);
 	label->setAlignment(Qt::AlignTop);
 	label->setText("Author:");
-	author = new QLabel(box);
-	author->move(110, 103);
-	author->resize(350, 20);
-	author->setAlignment(Qt::AlignTop);
-	author->setTextInteractionFlags(Qt::TextSelectableByMouse);
+	author_ = new QLabel(box);
+	author_->move(110, 103);
+	author_->resize(350, 20);
+	author_->setAlignment(Qt::AlignTop);
+	author_->setTextInteractionFlags(Qt::TextSelectableByMouse);
 
 	//-- Author Email
 	label = new QLabel(box);
@@ -120,13 +122,13 @@ int PluginLoaderOptions::createLoaderOptionsPage(intptr_t pfnPageAdder, intptr_t
 	label->resize(95, 20);
 	label->setAlignment(Qt::AlignTop);
 	label->setText("Author Email:");
-	authorEmail = new QLabel(box);
-	authorEmail->move(110, 123);
-	authorEmail->resize(350, 20);
-	authorEmail->setAlignment(Qt::AlignTop);
-	authorEmail->setTextFormat(Qt::RichText);
-	authorEmail->setTextInteractionFlags(Qt::TextBrowserInteraction);
-	authorEmail->setOpenExternalLinks(true);
+	authorEmail_ = new QLabel(box);
+	authorEmail_->move(110, 123);
+	authorEmail_->resize(350, 20);
+	authorEmail_->setAlignment(Qt::AlignTop);
+	authorEmail_->setTextFormat(Qt::RichText);
+	authorEmail_->setTextInteractionFlags(Qt::TextBrowserInteraction);
+	authorEmail_->setOpenExternalLinks(true);
 
 	//-- Copyright
 	label = new QLabel(box);
@@ -134,11 +136,23 @@ int PluginLoaderOptions::createLoaderOptionsPage(intptr_t pfnPageAdder, intptr_t
 	label->resize(95, 20);
 	label->setAlignment(Qt::AlignTop);
 	label->setText("Copyright:");
-	copyright = new QLabel(box);
-	copyright->move(110, 143);
-	copyright->resize(350, 20);
-	copyright->setAlignment(Qt::AlignTop);
-	copyright->setTextInteractionFlags(Qt::TextSelectableByMouse);
+	copyright_ = new QLabel(box);
+	copyright_->move(110, 143);
+	copyright_->resize(350, 20);
+	copyright_->setAlignment(Qt::AlignTop);
+	copyright_->setTextInteractionFlags(Qt::TextSelectableByMouse);
+
+	//-- Unique plugin ID
+	label = new QLabel(box);
+	label->move(10, 163);
+	label->resize(95, 20);
+	label->setAlignment(Qt::AlignTop);
+	label->setText("Unique ID:");
+	uuid_ = new QLabel(box);
+	uuid_->move(110, 163);
+	uuid_->resize(350, 20);
+	uuid_->setAlignment(Qt::AlignTop);
+	uuid_->setTextInteractionFlags(Qt::TextSelectableByMouse);
 
 	widget->setToolTip("Plugins");
 

@@ -28,8 +28,6 @@ SOURCES += \
 
 HEADERS += \
     src/tests.h \
-    src/services.h \
-    src/modules.h \
 	src/modules/tray.h \
 	../api/e_pluginapi.h \
 	../api/e_dbpluginapi.h \
@@ -40,11 +38,11 @@ HEADERS += \
     src/modules/options/treemodel.h \
 	src/modules/pluginloader/pluginloader.h \
     src/modules/profilemanager.h \
-    src/elise.h \
     src/modules/pluginloader/coreapi.h \
     src/modules/pluginloader/pluginloaderoptions.h \
     src/modules/pluginloader/pluginstreeitem.h \
-    src/modules/pluginloader/pluginstreemodel.h
+    src/modules/pluginloader/pluginstreemodel.h \
+    src/core.h
 
 RESOURCES += \
 	res/resources.qrc

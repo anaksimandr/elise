@@ -4,7 +4,7 @@
 #include <QtWidgets/QtWidgets>
 #include "../../../../api/e_pluginapi.h"
 
-extern const QLatin1String	kCoreIsPluginLoaded;			// "/Core/IsPluginLoaded"
+extern const QLatin1String	kCoreIsPluginLoaded;			// "Core/IsPluginLoaded"
 
 class IPlugin;
 class IDBPlugin;
@@ -35,9 +35,12 @@ public:
 	static int			loadPlugin(const QString& pluginModuleName);
 	static int			unloadPlugin(const QString& pluginModuleName);
 	static int			unloadAllPlugins();
+	static int			savePluginStateOrDelete(const QString& pluginModuleName,
+												bool disableOrDelete);
+	static bool			isPluginUnloadable(const QString& pluginModuleName);
 	static bool			isPluginLoadable(const QString& pluginModuleName);
 	static bool			isPluginLoaded(const QString& pluginModuleName);
-	static intptr_t		isPluginLoaded(intptr_t, intptr_t);
+	static intptr_t		isPluginLoaded(intptr_t id, intptr_t);
 	static const QMap<QString, Plugin>*	getAvailablePlugins();
 	static const QMap<QString, IDBPlugin*>*	getDBPlugins();
 };

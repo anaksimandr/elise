@@ -4,12 +4,13 @@
 class PluginLoaderOptions
 {
 private:
-	static QTreeView*	treeView;
-	static QLabel* description;
-	static QLabel* author;
-	static QLabel* authorEmail;
-	static QLabel* copyright;
-	static QLabel* homepage;
+	static QTreeView*	treeView_;
+	static QLabel*	description_;
+	static QLabel*	author_;
+	static QLabel*	authorEmail_;
+	static QLabel*	copyright_;
+	static QLabel*	homepage_;
+	static QLabel*	uuid_;
 public:
 	static void saveLoaderOptions();
 	static int	createLoaderOptionsPage(intptr_t pfnPageAdder, intptr_t);

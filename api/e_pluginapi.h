@@ -10,18 +10,9 @@ interfaces it must return this interface in IPlugin::ElisePluginInterfaces(void)
 But non standard interfaces must be returned too.
 
 Note: DBPlugin should not implements any other interfaces.
-	QUuid EUUID_DATABASE = "{4df3e270-fb8b-4654-9271-2f0f31e0eb84}";
+	const QUuid EUUID_DATABASE = "{4df3e270-fb8b-4654-9271-2f0f31e0eb84}";
 
 */
-
-/*/-- Store information about version here
-typedef struct {
-	union
-	{
-		unsigned char chars[4];		// [3] - major version, [2] - minor version
-		qint32 intValue;				// [1] - release num, [0] - build num
-	};
-} EVersion;*/
 
 //-- Hook functions
 typedef int (*EliseHook)(intptr_t,intptr_t);
@@ -30,8 +21,8 @@ typedef int (*EliseHook)(intptr_t,intptr_t);
 typedef intptr_t (*EliseService)(intptr_t,intptr_t);
 
 typedef struct {
-	QString	name;
-	unsigned char version[4];
+	QString	name;				// [3] - major version,	[2] - minor version
+	unsigned char version[4];	// [1] - release num,	[0] - build num
 	QString	description;
 	QString	homepage;
 	QString	author;
@@ -54,15 +45,15 @@ public:
 	virtual				~ICore() {}
 
 	//-- See services.h for more details
-	virtual int			CreateHookableEvent(const QLatin1String*) = 0;
-	virtual int			DestroyHookableEvent(const QLatin1String*) = 0;
-	virtual int			NotifyEventHooks(const QLatin1String*, uintptr_t, uintptr_t) = 0;
-	virtual int			HookEvent(const QLatin1String*, EliseHook) = 0;
-	virtual int			UnhookEvent(const THook) = 0;
-	virtual int			CreateServiceFunction(const QLatin1String*, EliseService) = 0;
-	virtual int			DestroyServiceFunction(const QLatin1String*) = 0;
-	virtual intptr_t	CallService(const QLatin1String*, uintptr_t, uintptr_t) = 0;
-	virtual int			ServiceExists(const QLatin1String*) = 0;
+	virtual int			createHookableEvent(const QLatin1String*) = 0;
+	virtual int			destroyHookableEvent(const QLatin1String*) = 0;
+	virtual int			notifyEventHooks(const QLatin1String*, uintptr_t, uintptr_t) = 0;
+	virtual int			hookEvent(const QLatin1String*, EliseHook) = 0;
+	virtual int			unhookEvent(const THook) = 0;
+	virtual int			createServiceFunction(const QLatin1String*, EliseService) = 0;
+	virtual int			destroyServiceFunction(const QLatin1String*) = 0;
+	virtual intptr_t	callService(const QLatin1String*, uintptr_t, uintptr_t) = 0;
+	virtual int			serviceExists(const QLatin1String*) = 0;
 };
 
 class IPlugin
