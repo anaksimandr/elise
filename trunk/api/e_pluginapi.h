@@ -52,14 +52,6 @@ typedef struct {
 	QUuid	uuid;
 } PluginInfo;
 
-//-- Use this to store information about your hooks and to call UnhookEvent() function
-//-- See UnhookEvent() function description in services.h for more details.
-typedef struct
-{
-	QLatin1String* name;
-	int num;
-} THook;
-
 class ICore
 {
 public:
@@ -70,7 +62,7 @@ public:
 	virtual int			destroyHookableEvent(const QLatin1String*) = 0;
 	virtual int			notifyEventHooks(const QLatin1String*, uintptr_t, uintptr_t) = 0;
 	virtual int			hookEvent(const QLatin1String*, EliseHook) = 0;
-	virtual int			unhookEvent(const THook) = 0;
+	virtual int			unhookEvent(const QLatin1String*, EliseHook) = 0;
 	virtual int			createServiceFunction(const QLatin1String*, EliseService) = 0;
 	virtual int			destroyServiceFunction(const QLatin1String*) = 0;
 	virtual intptr_t	callService(const QLatin1String*, uintptr_t, uintptr_t) = 0;

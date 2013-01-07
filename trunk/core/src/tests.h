@@ -19,7 +19,7 @@ private:
 	QLineEdit*		v3;
 	QLineEdit*		v4;
 	QLineEdit*		v5;
-	THook			thTray;
+	//THook			thTray;
 protected:
 	//Elise*			parent;
 	//virtual void	contextMenuEvent(QContextMenuEvent* e);
@@ -48,9 +48,9 @@ public slots:
 	void			unhookEvent();
 	void			deleteHokableEvent();
 	//-- Long test
-	void			testPointerCalls();
-	void			testNameCalls();
-	void			testQStringCalls();
+	//void			testPointerCalls();
+	//void			testNameCalls();
+	//void			testQStringCalls();
 	void			simpleTest();
 signals:
 	//int				testSignal(uintptr_t,uintptr_t);

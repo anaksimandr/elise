@@ -31,7 +31,7 @@ extern const QLatin1String	kDBWriteSetting_service;
 extern const QLatin1String	kDBReadSetting_service;
 extern const QLatin1String	kDBDellSetting_service;
 
-typedef struct
+/*typedef struct
 {
 	int num;
 	int type;
@@ -41,13 +41,14 @@ typedef struct
 		};
 	};
 
-} THookSubscriber;
+} THookSubscriber;*/
 
 typedef struct
 {
-	int  subscriberCount;
-	QMap<int, THookSubscriber*>* qmapSubscribers;
-	QMutex* qmutexHook;
+	//int  subscriberCount;
+	//QMap<int, THookSubscriber*>* qmapSubscribers;
+	QSet<EliseHook>*	qsetSubscribers;
+	QMutex*				qmutexHook;
 } THookEvent;
 
 typedef struct
@@ -135,25 +136,24 @@ public:
  * Adds a new hook to the chain 'name', to be called when the hook owner calls
  *	  NotifyEventHooks(...);
  * All hooks will be automatically destroyed when their parent event is destroyed or
- * the programm ends, but can be unhooked earlier using
+ * the programm ends, but they can be unhooked earlier using
  *	  UnhookEvent(..);
  * wParam and lParam in hookProc() are defined by the creator of the event when NotifyEventHooks()
  * is called. The return value of hookProc is 0 to continue processing the other hooks, or non-zero to stop
  * immediately. This abort value is returned to the caller of NotifyEventHooks() and
  * should not be -1 since that is a special return code for NotifyEventHooks() (see above).
- * Returns -2 if name is empty, -1 if name not found in events list. If the hook created
- * successfully, returns its personal number that must be used by call UnhookEvent().
+ * Returns 0 on success, -2 if name is empty, -1 if name not found in events list.
  */
 	int hookEvent(const QLatin1String* name, EliseHook hookProc);
 
 /* UnhookEvent
  * Removes a hook from its event chain. It will no longer receive any events.
- * hook.num in THook is personal number of destroying hook that was returned by HookEvent().
- * hook.name in THook is name of chain of events from which the remove is.
- * Returns 0 on success, -2 if name is empty, -1 if name is not found in the list of events and -3
- * if there is no hooks in chain 'name' or hook.num is wrong.
+ * 'name' is the name of chain of events from which the remove is.
+ * 'hookProc' is the pointer to unhooking function.
+ * Returns 0 on success, -2 if name is empty, -1 if name is not found in the list of events, -3
+ * if there is no 'hookProc' in chain 'name'.
  */
-	int unhookEvent(const THook hook);
+	int unhookEvent(const QLatin1String* name, EliseHook hookProc);
 
 	//-- Service functions --///////////////////////////////////////////////////////////////////////
 
