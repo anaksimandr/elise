@@ -20,13 +20,13 @@
 #include <QtWidgets/QtWidgets>
 
 //-- Services
-extern const QLatin1String	TRAY_ADD_MENUITEM;	//"Tray/AddMenuItem" /* Adds item to tray context menu. */
-extern const QLatin1String	TRAY_SET_ICON;		//"Tray/SetIcon"
+extern const QLatin1String	kTrayAddMenuItem_service;
+extern const QLatin1String	kTraySetIcon_service;
 
 //-- Hookable events
-extern const QLatin1String	TRAY_SINGLECLICK;	//"Tray/SingleClick"
-extern const QLatin1String	TRAY_DOUBLECLICK;	//"Tray/DoubleClick"
-extern const QLatin1String	TRAY_MIDDLECLICK;	//"Tray/MiddleClick"
+extern const QLatin1String	kTraySingleClick_event;
+extern const QLatin1String	kTrayDoubleClick_event;
+extern const QLatin1String	kTrayMiddleClick_event;
 
 class EliseTray;
 extern EliseTray* trayElise;

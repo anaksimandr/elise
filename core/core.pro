@@ -1,5 +1,4 @@
 
-
 QT += widgets sql
 
 TARGET		=	Elise
@@ -40,7 +39,9 @@ HEADERS += \
     src/modules/pluginloader/pluginloaderoptions.h \
     src/modules/pluginloader/pluginstreeitem.h \
     src/modules/pluginloader/pluginstreemodel.h \
-    src/core.h
+    src/core.h \
+    ../api/version.h \
+    ../api/defines.h
 
 RESOURCES += \
 	res/resources.qrc

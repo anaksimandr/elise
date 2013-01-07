@@ -1,6 +1,6 @@
-QT			+=	sql widgets
+QT			+=	widgets
 
-TARGET		=	BDPlugin
+TARGET		=	TestPlugin
 
 TEMPLATE	=	lib
 
@@ -8,21 +8,34 @@ CONFIG		+=	plugin
 
 DEFINES		+=	UNICODE
 
+#VERSION = $$system(svnversion -n)
+#!isEmpty(VERSION){
+#	VERSION = 0.$${VERSION}
+#}
+#VERSTR = '\\"$${VERSION}\\"'  # place quotes around the version string
+#DEFINES += VER=\"$${VERSTR}\" # create a VER macro containing the version string
+#for /F "tokens=*" %f in ('svnversion -n') do set vvv=%f
+#
+#VERSION = $$system(svnversion -n)
+#VERSTR = '\\"$${VERSION}\\"'
+#DEFINES += VER=\"$${VERSTR}\"
+#
+# Product version. Comma delimit 4 numbers eg. NW_VERSION=1,2,3,4
+#NW_VERSION=3,0,652,0
+#DEFINES += "VERSION_RC=$${NW_VERSION}"
+#NW_SVN = $$system(svnversion -n)
+#DEFINES += "SVN_RC=$${NW_SVN}"
+
 SOURCES += \
-	src/dbplugin.cpp \
-	src/elsiedb.cpp
+	src/tests.cpp
 
 HEADERS += \
-	../../api/version.h \
-	../../api/e_dbpluginapi.h \
 	../../api/e_pluginapi.h \
-	src/dbplugin.h \
-    src/dbkey.h \
-	src/elisedb.h \
-    ../../api/e_database.h
+	../../api/version.h \
+	src/tests.h
 
 #OTHER_FILES += \
-#	dbplugin.json
+#	plugin.json
 
 # install
 #target.path = $$[QT_INSTALL_EXAMPLES]/tools/echoplugin/plugin
@@ -38,12 +51,10 @@ HEADERS += \
 CONFIG (debug, debug|release) {
 #	OBJECTS_DIR = ../Elise-build/debug/plugins/newplugin
 	DESTDIR = ../../../Elise-debug/Plugins
-	#DEFINES		+=	_DEBUG
 }else{
 #	OBJECTS_DIR = ../Elise-build/release/plugins/newplugin
 	DESTDIR = ../../../Elise-release/Plugins
 }
-
 
 
 

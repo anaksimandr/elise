@@ -19,11 +19,11 @@
 #include "../core.h"
 
 
-const QLatin1String	TRAY_ADD_MENUITEM	=	QLatin1String("Tray/AddMenuItem");
-const QLatin1String	TRAY_SET_ICON		=	QLatin1String("Tray/SetIcon");
-const QLatin1String	TRAY_SINGLECLICK	=	QLatin1String("Tray/SingleClick");
-const QLatin1String	TRAY_DOUBLECLICK	=	QLatin1String("Tray/DoubleClick");
-const QLatin1String	TRAY_MIDDLECLICK	=	QLatin1String("Tray/MiddleClick");
+const QLatin1String	kTrayAddMenuItem_service	=	QLatin1String(__Tray_AddMenuItem_service);
+const QLatin1String	kTraySetIcon_service		=	QLatin1String(__Tray_SetIcon_service);
+const QLatin1String	kTraySingleClick_event	=	QLatin1String(__Tray_SingleClick_event);
+const QLatin1String	kTrayDoubleClick_event	=	QLatin1String(__Tray_DoubleClick_event);
+const QLatin1String	kTrayMiddleClick_event	=	QLatin1String(__Tray_MiddleClick_event);
 
 EliseTray* trayElise;
 
@@ -33,17 +33,17 @@ void EliseTray::trayActivationNotify(QSystemTrayIcon::ActivationReason reason)
 	{
 		case QSystemTrayIcon::Trigger:
 		{
-			core->notifyEventHooks(&TRAY_SINGLECLICK, 0, 0);
+			core->notifyEventHooks(&kTraySingleClick_event, 0, 0);
 			break;
 		}
 		case QSystemTrayIcon::DoubleClick:
 		{
-			core->notifyEventHooks(&TRAY_DOUBLECLICK, 0, 0);
+			core->notifyEventHooks(&kTrayDoubleClick_event, 0, 0);
 			break;
 		}
 		case QSystemTrayIcon::MiddleClick:
 		{
-			core->notifyEventHooks(&TRAY_MIDDLECLICK, 0, 0);
+			core->notifyEventHooks(&kTrayMiddleClick_event, 0, 0);
 			break;
 		}
 		default:
@@ -78,15 +78,15 @@ int LoadTrayModule()
 	trayElise = new EliseTray();
 	trayElise->setIcon(QIcon(":/icons/img/main.png"));
 	trayElise->show();
-	core->createHookableEvent(&TRAY_SINGLECLICK);
-	core->createHookableEvent(&TRAY_DOUBLECLICK);
-	core->createHookableEvent(&TRAY_MIDDLECLICK);
+	core->createHookableEvent(&kTraySingleClick_event);
+	core->createHookableEvent(&kTrayDoubleClick_event);
+	core->createHookableEvent(&kTrayMiddleClick_event);
 	//QObject::connect(trayElise, SIGNAL(activated(QSystemTrayIcon::ActivationReason)),
 	//				 trayElise, SLOT(trayActivationNotify(QSystemTrayIcon::ActivationReason)));
 	QObject::connect(trayElise, &EliseTray::activated, trayElise, &EliseTray::trayActivationNotify);
 	trayElise->setContextMenu(new QMenu());
-	core->createServiceFunction(&TRAY_ADD_MENUITEM, &addToContextMenu);
-	core->createServiceFunction(&TRAY_SET_ICON, &setTrayIcon);
+	core->createServiceFunction(&kTrayAddMenuItem_service, &addToContextMenu);
+	core->createServiceFunction(&kTraySetIcon_service, &setTrayIcon);
 	return 0;
 }
 

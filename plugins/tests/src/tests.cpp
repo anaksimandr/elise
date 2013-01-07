@@ -16,33 +16,34 @@
  */
 
 #include "../../../api/version.h"
-#include "newplugin.h"
+#include "tests.h"
 
 const QLatin1String	kTestPlugin_service	=	QLatin1String(__Tests_TestService);
 ICore* core;
-QSet<QUuid>* NewPlugin::interfaces = 0;
+QSet<QUuid>* TestPlugin::interfaces = 0;
 
 const PluginInfo pluginInfo = {
-	"NewPlugin",
+	"TestPlugin",
 	{__MAJOR_VERSION, __MINOR_VERSION, __BUILD_NUM, __SVN_REVISION},
-	"Simple plugin",
+	"Plugin for testing (for developers only).",
 	"http://code.google.com/p/elise/",
-	"somebody",
-	"somebody@nomail.com",
+	"Sergey Andreenko",
+	"s.andreenko@gmail.com",
 	"© 2012 Elise IM project",
-	"{792e2ede-6e43-4891-9ab1-a9eb8f88cc09}"
+	"{c8aa9219-6544-481a-8790-d0cd42831647}"
 };
 
 
-const PluginInfo* NewPlugin::ElisePluginInfo()
+const PluginInfo* TestPlugin::ElisePluginInfo()
 {
 	return &pluginInfo;
 }
 
-const QSet<QUuid>* NewPlugin::ElisePluginInterfaces(void)
+const QSet<QUuid>* TestPlugin::ElisePluginInterfaces(void)
 {
 	if (interfaces == 0) {
 		interfaces = new QSet<QUuid>();
+		interfaces->insert(__UUID_Clist);
 		interfaces->insert(__UUID_TestPlugin);
 	}
 
@@ -57,16 +58,19 @@ intptr_t testPluginFunction(intptr_t, intptr_t)
 	return 0;
 }
 
-int NewPlugin::Load(ICore* coreAPI)
+int TestPlugin::Load(ICore* coreAPI)
 {
 	core = coreAPI;
-	core->createServiceFunction(&kTestPlugin_service, &testPluginFunction);
+	if (core->createServiceFunction(&kTestPlugin_service, &testPluginFunction) == -1)
+		QMessageBox::critical(0, "Error", "Test service already exists", QMessageBox::Ok);
 	return 0;
 }
 
-int NewPlugin::Unload(void)
+int TestPlugin::Unload(void)
 {
 	core->destroyServiceFunction(&kTestPlugin_service);
 	return 0;
 }
+
+//Q_EXPORT_PLUGIN2(newplugin, NewPlugin)
 

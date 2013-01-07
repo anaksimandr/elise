@@ -24,12 +24,12 @@
 class QModelIndex;
 
 //-- Services
-extern const QLatin1String	kOptionsShow_service;		//"Options/Show"
+extern const QLatin1String	kOptionsShow_service;
 //-- Hookable events
 //-- There is also "Options/Show" event
 #define kOptionsShow_event kOptionsShow_service
-extern const QLatin1String	kOptionsSave_event;			//"Options/Save"
-extern const QLatin1String	kOptionsClose_event;		//"Options/Close"
+extern const QLatin1String	kOptionsSave_event;
+extern const QLatin1String	kOptionsClose_event;
 
 class OptionsDialog : public QWidget
 {

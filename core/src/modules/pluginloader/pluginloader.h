@@ -20,7 +20,8 @@
 #include <QtWidgets/QtWidgets>
 #include "../../../../api/e_pluginapi.h"
 
-extern const QLatin1String	kCoreIsPluginLoaded;			// "Core/IsPluginLoaded"
+extern const QLatin1String	kCoreIsPluginLoaded;
+extern const QLatin1String	kCoreGetPluginInterfaces;
 
 class IPlugin;
 class IDBPlugin;
@@ -43,11 +44,13 @@ private:
 public:
 	static QDir			getPluginsDir();
 	static PluginInfo*	getElisePluginInfo(const QString& pluginModuleName);
-	static int			loadPluginLoader();
+	static intptr_t		getElisePluginInterfaces(intptr_t id, intptr_t);
 	static int			loadDBPlugin(const QString& pluginModuleName,
 									 const QMap<QString, IDBPlugin*>* dbPlugins);
 	static int			loadPlugins();
 	static int			loadPlugin(const QString& pluginModuleName);
+	static int			loadPluginLoader();
+	static int			unloadPluginLoader();
 	static int			unloadPlugin(const QString& pluginModuleName);
 	static int			unloadAllPlugins();
 	static int			savePluginStateOrDelete(const QString& pluginModuleName,

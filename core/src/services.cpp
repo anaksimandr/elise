@@ -20,11 +20,11 @@
 #include <QLatin1String>
 #include "core.h"
 
-const QLatin1String	kShutdown_service		=	QLatin1String("System/Shutdown");
-const QLatin1String	kChangeProfile_service	=	QLatin1String("System/ChangeAcc");
-const QLatin1String	kDBWriteSetting_service	=	QLatin1String("DB/WriteSetting");
-const QLatin1String	kDBReadSetting_service	=	QLatin1String("DB/ReadSetting");
-const QLatin1String	kDBDellSetting_service	=	QLatin1String("DB/DeleteSetting");
+const QLatin1String	kShutdown_service		=	QLatin1String(__Core_Shutdown_service);
+const QLatin1String	kChangeProfile_service	=	QLatin1String(__Core_ChangeProfile_service);
+const QLatin1String	kDBWriteSetting_service	=	QLatin1String(__DB_WriteSetting_service);
+const QLatin1String	kDBReadSetting_service	=	QLatin1String(__DB_ReadSetting_service);
+const QLatin1String	kDBDellSetting_service	=	QLatin1String(__DB_DellSetting_service);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //-- HOOKS --///////////////////////////////////////////////////////////////////////////////////////
@@ -108,14 +108,14 @@ int Core::notifyEventHooks(const QLatin1String* name, uintptr_t wParam, uintptr_
 		return -1;
 
 	int returnErr = 0;
-	THookEvent* p = qmapHooks_[*name];
+	THookEvent* h = qmapHooks_[*name];
 	//qmutexHooks.unlock();
 
-	p->qmutexHook->lock();
+	h->qmutexHook->lock();
 
 	//-- NOTE: We've got the critical section while all this lot are called.
-	if (p->qmapSubscribers != NULL) {
-		QMapIterator<int, THookSubscriber*> iter(*p->qmapSubscribers);
+	if (h->qmapSubscribers != NULL) {
+		QMapIterator<int, THookSubscriber*> iter(*h->qmapSubscribers);
 		THookSubscriber* s;
 		while (iter.hasNext()) {
 			iter.next();
@@ -147,7 +147,7 @@ int Core::notifyEventHooks(const QLatin1String* name, uintptr_t wParam, uintptr_
 		//	returnVal = p->pfnHook( wParam, lParam );
 	}
 
-	p->qmutexHook->unlock();
+	h->qmutexHook->unlock();
 	return returnErr;
 }
 
@@ -174,6 +174,7 @@ int Core::hookEvent(const QLatin1String* name, EliseHook hookProc)
 	//newSubscr = (THookSubscriber*)malloc(sizeof(THookSubscriber));
 	newSubscr = new THookSubscriber;
 	newSubscr->num = p->subscriberCount;
+	//newSubscr->num = p->qmapSubscribers->count();
 	newSubscr->type = 1;
 	newSubscr->pfnHook = hookProc;
 
