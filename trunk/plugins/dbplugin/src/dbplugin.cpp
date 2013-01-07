@@ -19,10 +19,11 @@
 #include "elisedb.h"
 #include "dbkey.h"
 #include "../../../api/e_database.h"
+#include "../../../api/version.h"
 
-const QLatin1String	kDBWriteSetting_service	=	QLatin1String("DB/WriteSetting");
-const QLatin1String	kDBReadSetting_service	=	QLatin1String("DB/ReadSetting");
-const QLatin1String	kDBDellSetting_service	=	QLatin1String("DB/DeleteSetting");
+const QLatin1String	kDBWriteSetting_service	=	QLatin1String(__DB_WriteSetting_service);
+const QLatin1String	kDBReadSetting_service	=	QLatin1String(__DB_ReadSetting_service);
+const QLatin1String	kDBDellSetting_service	=	QLatin1String(__DB_DellSetting_service);
 
 QSet<QUuid>* DBPlugin::interfaces = 0;
 
@@ -30,12 +31,12 @@ ICore* core;
 
 const PluginInfo pluginInfo = {
 	QLatin1String("DBPlugin"),
-	{0,0,0,1},
+	{__MAJOR_VERSION, __MINOR_VERSION, __BUILD_NUM, __SVN_REVISION},
 	"Basic DB plugin",
 	"http://code.google.com/p/elise/",
-	"Andreenko Sergey",
+	"Sergey Andreenko",
 	"s.andreenko@gmail.com",
-	"© 2012 Andreenko Sergey",
+	"© 2012 Elise IM project",
 	"{708acd4b-bda3-45a0-b2c6-290f9c7cfce3}"
 };
 
@@ -418,7 +419,7 @@ const QSet<QUuid>* DBPlugin::ElisePluginInterfaces(void)
 {
 	if (interfaces == 0) {
 		interfaces = new QSet<QUuid>();
-		interfaces->insert("{4df3e270-fb8b-4654-9271-2f0f31e0eb84}");
+		interfaces->insert(__UUID_Database);
 	}
 
 	return interfaces;

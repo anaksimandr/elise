@@ -19,9 +19,9 @@
 #include "treemodel.h"
 #include "../../core.h"
 
-const QLatin1String	kOptionsShow_service	=	QLatin1String("Options/Show");
-const QLatin1String	kOptionsSave_event		=	QLatin1String("Options/Save");
-const QLatin1String	kOptionsClose_event		=	QLatin1String("Options/Close");
+const QLatin1String	kOptionsShow_service	=	QLatin1String(__Options_Show_service);
+const QLatin1String	kOptionsSave_event		=	QLatin1String(__Options_Save_event);
+const QLatin1String	kOptionsClose_event		=	QLatin1String(__Options_Close_event);
 
 OptionsDialog* OptionsDialog::options_ = 0;
 

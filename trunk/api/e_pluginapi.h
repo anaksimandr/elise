@@ -19,6 +19,7 @@
 #define ELISE_API_E_PLUGINAPI_H_
 
 #include <QtCore>
+#include "defines.h"
 
 /* Replaceable plugin interfaces.
 
@@ -27,8 +28,11 @@ interfaces it must return this interface in IPlugin::ElisePluginInterfaces(void)
 But non standard interfaces must be returned too.
 
 Note: DBPlugin should not implements any other interfaces.
-	const QUuid EUUID_DATABASE = "{4df3e270-fb8b-4654-9271-2f0f31e0eb84}";
-
+	const QUuid UUID_DATABASE	=	"{4df3e270-fb8b-4654-9271-2f0f31e0eb84}";
+	const QUuid UUID_CLIST		=	"{88441947-8188-474e-ae18-bb2f3795d4fe}";
+	const QUuid UUID_CHATWINDOW	=	"{29fbc48a-bf3e-4fdd-a537-35ad427da091}";
+	const QUuid UUID_CHATLOG	=	"{d6f1dce9-2c88-495d-b89c-9fb147f4863d}";
+	const QUuid UUID_TESTPLUGIN	=	"{a3c43dc8-4bb0-454d-baca-7682f924115c}";
 */
 
 //-- Hook functions
@@ -39,7 +43,7 @@ typedef intptr_t (*EliseService)(intptr_t,intptr_t);
 
 typedef struct {
 	QString	name;				// [3] - major version,	[2] - minor version
-	unsigned char version[4];	// [1] - release num,	[0] - build num
+	unsigned char version[4];	// [1] - build num,	[0] - svn revision
 	QString	description;
 	QString	homepage;
 	QString	author;

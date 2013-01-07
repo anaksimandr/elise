@@ -25,14 +25,11 @@ class QLatin1String;
 class QMutex;
 
 //-- Services
-extern const QLatin1String	kShutdown_service;		//"System/Shutdown"
-extern const QLatin1String	kChangeProfile_service;	//"System/ChangeAcc"
-extern const QLatin1String	kDBWriteSetting_service;//"DB/WriteSetting"
-extern const QLatin1String	kDBReadSetting_service;	//"DB/ReadSetting"
-extern const QLatin1String	kDBDellSetting_service;	//"DB/DeleteSetting"
-
-//-- Hookable events
-//const QLatin1String	TRAY_SINGLECLICK	=	QLatin1String("Tray/SingleClick");
+extern const QLatin1String	kShutdown_service;
+extern const QLatin1String	kChangeProfile_service;
+extern const QLatin1String	kDBWriteSetting_service;
+extern const QLatin1String	kDBReadSetting_service;
+extern const QLatin1String	kDBDellSetting_service;
 
 typedef struct
 {
@@ -125,10 +122,11 @@ public:
 	int destroyHookableEvent(const QLatin1String* name);
 
 /* NotifyEventHooks
- * Calls every module in turn that has hooked 'name', using the parameters wParam and lParam.
+ * Calls every module in turn that has hooked 'name', using the parameters wParam and lParam
+ * (they are defined by the creator of the event when NotifyEventHooks() is called).
  * If one of the hooks returned non-zero to indicate abort, returns that abort value immediately,
  * without calling the rest of the hooks in the chain.
- * Returns 0 on success, -2 if name is invalid, any non-zero value that indicates break of one
+ * Returns 0 on success, -1 if name is invalid, any non-zero value that indicates break of one
  * of called hooks.
  */
 	int notifyEventHooks(const QLatin1String* name, uintptr_t wParam, uintptr_t lParam );
@@ -136,11 +134,11 @@ public:
 /* HookEvent
  * Adds a new hook to the chain 'name', to be called when the hook owner calls
  *	  NotifyEventHooks(...);
- * All hooks will be automatically destroyed when (their parent event is destroyed or)
+ * All hooks will be automatically destroyed when their parent event is destroyed or
  * the programm ends, but can be unhooked earlier using
  *	  UnhookEvent(..);
  * wParam and lParam in hookProc() are defined by the creator of the event when NotifyEventHooks()
- * is called. The return value is 0 to continue processing the other hooks, or non-zero to stop
+ * is called. The return value of hookProc is 0 to continue processing the other hooks, or non-zero to stop
  * immediately. This abort value is returned to the caller of NotifyEventHooks() and
  * should not be -1 since that is a special return code for NotifyEventHooks() (see above).
  * Returns -2 if name is empty, -1 if name not found in events list. If the hook created

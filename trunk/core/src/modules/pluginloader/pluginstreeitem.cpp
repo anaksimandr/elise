@@ -41,7 +41,8 @@ PluginsTreeItem::PluginsTreeItem(const QString& pluginModuleNameExt, const QStri
 
 void PluginsTreeItem::dataChange(bool checked)
 {
-	PluginLoader::savePluginStateOrDelete(pluginModuleName, !checked);
+	if (PluginLoader::savePluginStateOrDelete(pluginModuleName, !checked))
+		return;
 
 	if (checked)
 		PluginLoader::loadPlugin(pluginModuleName);

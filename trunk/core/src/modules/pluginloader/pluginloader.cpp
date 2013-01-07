@@ -25,7 +25,8 @@
 #include "../../core.h"
 #include "pluginloaderoptions.h"
 
-const QLatin1String	kCoreIsPluginLoaded	=	QLatin1String("Core/IsPluginLoaded");
+const QLatin1String	kCoreIsPluginLoaded	=	QLatin1String(__Core_IsPluginLoaded_service);
+const QLatin1String	kCoreGetPluginInterfaces = QLatin1String(__Core_GetPluginInterfaces_service);
 
 QDir						PluginLoader::pluginsDir_;
 QMap<QString, Plugin>*		PluginLoader::plugins_ = 0;
@@ -36,6 +37,16 @@ int PluginLoader::loadPluginLoader()
 	pluginsDir_ = getPluginsDir();
 	core->hookEvent(&kOptionsShow_event, &PluginLoaderOptions::createLoaderOptionsPage);
 	core->createServiceFunction(&kCoreIsPluginLoaded, &PluginLoader::isPluginLoaded);
+	core->createServiceFunction(&kCoreGetPluginInterfaces, &PluginLoader::getElisePluginInterfaces);
+
+	return 0;
+}
+
+int PluginLoader::unloadPluginLoader()
+{
+	core->unhookEvent();
+	core->destroyServiceFunction(&kCoreIsPluginLoaded);
+	core->destroyServiceFunction(&kCoreGetPluginInterfaces);
 
 	return 0;
 }
@@ -83,6 +94,40 @@ PluginInfo* PluginLoader::getElisePluginInfo(const QString &pluginModuleName)
 	if (!doNotUnload)
 		loader.unload();
 	return result;
+}
+
+intptr_t PluginLoader::getElisePluginInterfaces(intptr_t id, intptr_t)
+{
+	//-- Note: We can get interfaces only for loaded plugins.
+
+	QUuid* pluginUuid = reinterpret_cast<QUuid*>(id);
+	IPlugin* pluginInterface;
+
+	QMap<QString, Plugin>::const_iterator iteratorPlugins = plugins_->constBegin();
+	QMap<QString, Plugin>::const_iterator pluginsEnd = plugins_->constEnd();
+
+	bool found = false;
+
+	while (iteratorPlugins != pluginsEnd)
+	{
+		if (iteratorPlugins.value().loaded == true
+				&& *(iteratorPlugins.value().uuid) == *pluginUuid)
+		{
+			pluginInterface = qobject_cast<IPlugin*>(iteratorPlugins.value().instance);
+			found = true;
+			break;
+		}
+		++iteratorPlugins;
+	}
+
+	if (!found)
+		return 0;
+
+	QSet<QUuid>* interfaces = new QSet<QUuid>();
+
+	*interfaces = *pluginInterface->ElisePluginInterfaces();
+
+	return reinterpret_cast<intptr_t>(interfaces);
 }
 
 const QMap<QString, Plugin>* PluginLoader::getAvailablePlugins()
@@ -138,6 +183,12 @@ const QMap<QString, Plugin>* PluginLoader::getAvailablePlugins()
 
 int PluginLoader::savePluginStateOrDelete(const QString &pluginModuleName, bool disableOrDelete)
 {
+	if (!pluginsDir_.exists(pluginModuleName)) {
+		QMessageBox::critical(0, "Error", "Plugin module is not found.\nPerhaps it was deleted.",
+							  QMessageBox::Ok);
+		return -1;
+	}
+
 	QString qsUuid;
 	if (disableOrDelete) {
 		const Plugin* plugin = &plugins_->value(pluginModuleName);
@@ -196,13 +247,14 @@ bool PluginLoader::isLoadingPluginDisabled(const QString& pluginModuleName)
 
 intptr_t PluginLoader::isPluginLoaded(intptr_t id, intptr_t)
 {
-	QUuid* uuid = reinterpret_cast<QUuid*>(id);
+	QUuid* pluginUuid = reinterpret_cast<QUuid*>(id);
 
 	QMap<QString, Plugin>::const_iterator iteratorPlugins = plugins_->constBegin();
 	QMap<QString, Plugin>::const_iterator pluginsEnd = plugins_->constEnd();
 
 	while (iteratorPlugins != pluginsEnd) {
-		if (iteratorPlugins.value().loaded == true && *(iteratorPlugins.value().uuid) == *uuid)
+		if (iteratorPlugins.value().loaded == true
+				&& *(iteratorPlugins.value().uuid) == *pluginUuid)
 			return 1;
 		++iteratorPlugins;
 	}

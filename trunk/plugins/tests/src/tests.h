@@ -14,25 +14,25 @@
 	You should have received a copy of the GNU General Public License
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-#ifndef ELISE_CORE_MODULES_PLUGINLOADER_PLUGINLOADEROPTIONS_H_
-#define ELISE_CORE_MODULES_PLUGINLOADER_PLUGINLOADEROPTIONS_H_
 
-class PluginLoaderOptions
-{
-private:
-	static QTreeView*	treeView_;
-	static QLabel*	description_;
-	static QLabel*	author_;
-	static QLabel*	authorEmail_;
-	static QLabel*	copyright_;
-	static QLabel*	homepage_;
-	static QLabel*	uuid_;
-	static QString	pluginName_;
+#ifndef ELISE_PLUGINS_TESTPLUG_TESTPLUG_H_
+#define ELISE_PLUGINS_TESTPLUG_TESTPLUG_H_
+
+#include <QtWidgets/QtWidgets>
+#include "../../../api/e_pluginapi.h"
+
+class TestPlugin : public QObject, IPlugin
+ {
+	Q_OBJECT
+	Q_INTERFACES(IPlugin)
+	Q_PLUGIN_METADATA(IID "elise.IPlugin")
+	static QSet<QUuid>*		interfaces;
 public:
-	static void	saveLoaderOptions();
-	static int	createLoaderOptionsPage(intptr_t pfnPageAdder, intptr_t);
-	static void	loadSelectedPluginInfo(const QModelIndex& current, const QModelIndex&);
-	static void	showPluginInterfaces();
+	const PluginInfo*		ElisePluginInfo();
+	const QSet<QUuid>*		ElisePluginInterfaces(void);
+	int						Load(ICore* coreAPI);
+	int						Unload(void);
 };
 
-#endif // ELISE_CORE_MODULES_PLUGINLOADER_PLUGINLOADEROPTIONS_H_
+
+#endif // ELISE_PLUGINS_TESTPLUG_TESTPLUG_H_

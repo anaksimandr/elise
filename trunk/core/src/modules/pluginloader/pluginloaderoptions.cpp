@@ -29,7 +29,8 @@ QLabel* PluginLoaderOptions::author_ = 0;
 QLabel* PluginLoaderOptions::authorEmail_ = 0;
 QLabel* PluginLoaderOptions::copyright_ = 0;
 QLabel* PluginLoaderOptions::homepage_ = 0;
-QLabel* PluginLoaderOptions::uuid_ = 0;
+QLabel*	PluginLoaderOptions::uuid_ = 0;
+QString	PluginLoaderOptions::pluginName_;
 
 void PluginLoaderOptions::saveLoaderOptions()
 {
@@ -49,6 +50,39 @@ void PluginLoaderOptions::loadSelectedPluginInfo(const QModelIndex& current, con
 						 + pluginInfo->authorEmail + "</a>");
 	copyright_->setText(pluginInfo->copyright);
 	uuid_->setText(pluginInfo->uuid.toString());
+	pluginName_ = pluginInfo->name;
+	delete pluginInfo;
+}
+
+void PluginLoaderOptions::showPluginInterfaces()
+{
+	QUuid uuid = QUuid(uuid_->text());
+	QSet<QUuid>* pluginInterfaces = reinterpret_cast<QSet<QUuid>*>(
+				core->callService(&kCoreGetPluginInterfaces, reinterpret_cast<intptr_t>(&uuid), 0)
+				);
+
+	if (!pluginInterfaces) {
+		QMessageBox::information(0,
+								 "Information", "There is no interfaces or plugin is not loaded.",
+								 QMessageBox::Ok);
+		return;
+	}
+
+	QListWidget* list = new QListWidget();
+
+	QSet<QUuid>::const_iterator i = pluginInterfaces->constBegin();
+	QSet<QUuid>::const_iterator iEnd = pluginInterfaces->constEnd();
+	while (i != iEnd) {
+		list->addItem((*i).toString());
+		++i;
+	}
+
+	list->setAttribute(Qt::WA_DeleteOnClose);
+	list->setSortingEnabled(true);
+	list->setWindowTitle(pluginName_ + " interfaces");
+	//-- Hmmm... contentsSize() is protected Oo
+	list->resize(list->sizeHintForColumn(0) + 4, list->sizeHintForRow(0) * list->count() + 4);
+	list->show();
 }
 
 int PluginLoaderOptions::createLoaderOptionsPage(intptr_t pfnPageAdder, intptr_t)
@@ -170,6 +204,13 @@ int PluginLoaderOptions::createLoaderOptionsPage(intptr_t pfnPageAdder, intptr_t
 	uuid_->resize(350, 20);
 	uuid_->setAlignment(Qt::AlignTop);
 	uuid_->setTextInteractionFlags(Qt::TextSelectableByMouse);
+
+	//-- Button for list plugin interfaces
+	QPushButton* btn = new QPushButton(box);
+	btn->resize(129, 22);
+	btn->move(340, 158);
+	btn->setText("Show interfaces");
+	QObject::connect(btn, &QPushButton::clicked, &PluginLoaderOptions::showPluginInterfaces);
 
 	widget->setToolTip("Plugins");
 
