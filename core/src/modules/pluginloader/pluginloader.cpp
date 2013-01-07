@@ -20,7 +20,6 @@
 #include "../../../../api/e_options.h"
 #include "../../../../api/e_database.h"
 #include "../options/options.h"
-#include "coreapi.h"
 #include "pluginloader.h"
 #include "../../core.h"
 #include "pluginloaderoptions.h"
@@ -44,7 +43,7 @@ int PluginLoader::loadPluginLoader()
 
 int PluginLoader::unloadPluginLoader()
 {
-	core->unhookEvent();
+	core->unhookEvent(&kOptionsShow_event, &PluginLoaderOptions::createLoaderOptionsPage);
 	core->destroyServiceFunction(&kCoreIsPluginLoaded);
 	core->destroyServiceFunction(&kCoreGetPluginInterfaces);
 

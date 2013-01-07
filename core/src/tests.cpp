@@ -210,18 +210,18 @@ QTestWindow::QTestWindow()
 	//-- Long tests
 	button = new QPushButton(this);
 	button->setText("Test pointer calls");
-	connect(button, SIGNAL(clicked()), this, SLOT(testPointerCalls()));
+	//connect(button, SIGNAL(clicked()), this, SLOT(testPointerCalls()));
 	layoutTest->addWidget(button);
 	button->setMinimumWidth(100);
 
 	button = new QPushButton(this);
 	button->setText("Test name calls");
-	connect(button, SIGNAL(clicked()), this, SLOT(testNameCalls()));
+	//connect(button, SIGNAL(clicked()), this, SLOT(testNameCalls()));
 	layoutTest->addWidget(button);
 
 	button = new QPushButton(this);
 	button->setText("Test QString calls");
-	connect(button, SIGNAL(clicked()), this, SLOT(testQStringCalls()));
+	//connect(button, SIGNAL(clicked()), this, SLOT(testQStringCalls()));
 	layoutTest->addWidget(button);
 
 	button = new QPushButton(this);
@@ -239,8 +239,7 @@ QTestWindow::QTestWindow()
 	layoutV->setAlignment(button, Qt::AlignBottom);
 
 	//-- Work with tray
-	thTray.num =  core->hookEvent(&kTraySingleClick_event, &hideMainWindow);
-	thTray.name = new QLatin1String(kTraySingleClick_event);
+	core->hookEvent(&kTraySingleClick_event, &hideMainWindow);
 
 	wii = this;
 	this->show();
@@ -271,7 +270,7 @@ int hideMainWindow(intptr_t, intptr_t)
 
 QTestWindow::~QTestWindow()
 {
-	core->unhookEvent(thTray);
+	core->unhookEvent(&kTraySingleClick_event, &hideMainWindow);
 }
 
 void QTestWindow::setBarValue(int val)
@@ -415,7 +414,6 @@ void QTestWindow::delSetting()
 
 static QLatin1String name = QLatin1String("TEST_SERVISE");
 static QLatin1String hkevName = QLatin1String("TEST_HOOKABLE_EVENT");
-static THook hookEv;
 
 //-- Hooks
 
@@ -437,10 +435,8 @@ void QTestWindow::createHookblEvent()
 
 void QTestWindow::hookEvent()
 {
-	hookEv.num = core->hookEvent(&hkevName, &testHook);
-	hookEv.name = &hkevName;
-	if (hookEv.num != -1)
-		setOutput("Hook event success, num is " + QString::number(hookEv.num));
+	if (!core->hookEvent(&hkevName, &testHook))
+		setOutput("Hook event success");
 	else
 		setOutput("Hook event FAILED!");
 }
@@ -456,9 +452,8 @@ void QTestWindow::notifyEventHooks()
 
 void QTestWindow::unhookEvent()
 {
-	int ret = core->unhookEvent(hookEv);
-	if (ret != -1)
-		setOutput("Unhook event success, num was " + QString::number(hookEv.num));
+	if (!core->unhookEvent(&hkevName, &testHook))
+		setOutput("Unhook event success");
 	else
 		setOutput("Unhook event FAILED!");
 }
@@ -520,7 +515,7 @@ void QTestWindow::delService()
 
 //-- Long test
 
-static QMap <QLatin1String, THook*> qmapHooks;
+/*static QMap <QLatin1String, THook*> qmapHooks;
 static void* hookableEvent;
 
 int testFunction(void* ho, int val)
@@ -574,7 +569,7 @@ void QTestWindow::testQStringCalls()
 		setBarValue(testFunction3(name, i));
 	}
 	setOutput(QString::number(time.elapsed()));
-}
+}*/
 
 const QLatin1String	kCoreIsPluginLoaded	=	QLatin1String("Core/IsPluginLoaded");
 void QTestWindow::simpleTest()

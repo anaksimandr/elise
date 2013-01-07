@@ -31,9 +31,6 @@ const QLatin1String	kDBDellSetting_service	=	QLatin1String(__DB_DellSetting_serv
 
 int Core::createHookableEvent(const QLatin1String* name)
 {
-	//if (name->isEmpty())
-	//	return -1;
-
 	if (name->size() < 1)
 		return -2;
 
@@ -46,11 +43,8 @@ int Core::createHookableEvent(const QLatin1String* name)
 
 	THookEvent* newEvent;
 
-	//newEvent = (THookEvent*)malloc(sizeof(THookEvent));
 	newEvent = new THookEvent;
-	newEvent->subscriberCount = 0;
-	newEvent->qmapSubscribers = NULL;
-	//newEvent->pfnHook = hokableSig;
+	newEvent->qsetSubscribers = NULL;
 	newEvent->qmutexHook = new QMutex();
 	qmapHooks_[*name] = newEvent;
 
@@ -60,15 +54,10 @@ int Core::createHookableEvent(const QLatin1String* name)
 
 int Core::destroyHookableEvent(const QLatin1String* name)
 {
-	//if (name->isEmpty())
-	//	return -1;
-
 	if (name->size() < 1)
 		return -2;
 
 	qmutexHooks_.lock();
-	//if ( pLastHook == ( THook* )hEvent )
-	//	pLastHook = NULL;
 	if (!qmapHooks_.contains(*name)) {
 		qmutexHooks_.unlock();
 		return -1;
@@ -78,23 +67,10 @@ int Core::destroyHookableEvent(const QLatin1String* name)
 	p = qmapHooks_[*name];
 
 	//-- Destroy all hooks to this event
-	if (p->qmapSubscribers != NULL) {
-		QMapIterator<int, THookSubscriber*> iter(*p->qmapSubscribers);
-		THookSubscriber* s;
-		while (iter.hasNext()) {
-			iter.next();
-			s = iter.value();
-			s->num = 0;
-			s->type = 0;
-			s->pfnHook = NULL;
-			delete s;
-		}
-		p->qmapSubscribers->~QMap();
-		p->qmapSubscribers = NULL;
-		p->subscriberCount = 0;
-	}
+	if (p->qsetSubscribers != NULL)
+		delete p->qsetSubscribers;
 
-	p->qmutexHook->~QMutex();
+	delete p->qmutexHook;
 	qmapHooks_.remove(*name);
 	delete p;
 	qmutexHooks_.unlock();
@@ -108,54 +84,28 @@ int Core::notifyEventHooks(const QLatin1String* name, uintptr_t wParam, uintptr_
 		return -1;
 
 	int returnErr = 0;
-	THookEvent* h = qmapHooks_[*name];
+	THookEvent* p = qmapHooks_[*name];
 	//qmutexHooks.unlock();
 
-	h->qmutexHook->lock();
+	p->qmutexHook->lock();
 
 	//-- NOTE: We've got the critical section while all this lot are called.
-	if (h->qmapSubscribers != NULL) {
-		QMapIterator<int, THookSubscriber*> iter(*h->qmapSubscribers);
-		THookSubscriber* s;
-		while (iter.hasNext()) {
-			iter.next();
-			s = iter.value();
-			switch (s->type) {
-				case 1:
-					returnErr = s->pfnHook(wParam, lParam);
-					break;
-				case 2:
-					//returnVal = s->pfnHookParam( wParam, lParam, s->lParam );
-					break;
-				case 3:
-					//returnVal = s->pfnHookObj( s->object, wParam, lParam );
-					break;
-				case 4:
-					//returnVal = s->pfnHookObjParam( s->object, wParam, lParam, s->lParam );
-					break;
-				case 5:
-					//returnVal = SendMessage( s->hwnd, s->message, wParam, lParam );
-					break;
-				default:
-					continue;
-			}
-			if (returnErr)
+	if (p->qsetSubscribers != NULL) {
+		QSet<EliseHook>::const_iterator iterSubs = p->qsetSubscribers->constBegin();
+		QSet<EliseHook>::const_iterator iterEnd = p->qsetSubscribers->constEnd();
+		while (iterSubs != iterEnd) {
+			if (returnErr = (*iterSubs)(wParam, lParam))
 				break;
-		} //while
-	} else {
-		//-- Call the default hook if any  because no other hooks
-		//	returnVal = p->pfnHook( wParam, lParam );
+			++iterSubs;
+		}
 	}
 
-	h->qmutexHook->unlock();
+	p->qmutexHook->unlock();
 	return returnErr;
 }
 
 int Core::hookEvent(const QLatin1String* name, EliseHook hookProc)
-{	
-	//if (name->isEmpty())
-	//	return -2;
-
+{
 	if (name->size() < 1)
 		return -2;
 
@@ -165,64 +115,42 @@ int Core::hookEvent(const QLatin1String* name, EliseHook hookProc)
 		return -1;
 	}
 
-	THookEvent* p;
-	THookSubscriber* newSubscr;
+	THookEvent* p = qmapHooks_[*name];
 
-	p = qmapHooks_[*name];
+	//-- If this hook is first then create the Set
+	if (p->qsetSubscribers == NULL)
+		p->qsetSubscribers = new QSet<EliseHook>();
 
-	//-- Create new subscriber
-	//newSubscr = (THookSubscriber*)malloc(sizeof(THookSubscriber));
-	newSubscr = new THookSubscriber;
-	newSubscr->num = p->subscriberCount;
-	//newSubscr->num = p->qmapSubscribers->count();
-	newSubscr->type = 1;
-	newSubscr->pfnHook = hookProc;
-
-	//-- If this hook is first then create the map
-	if(p->qmapSubscribers == NULL)
-	{
-		p->qmapSubscribers = new QMap<int, THookSubscriber*>();
-	}
-
-	p->qmapSubscribers->insert(newSubscr->num, newSubscr);
+	p->qsetSubscribers->insert(hookProc);
 
 	qmutexHooks_.unlock();
-	return p->subscriberCount++;
+	return 0;
 }
 
-int Core::unhookEvent(const THook hook)
+int Core::unhookEvent(const QLatin1String* name, EliseHook hookProc)
 {
-	//if (hook.name == NULL || hook.name->isEmpty())
-	//	return -1;
-
-	if (hook.name == NULL || hook.name->size() < 1)
+	if (name == NULL || name->size() < 1)
 		return -2;
 
 	qmutexHooks_.lock();
 	//-- If the event name is wrong - return
-	if (!qmapHooks_.contains(*hook.name)) {
+	if (!qmapHooks_.contains(*name)) {
 		qmutexHooks_.unlock();
 		return -1;
 	}
 
-	THookEvent* p = qmapHooks_[*hook.name];
+	THookEvent* p = qmapHooks_[*name];
 	//-- If there is no subscribers or num is wrong - return
-	if (p->qmapSubscribers == NULL || !p->qmapSubscribers->contains(hook.num)) {
+	if (p->qsetSubscribers == NULL || !p->qsetSubscribers->contains(hookProc)) {
 		qmutexHooks_.unlock();
 		return -3;
 	}
 
-	THookSubscriber* s = p->qmapSubscribers->value(hook.num);
-	s->num = 0;
-	s->type = 0;
-	s->pfnHook = NULL;
-	delete s;
-	p->qmapSubscribers->remove(hook.num);
+	p->qsetSubscribers->remove(hookProc);
 	//-- If there is no more subscribers - destroy map and reset subscriberCount
-	if (p->qmapSubscribers->isEmpty()) {
-		p->qmapSubscribers->~QMap();
-		p->qmapSubscribers = NULL;
-		p->subscriberCount = 0;
+	if (p->qsetSubscribers->isEmpty()) {
+		delete p->qsetSubscribers;
+		p->qsetSubscribers = NULL;
 	}
 
 	qmutexHooks_.unlock();
