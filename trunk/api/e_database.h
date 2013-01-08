@@ -23,12 +23,10 @@ class QString;
 class QByteArray;
 
 //-- Types of settings
-/*
-  0;	int
-  1;	double
-  2;	QString
-  3;	QByteArray
-*/
+#define __Int_Type		0	//-- int
+#define __Real_Type		1	//-- double
+#define __Text_Type		2	//-- QString
+#define __Blob_Type		3	//-- QByteArray
 
 typedef struct {
 	unsigned char type;

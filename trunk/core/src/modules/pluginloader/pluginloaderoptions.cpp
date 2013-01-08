@@ -43,6 +43,8 @@ void PluginLoaderOptions::loadSelectedPluginInfo(const QModelIndex& current, con
 	PluginsTreeModel* model = dynamic_cast<PluginsTreeModel*>(treeView_->model());
 	pluginInfo = PluginLoader::getElisePluginInfo(model->data(model->index(current.row(), 1),
 															  Qt::DisplayRole).toString());
+	if (!pluginInfo)
+		return;
 	description_->setText(pluginInfo->description);
 	homepage_->setText("<a href=\"" + pluginInfo->homepage + "\">" + pluginInfo->homepage + "</a>");
 	author_->setText(pluginInfo->author);
@@ -113,6 +115,8 @@ int PluginLoaderOptions::createLoaderOptionsPage(intptr_t pfnPageAdder, intptr_t
 	QMap<QString, Plugin>::const_iterator iEnd = plugins->constEnd();
 	while (i != iEnd) {
 		pluginInfo = PluginLoader::getElisePluginInfo(i.key());
+		if (!pluginInfo)
+			continue;
 		model->insert(i.key(), pluginInfo->name,
 					  QString::number(pluginInfo->version[0]) + "."
 					+ QString::number(pluginInfo->version[1]) + "."

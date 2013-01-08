@@ -27,12 +27,16 @@ DEFINES		+=	UNICODE
 #DEFINES += "SVN_RC=$${NW_SVN}"
 
 SOURCES += \
-	src/tests.cpp
+	src/tests.cpp \
+    src/testwindow.cpp
 
 HEADERS += \
+	../../api/defines.h \
 	../../api/e_pluginapi.h \
+	../../api/e_database.h \
 	../../api/version.h \
-	src/tests.h
+	src/tests.h \
+    src/testwindow.h
 
 #OTHER_FILES += \
 #	plugin.json

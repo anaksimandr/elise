@@ -28,12 +28,18 @@ const QLatin1String	kCoreIsPluginLoaded	=	QLatin1String(__Core_IsPluginLoaded_se
 const QLatin1String	kCoreGetPluginInterfaces = QLatin1String(__Core_GetPluginInterfaces_service);
 
 QDir						PluginLoader::pluginsDir_;
-QMap<QString, Plugin>*		PluginLoader::plugins_ = 0;
-QMap<QUuid, QString>*		PluginLoader::interfaces_ = 0;
+QMap<QString, Plugin>*		PluginLoader::plugins_ = NULL;
+QMap<QUuid, QString>*		PluginLoader::interfaces_ = NULL;
+QSet<QUuid>*				PluginLoader::multiplyImplementingInterfaces_ = NULL;
 
 int PluginLoader::loadPluginLoader()
 {
 	pluginsDir_ = getPluginsDir();
+	if (multiplyImplementingInterfaces_ == NULL) {
+		multiplyImplementingInterfaces_ = new QSet<QUuid>();
+		multiplyImplementingInterfaces_->insert(__UUID_TestPlugin);
+	}
+
 	core->hookEvent(&kOptionsShow_event, &PluginLoaderOptions::createLoaderOptionsPage);
 	core->createServiceFunction(&kCoreIsPluginLoaded, &PluginLoader::isPluginLoaded);
 	core->createServiceFunction(&kCoreGetPluginInterfaces, &PluginLoader::getElisePluginInterfaces);
@@ -43,6 +49,8 @@ int PluginLoader::loadPluginLoader()
 
 int PluginLoader::unloadPluginLoader()
 {
+	delete multiplyImplementingInterfaces_;
+	multiplyImplementingInterfaces_ = NULL;
 	core->unhookEvent(&kOptionsShow_event, &PluginLoaderOptions::createLoaderOptionsPage);
 	core->destroyServiceFunction(&kCoreIsPluginLoaded);
 	core->destroyServiceFunction(&kCoreGetPluginInterfaces);
@@ -73,6 +81,9 @@ QDir PluginLoader::getPluginsDir()
 
 PluginInfo* PluginLoader::getElisePluginInfo(const QString &pluginModuleName)
 {
+	if (!confirmPluginModule(pluginModuleName))
+		return NULL;
+
 	PluginInfo* result = new PluginInfo;
 	QPluginLoader loader;
 	loader.setFileName(pluginsDir_.absoluteFilePath(pluginModuleName));
@@ -182,11 +193,8 @@ const QMap<QString, Plugin>* PluginLoader::getAvailablePlugins()
 
 int PluginLoader::savePluginStateOrDelete(const QString &pluginModuleName, bool disableOrDelete)
 {
-	if (!pluginsDir_.exists(pluginModuleName)) {
-		QMessageBox::critical(0, "Error", "Plugin module is not found.\nPerhaps it was deleted.",
-							  QMessageBox::Ok);
+	if (!confirmPluginModule(pluginModuleName))
 		return -1;
-	}
 
 	QString qsUuid;
 	if (disableOrDelete) {
@@ -195,6 +203,8 @@ int PluginLoader::savePluginStateOrDelete(const QString &pluginModuleName, bool 
 	}
 	else {
 		PluginInfo* pluginInfo = getElisePluginInfo(pluginModuleName);
+		if (!pluginInfo)
+			return -1;
 		qsUuid = pluginInfo->uuid.toString();
 		delete pluginInfo;
 	}
@@ -207,7 +217,7 @@ int PluginLoader::savePluginStateOrDelete(const QString &pluginModuleName, bool 
 	set->qsModule = &module;
 	set->qsSetting = &setting;
 	set->var = new DBVariant;
-	set->var->type = 0; //-- int
+	set->var->type = __Int_Type;
 	if (disableOrDelete) {
 		//-- Disable plugin
 		set->var->intValue = 1;
@@ -225,6 +235,9 @@ int PluginLoader::savePluginStateOrDelete(const QString &pluginModuleName, bool 
 bool PluginLoader::isLoadingPluginDisabled(const QString& pluginModuleName)
 {
 	PluginInfo* pluginInfo = getElisePluginInfo(pluginModuleName);
+	//-- TODO: check this
+	if (!pluginInfo)
+		return true;
 
 	QString module = QStringLiteral("core");
 	QString setting = QStringLiteral("pluginDisabled_") + pluginInfo->uuid.toString();
@@ -234,7 +247,7 @@ bool PluginLoader::isLoadingPluginDisabled(const QString& pluginModuleName)
 	set->qsModule = &module;
 	set->qsSetting = &setting;
 	set->var = new DBVariant;
-	set->var->type = 0; //-- int
+	set->var->type = __Int_Type;
 	if (!core->callService(&kDBReadSetting_service, reinterpret_cast<intptr_t>(set), 0)) {
 		result = static_cast<bool>(set->var->intValue);
 	}
@@ -294,8 +307,9 @@ bool PluginLoader::isPluginLoadable(const QString& pluginModuleName)
 	QSet<QUuid>::const_iterator iEnd = pluginInterfaces->constEnd();
 	bool result = true;
 	while (i != iEnd) {
-		//-- if one of the interfaces is already registered - break
-		if (interfaces_->contains(*i)) {
+		//-- if one of the interfaces is already registered and
+		//-- it is not allows more than one plugin to implement it - break.
+		if (interfaces_->contains(*i) && !multiplyImplementingInterfaces_->contains(*i)) {
 			result = false;
 			break;
 		}

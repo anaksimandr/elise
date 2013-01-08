@@ -21,10 +21,11 @@
 #include "../../../api/e_database.h"
 
 //-- Types of settings
-const unsigned char intType		=	0;	//-- int
-const unsigned char realType	=	1;	//-- double
-const unsigned char textType	=	2;	//-- QString
-const unsigned char blobType	=	3;	//-- QByteArray
+//-- Moved to e_database.h
+//const unsigned char intType		=	0;	//-- int
+//const unsigned char realType	=	1;	//-- double
+//const unsigned char textType	=	2;	//-- QString
+//const unsigned char blobType	=	3;	//-- QByteArray
 /*extern const unsigned char intType;
 extern const unsigned char realType;
 extern const unsigned char textType;
@@ -49,16 +50,16 @@ int WriteSettingToBase(intptr_t  wParam, intptr_t)
 	QString qsType;
 	//-- Choose table
 	switch (set->var->type) {
-		case intType:
+		case __Int_Type:
 			qsType = "int_settings";
 			break;
-		case realType:
+		case __Real_Type:
 			qsType = "real_settings";
 			break;
-		case textType:
+		case __Text_Type:
 			qsType = "text_settings";
 			break;
-		case blobType:
+		case __Blob_Type:
 			qsType = "blob_settings";
 			break;
 	}
@@ -79,16 +80,16 @@ int WriteSettingToBase(intptr_t  wParam, intptr_t)
 					  "where contact=:1 and module=:2 and setting=:3");
 	//-- Bind values
 	switch (set->var->type) {
-		case intType:
+		case __Int_Type:
 			query.bindValue(":4", set->var->intValue);
 			break;
-		case realType:
+		case __Real_Type:
 			query.bindValue(":4", set->var->realValue);
 			break;
-		case textType:
+		case __Text_Type:
 			query.bindValue(":4", *set->var->textValue);
 			break;
-		case blobType:
+		case __Blob_Type:
 			query.bindValue(":4", *set->var->blobValue);
 			break;
 	}
@@ -123,16 +124,16 @@ int ReadSettingFromBase(intptr_t  wParam, intptr_t)
 	QSqlQuery query(QSqlDatabase::database(qsProfile));
 	QString qsType;
 	switch (set->var->type) {
-		case intType:
+		case __Int_Type:
 			qsType = "int_settings";
 			break;
-		case realType:
+		case __Real_Type:
 			qsType = "real_settings";
 			break;
-		case textType:
+		case __Text_Type:
 			qsType = "text_settings";
 			break;
-		case blobType:
+		case __Blob_Type:
 			qsType = "blob_settings";
 			break;
 	}
@@ -162,16 +163,16 @@ int ReadSettingFromBase(intptr_t  wParam, intptr_t)
 #endif
 	query.next();
 	switch (set->var->type) {
-		case intType:
+		case __Int_Type:
 			set->var->intValue = query.value(0).toInt();
 			break;
-		case realType:
+		case __Real_Type:
 			set->var->realValue = query.value(0).toDouble();
 			break;
-		case textType:		
+		case __Text_Type:
 			*set->var->textValue = query.value(0).toString();
 			break;
-		case blobType:
+		case __Blob_Type:
 			*set->var->blobValue = query.value(0).toByteArray();
 			break;
 	}
@@ -194,16 +195,16 @@ int DelteSettingFromBase(intptr_t  wParam, intptr_t)
 	QSqlQuery query(QSqlDatabase::database(qsProfile));
 	QString qsType;
 	switch (set->var->type) {
-		case intType:
+		case __Int_Type:
 			qsType = "int_settings";
 			break;
-		case realType:
+		case __Real_Type:
 			qsType = "real_settings";
 			break;
-		case textType:
+		case __Text_Type:
 			qsType = "text_settings";
 			break;
-		case blobType:
+		case __Blob_Type:
 			qsType = "blob_settings";
 			break;
 	}

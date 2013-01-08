@@ -15,11 +15,13 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#ifndef ELISE_PLUGINS_TESTPLUG_TESTPLUG_H_
-#define ELISE_PLUGINS_TESTPLUG_TESTPLUG_H_
+#ifndef ELISE_PLUGINS_TESTS_TESTS_H_
+#define ELISE_PLUGINS_TESTS_TESTS_H_
 
 #include <QtWidgets/QtWidgets>
 #include "../../../api/e_pluginapi.h"
+
+extern ICore* core;
 
 class TestPlugin : public QObject, IPlugin
  {
@@ -35,4 +37,4 @@ public:
 };
 
 
-#endif // ELISE_PLUGINS_TESTPLUG_TESTPLUG_H_
+#endif // ELISE_PLUGINS_TESTS_TESTS_H_

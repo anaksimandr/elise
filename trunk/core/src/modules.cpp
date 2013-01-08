@@ -23,7 +23,7 @@
 
 
 //-- Temporary module for tests
-#include "tests.h"
+//#include "tests.h"
 
 ICore* core = 0;
 
@@ -48,6 +48,7 @@ int Core::loadCore()
 int Core::unloadCore()
 {
 	UnloadTrayModule();
+	PluginLoader::unloadPluginLoader();
 	OptionsDialog::unloadOptionsModule();
 	//-- This will be cleaned during the destruction of the core
 	//destroyServiceFunction(&kShutdown_service);
@@ -137,8 +138,8 @@ int Core::loadProfile(bool launchApp)
 		return 1;
 		//return shutDown(-1, 0);
 
-	//-- For test
-	new QTestWindow();
+	//-- Call CList
+	core->callService(&kClistShow_service, 0, 0);
 	return 0;
 }
 

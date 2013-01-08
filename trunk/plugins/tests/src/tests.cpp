@@ -16,9 +16,9 @@
  */
 
 #include "../../../api/version.h"
+#include "testwindow.h"
 #include "tests.h"
 
-const QLatin1String	kTestPlugin_service	=	QLatin1String(__Tests_TestService);
 ICore* core;
 QSet<QUuid>* TestPlugin::interfaces = 0;
 
@@ -50,25 +50,20 @@ const QSet<QUuid>* TestPlugin::ElisePluginInterfaces(void)
 	return interfaces;
 }
 
-intptr_t testPluginFunction(intptr_t, intptr_t)
-{
-	QMessageBox qmes;
-	qmes.setText("Call test plugin success! uuid is\n");
-	qmes.exec();
-	return 0;
-}
 
 int TestPlugin::Load(ICore* coreAPI)
 {
 	core = coreAPI;
-	if (core->createServiceFunction(&kTestPlugin_service, &testPluginFunction) == -1)
-		QMessageBox::critical(0, "Error", "Test service already exists", QMessageBox::Ok);
+	core->createServiceFunction(&kClistShow_service, &TestWindow::showCList);
+	core->createServiceFunction(&kClistHide_service, &TestWindow::hideCList);
+
 	return 0;
 }
 
 int TestPlugin::Unload(void)
 {
-	core->destroyServiceFunction(&kTestPlugin_service);
+	core->destroyServiceFunction(&kClistShow_service);
+	core->destroyServiceFunction(&kClistHide_service);
 	return 0;
 }
 
