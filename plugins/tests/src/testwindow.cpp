@@ -231,6 +231,7 @@ intptr_t TestWindow::showCList(intptr_t, intptr_t)
 intptr_t TestWindow::hideCList(intptr_t, intptr_t)
 {
 	delete mainWindow;
+	mainWindow = NULL;
 	return 0;
 }
 
@@ -263,6 +264,7 @@ void TestWindow::uuidCreate()
 void TestWindow::changeAcc()
 {
 	delete this;
+	mainWindow = NULL;
 	if (core->callService(&kChangeProfile_service, 0, 0) == -2)
 		QMessageBox::critical(this, "Error", "Service not found.", QMessageBox::Ok);
 }
@@ -464,7 +466,7 @@ void TestWindow::testtService()
 	int res = core->callService(&name, 111, 0);
 	if (res == 111)
 		setOutput("Test service returned valid result");
-	else if (res == -2)
+	else if (res == -2 || res == -1)
 		setOutput("SERVICE_NOTFOUND");
 	else
 		setOutput("Test service returned wrong result");
