@@ -39,6 +39,7 @@ private:
 	static QDir						pluginsDir_;
 	static QMap<QString, Plugin>*	plugins_;
 	static QMap<QUuid, QString>*	interfaces_;
+	static QSet<QUuid>*				multiplyImplementingInterfaces_;
 
 	static bool			isLoadingPluginDisabled(const QString& pluginModuleName);
 public:
@@ -61,6 +62,17 @@ public:
 	static intptr_t		isPluginLoaded(intptr_t id, intptr_t);
 	static const QMap<QString, Plugin>*	getAvailablePlugins();
 	static const QMap<QString, IDBPlugin*>*	getDBPlugins();
+
+	static inline int	confirmPluginModule(const QString &pluginModuleName)
+	{
+		if (!pluginsDir_.exists(pluginModuleName)) {
+			QMessageBox::critical(0, "Error",
+								  "Plugin module is not found.\nPerhaps it was deleted.",
+								  QMessageBox::Ok);
+			return 0;
+		}
+		return 1;
+	}
 };
 
 #endif // ELISE_CORE_MODULES_PLUGINLOADER_PLUGINLOADER_H_

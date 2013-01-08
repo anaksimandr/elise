@@ -10,7 +10,6 @@ DEFINES		+=	UNICODE
 
 SOURCES += \
 	src/elise.cpp \
-	src/tests.cpp \
 	src/services.cpp \
 	src/modules.cpp \
 	src/modules/tray.cpp \
@@ -25,7 +24,6 @@ SOURCES += \
 
 
 HEADERS += \
-    src/tests.h \
 	src/modules/tray.h \
 	../api/e_pluginapi.h \
 	../api/e_dbpluginapi.h \

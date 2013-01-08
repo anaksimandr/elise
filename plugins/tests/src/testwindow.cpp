@@ -1,37 +1,26 @@
-/*  Elise IM, free crossplatform IM client
-	Copyright (C) 2012  Elise project
+#include "testwindow.h"
+#include <QVBoxLayout>
+#include <QHBoxLayout>
+#include <QPushButton>
+#include "../../../api/e_database.h"
 
-	This program is free software: you can redistribute it and/or modify
-	it under the terms of the GNU General Public License as published by
-	the Free Software Foundation, either version 3 of the License, or
-	(at your option) any later version.
+const QLatin1String	kShutdown_service		=	QLatin1String(__Core_Shutdown_service);
+const QLatin1String	kChangeProfile_service	=	QLatin1String(__Core_ChangeProfile_service);
+const QLatin1String	kTrayAddMenuItem_service	=	QLatin1String(__Tray_AddMenuItem_service);
+const QLatin1String	kTraySetIcon_service		=	QLatin1String(__Tray_SetIcon_service);
+const QLatin1String	kTraySingleClick_event	=	QLatin1String(__Tray_SingleClick_event);
+const QLatin1String	kDBWriteSetting_service	=	QLatin1String(__DB_WriteSetting_service);
+const QLatin1String	kDBReadSetting_service	=	QLatin1String(__DB_ReadSetting_service);
+const QLatin1String	kDBDellSetting_service	=	QLatin1String(__DB_DellSetting_service);
+const QLatin1String	kOptionsShow_service	=	QLatin1String(__Options_Show_service);
+const QLatin1String	kClistShow_service	=	QLatin1String(__CList_Show_service);
+const QLatin1String	kClistHide_service	=	QLatin1String(__CList_Hide_service);
 
-	This program is distributed in the hope that it will be useful,
-	but WITHOUT ANY WARRANTY; without even the implied warranty of
-	MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-	GNU General Public License for more details.
+TestWindow* mainWindow;
 
-	You should have received a copy of the GNU General Public License
-	along with this program.  If not, see <http://www.gnu.org/licenses/>.
- */
-
-#include "tests.h"
-
-const unsigned char intType		=	0;	//-- int
-const unsigned char realType	=	1;	//-- double
-const unsigned char textType	=	2;	//-- QString
-const unsigned char blobType	=	3;	//-- QByteArray
-
-int hideMainWindow(intptr_t, intptr_t);
-
-#include <QtSql>
-
-QTestWindow* wii;
-
-QTestWindow::QTestWindow()
+TestWindow::TestWindow() :
+	QWidget(NULL)
 {
-	vis = false;
-
 	this->setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowTitleHint);
 	QVBoxLayout* layoutV = new QVBoxLayout(this);
 	QHBoxLayout* layoutH = new QHBoxLayout(this);
@@ -39,13 +28,13 @@ QTestWindow::QTestWindow()
 	QVBoxLayout* layoutDB = new QVBoxLayout(this);
 	QVBoxLayout* layoutServ = new QVBoxLayout(this);
 	QVBoxLayout* layoutHook = new QVBoxLayout(this);
-	QVBoxLayout* layoutTest = new QVBoxLayout(this);
+	//QVBoxLayout* layoutTest = new QVBoxLayout(this);
 	layoutV->addLayout(layoutH);
 	layoutH->addLayout(layoutUtil);
 	layoutH->addLayout(layoutDB);
 	layoutH->addLayout(layoutServ);
 	layoutH->addLayout(layoutHook);
-	layoutH->addLayout(layoutTest);
+	//layoutH->addLayout(layoutTest);
 	QHBoxLayout* layoutHInput = new QHBoxLayout(this);
 
 	QLabel* lbl = new QLabel(this);
@@ -72,15 +61,9 @@ QTestWindow::QTestWindow()
 	lbl->setMaximumHeight(15);
 	layoutHook->setAlignment(lbl, Qt::AlignTop | Qt::AlignHCenter);
 
-	lbl = new QLabel(this);
-	layoutTest->addWidget(lbl);
-	lbl->setText("Long tests");
-	lbl->setMaximumHeight(15);
-	layoutTest->setAlignment(lbl, Qt::AlignTop | Qt::AlignHCenter);
-
 	bar = new QProgressBar(this);
 	layoutV->addWidget(bar);
-	bar->setRange(0, 1000000);
+	//bar->setRange(0, 1000000);
 
 	layoutV->addLayout(layoutHInput);
 	v1 = new QLineEdit(this);
@@ -110,28 +93,27 @@ QTestWindow::QTestWindow()
 	//-- Utils
 	QPushButton* button = new QPushButton(this);
 	button->setText("Create UUID");
-	connect(button, SIGNAL(clicked()), this, SLOT(uuidCreate()));
+	//connect(button, SIGNAL(clicked()), this, SLOT(uuidCreate()));
+	connect(button, &QPushButton::clicked, this, &TestWindow::uuidCreate);
 	layoutUtil->addWidget(button);
 	button->setMinimumWidth(100);
 
 	button = new QPushButton(this);
-	button->setText("Test plugin");
-	connect(button, SIGNAL(clicked()), this, SLOT(testNewPlugin()));
-	layoutUtil->addWidget(button);
-
-	button = new QPushButton(this);
 	button->setText("Options");
-	connect(button, SIGNAL(clicked()), this, SLOT(showOptions()));
+	//connect(button, SIGNAL(clicked()), this, SLOT(showOptions()));
+	connect(button, &QPushButton::clicked, this, &TestWindow::showOptions);
 	layoutUtil->addWidget(button);
 
 	button = new QPushButton(this);
 	button->setText("Set icon");
-	connect(button, &QPushButton::clicked, this, &QTestWindow::setTrayIcon);
+	//connect(button, &QPushButton::clicked, this, &QTestWindow::setTrayIcon);
+	connect(button, &QPushButton::clicked, this, &TestWindow::setTrayIcon);
 	layoutUtil->addWidget(button);
 
 	button = new QPushButton(this);
 	button->setText("Change account");
-	connect(button, SIGNAL(clicked()), this, SLOT(changeAcc()));
+	//connect(button, SIGNAL(clicked()), this, SLOT(changeAcc()));
+	connect(button, &QPushButton::clicked, this, &TestWindow::changeAcc);
 	layoutUtil->addWidget(button);
 
 	layoutUtil->setAlignment(button, Qt::AlignTop);
@@ -139,18 +121,21 @@ QTestWindow::QTestWindow()
 	//-- Database
 	button = new QPushButton(this);
 	button->setText("Save setting");
-	connect(button, SIGNAL(clicked()), this, SLOT(saveSetting()));
+	//connect(button, SIGNAL(clicked()), this, SLOT(saveSetting()));
+	connect(button, &QPushButton::clicked, this, &TestWindow::saveSetting);
 	layoutDB->addWidget(button);
 	button->setMinimumWidth(100);
 
 	button = new QPushButton(this);
 	button->setText("Read setting");
-	connect(button, SIGNAL(clicked()), this, SLOT(readSetting()));
+	//connect(button, SIGNAL(clicked()), this, SLOT(readSetting()));
+	connect(button, &QPushButton::clicked, this, &TestWindow::readSetting);
 	layoutDB->addWidget(button);
 
 	button = new QPushButton(this);
 	button->setText("Delete setting");
-	connect(button, SIGNAL(clicked()), this, SLOT(delSetting()));
+	//connect(button, SIGNAL(clicked()), this, SLOT(delSetting()));
+	connect(button, &QPushButton::clicked, this, &TestWindow::delSetting);
 	layoutDB->addWidget(button);
 
 	layoutDB->setAlignment(button, Qt::AlignTop);
@@ -158,153 +143,136 @@ QTestWindow::QTestWindow()
 	//-- Services
 	button = new QPushButton(this);
 	button->setText("Add service");
-	connect(button, SIGNAL(clicked()), this, SLOT(createService()));
+	//connect(button, SIGNAL(clicked()), this, SLOT(createService()));
+	connect(button, &QPushButton::clicked, this, &TestWindow::createService);
 	layoutServ->addWidget(button);
 	button->setMinimumWidth(100);
 
 	button = new QPushButton(this);
 	button->setText("Check service");
-	connect(button, SIGNAL(clicked()), this, SLOT(checkService()));
+	//connect(button, SIGNAL(clicked()), this, SLOT(checkService()));
+	connect(button, &QPushButton::clicked, this, &TestWindow::checkService);
 	layoutServ->addWidget(button);
 
 	button = new QPushButton(this);
 	button->setText("Test service");
-	connect(button, SIGNAL(clicked()), this, SLOT(testtService()));
+	//connect(button, SIGNAL(clicked()), this, SLOT(testtService()));
+	connect(button, &QPushButton::clicked, this, &TestWindow::testtService);
 	layoutServ->addWidget(button);
 
 	button = new QPushButton(this);
 	button->setText("Delete service");
-	connect(button, SIGNAL(clicked()), this, SLOT(delService()));
+	//connect(button, SIGNAL(clicked()), this, SLOT(delService()));
+	connect(button, &QPushButton::clicked, this, &TestWindow::delService);
 	layoutServ->addWidget(button);
+
 	layoutServ->setAlignment(button, Qt::AlignTop);
 
 	//-- Hooks
 	button = new QPushButton(this);
 	button->setText("Create hookable event");
-	connect(button, SIGNAL(clicked()), this, SLOT(createHookblEvent()));
+	//connect(button, SIGNAL(clicked()), this, SLOT(createHookblEvent()));
+	connect(button, &QPushButton::clicked, this, &TestWindow::createHookblEvent);
 	layoutHook->addWidget(button);
 	button->setMinimumWidth(100);
 
 	button = new QPushButton(this);
 	button->setText("Hook event");
-	connect(button, SIGNAL(clicked()), this, SLOT(hookEvent()));
+	//connect(button, SIGNAL(clicked()), this, SLOT(hookEvent()));
+	connect(button, &QPushButton::clicked, this, &TestWindow::hookEvent);
 	layoutHook->addWidget(button);
 
 	button = new QPushButton(this);
 	button->setText("Notify event hooks");
-	connect(button, SIGNAL(clicked()), this, SLOT(notifyEventHooks()));
+	//connect(button, SIGNAL(clicked()), this, SLOT(notifyEventHooks()));
+	connect(button, &QPushButton::clicked, this, &TestWindow::notifyEventHooks);
 	layoutHook->addWidget(button);
 
 	button = new QPushButton(this);
 	button->setText("Unhook event");
-	connect(button, SIGNAL(clicked()), this, SLOT(unhookEvent()));
+	//connect(button, SIGNAL(clicked()), this, SLOT(unhookEvent()));
+	connect(button, &QPushButton::clicked, this, &TestWindow::unhookEvent);
 	layoutHook->addWidget(button);
 
 	button = new QPushButton(this);
 	button->setText("Delete hookable event");
-	connect(button, SIGNAL(clicked()), this, SLOT(deleteHokableEvent()));
+	//connect(button, SIGNAL(clicked()), this, SLOT(deleteHokableEvent()));
+	connect(button, &QPushButton::clicked, this, &TestWindow::deleteHokableEvent);
 	layoutHook->addWidget(button);
 
 	layoutHook->setAlignment(button, Qt::AlignTop);
 
-	//-- Long tests
-	button = new QPushButton(this);
-	button->setText("Test pointer calls");
-	//connect(button, SIGNAL(clicked()), this, SLOT(testPointerCalls()));
-	layoutTest->addWidget(button);
-	button->setMinimumWidth(100);
-
-	button = new QPushButton(this);
-	button->setText("Test name calls");
-	//connect(button, SIGNAL(clicked()), this, SLOT(testNameCalls()));
-	layoutTest->addWidget(button);
-
-	button = new QPushButton(this);
-	button->setText("Test QString calls");
-	//connect(button, SIGNAL(clicked()), this, SLOT(testQStringCalls()));
-	layoutTest->addWidget(button);
-
-	button = new QPushButton(this);
-	button->setText("Simple test");
-	connect(button, SIGNAL(clicked()), this, SLOT(simpleTest()));
-	layoutTest->addWidget(button);
-
-	layoutTest->setAlignment(button, Qt::AlignTop);
-
 	//-- Exit
 	button = new QPushButton(this);
 	button->setText("Exit");
-	connect(button, SIGNAL(clicked()), this, SLOT(buttonExit()));
+	//connect(button, SIGNAL(clicked()), this, SLOT(buttonExit()));
+	connect(button, &QPushButton::clicked, this, &TestWindow::buttonExit);
 	layoutV->addWidget(button);
 	layoutV->setAlignment(button, Qt::AlignBottom);
 
 	//-- Work with tray
-	core->hookEvent(&kTraySingleClick_event, &hideMainWindow);
+	core->hookEvent(&kTraySingleClick_event, &TestWindow::hideMainWindow);
 
-	wii = this;
 	this->show();
 	vis = true;
 
-	QAction* action = new QAction("Call testQStringCalls", 0);
-	connect(action, SIGNAL(triggered()), this, SLOT(testQStringCalls()));
-	core->callService(&kTrayAddMenuItem_service, (uintptr_t)action, 0);
-
-	action = new QAction("Exit", 0);
+	QAction* action = new QAction("Exit", 0);
 	connect(action, SIGNAL(triggered()), this, SLOT(buttonExit()));
 	core->callService(&kTrayAddMenuItem_service, (uintptr_t)action, 0);
 }
 
-int hideMainWindow(intptr_t, intptr_t)
+intptr_t TestWindow::showCList(intptr_t, intptr_t)
 {
-	if (wii->vis) {
-		wii->hide();
-		wii->vis = false;
+	if (!mainWindow)
+		mainWindow = new TestWindow();
+	return 0;
+}
+
+intptr_t TestWindow::hideCList(intptr_t, intptr_t)
+{
+	delete mainWindow;
+	return 0;
+}
+
+int TestWindow::hideMainWindow(intptr_t, intptr_t)
+{
+	if (mainWindow->vis) {
+		mainWindow->hide();
+		mainWindow->vis = false;
 	}
 	else {
-		wii->show();
-		wii->vis = true;
+		mainWindow->show();
+		mainWindow->vis = true;
 	}
 
 	return 0;
 }
 
-QTestWindow::~QTestWindow()
+TestWindow::~TestWindow()
 {
-	core->unhookEvent(&kTraySingleClick_event, &hideMainWindow);
-}
-
-void QTestWindow::setBarValue(int val)
-{
-	bar->setValue(val);
-	QApplication::processEvents();
+	core->unhookEvent(&kTraySingleClick_event, &TestWindow::hideMainWindow);
 }
 
 //-- Utils
 
-void QTestWindow::uuidCreate()
+void TestWindow::uuidCreate()
 {
 	setOutput(QUuid::createUuid().toString());
 }
 
-const QLatin1String testplugin_service = QLatin1String("TESTPLUGIN_SERVICE");
-void QTestWindow::testNewPlugin()
+void TestWindow::changeAcc()
 {
-	core->callService(&testplugin_service, 0, 0);
-}
-
-void QTestWindow::changeAcc()
-{
-	this->~QTestWindow();
+	delete this;
 	if (core->callService(&kChangeProfile_service, 0, 0) == -2)
 		QMessageBox::critical(this, "Error", "Service not found.", QMessageBox::Ok);
 }
 
-void QTestWindow::showOptions()
+void TestWindow::showOptions()
 {
 	core->callService(&kOptionsShow_service, 0, 0);
 }
 
-void QTestWindow::setTrayIcon()
+void TestWindow::setTrayIcon()
 {
 	QString filename = QFileDialog::getOpenFileName(this, "Open file", "", "SVG (*.svg);; Files (*.*)");
 	//QMessageBox::critical(this, "Debug", "2", QMessageBox::Ok);
@@ -315,7 +283,7 @@ void QTestWindow::setTrayIcon()
 
 //-- Database
 
-void QTestWindow::saveSetting()
+void TestWindow::saveSetting()
 {
 	QString module = QString(v1->text().toLatin1());
 	QString setting = QString(v2->text().toLatin1());
@@ -327,19 +295,19 @@ void QTestWindow::saveSetting()
 	set->var->type = (unsigned char)v4->text().toInt();
 	QString value;
 	switch (set->var->type) {
-		case intType:
+		case __Int_Type:
 			set->var->intValue = v3->text().toInt();
 			break;
-		case realType:
+		case __Real_Type:
 			set->var->realValue = v3->text().toDouble();
 			break;
-		case textType:
+		case __Text_Type:
 		{
 			value = v3->text();
 			set->var->textValue = &value;
 		}
 			break;
-		case blobType:
+		case __Blob_Type:
 		{
 			value = v3->text();
 			set->var->textValue = &value;
@@ -353,7 +321,7 @@ void QTestWindow::saveSetting()
 	delete set;
 }
 
-void QTestWindow::readSetting()
+void TestWindow::readSetting()
 {
 	QString module = QString(v1->text().toLatin1());
 	QString setting = QString(v2->text().toLatin1());
@@ -363,22 +331,22 @@ void QTestWindow::readSetting()
 	set->qsSetting = &setting;
 	set->var = new DBVariant;
 	set->var->type = (unsigned char)v4->text().toInt();
-	if (set->var->type == textType)
+	if (set->var->type == __Text_Type)
 		set->var->textValue = new QString;
-	else if (set->var->type == blobType)
+	else if (set->var->type == __Blob_Type)
 		set->var->blobValue = new QByteArray;
 	if (!core->callService(&kDBReadSetting_service, reinterpret_cast<intptr_t>(set), 0)) {
 		switch (set->var->type) {
-			case intType:
+			case __Int_Type:
 				setOutput(QString::number(set->var->intValue));
 				break;
-			case realType:
+			case __Real_Type:
 				setOutput(QString::number(set->var->realValue));
 				break;
-			case textType:			
+			case __Text_Type:
 				setOutput(*set->var->textValue);
 				break;
-			case blobType:
+			case __Blob_Type:
 			{
 				setOutput(*set->var->blobValue);
 			}
@@ -392,7 +360,7 @@ void QTestWindow::readSetting()
 	delete set;
 }
 
-void QTestWindow::delSetting()
+void TestWindow::delSetting()
 {
 	QString module = QString(v1->text().toLatin1());
 	QString setting = QString(v2->text().toLatin1());
@@ -425,7 +393,7 @@ int testHook(intptr_t, intptr_t lParam)
 	return 0;
 }
 
-void QTestWindow::createHookblEvent()
+void TestWindow::createHookblEvent()
 {
 	if (!core->createHookableEvent(&hkevName))
 		setOutput("Hookable event created");
@@ -433,7 +401,7 @@ void QTestWindow::createHookblEvent()
 		setOutput("Create hookable event FAIL!");
 }
 
-void QTestWindow::hookEvent()
+void TestWindow::hookEvent()
 {
 	if (!core->hookEvent(&hkevName, &testHook))
 		setOutput("Hook event success");
@@ -441,7 +409,7 @@ void QTestWindow::hookEvent()
 		setOutput("Hook event FAILED!");
 }
 
-void QTestWindow::notifyEventHooks()
+void TestWindow::notifyEventHooks()
 {
 	int ret = core->notifyEventHooks(&hkevName, 0, 137);
 	if (ret)
@@ -450,7 +418,7 @@ void QTestWindow::notifyEventHooks()
 		setOutput("Notify event success!");
 }
 
-void QTestWindow::unhookEvent()
+void TestWindow::unhookEvent()
 {
 	if (!core->unhookEvent(&hkevName, &testHook))
 		setOutput("Unhook event success");
@@ -458,7 +426,7 @@ void QTestWindow::unhookEvent()
 		setOutput("Unhook event FAILED!");
 }
 
-void QTestWindow::deleteHokableEvent()
+void TestWindow::deleteHokableEvent()
 {
 	if (!core->destroyHookableEvent(&hkevName))
 		setOutput("Hookable event destroed");
@@ -475,7 +443,7 @@ int testService(intptr_t wParam, intptr_t)
 	return wParam;
 }
 
-void QTestWindow::createService()
+void TestWindow::createService()
 {
 	if (!core->createServiceFunction(&name, &testService))
 		setOutput("Service created");
@@ -483,7 +451,7 @@ void QTestWindow::createService()
 		setOutput("Create service FAIL!");
 }
 
-void QTestWindow::checkService()
+void TestWindow::checkService()
 {
 	if (core->serviceExists(&name))
 		setOutput("Test service exists");
@@ -491,7 +459,7 @@ void QTestWindow::checkService()
 		setOutput("Test service not found");
 }
 
-void QTestWindow::testtService()
+void TestWindow::testtService()
 {
 	int res = core->callService(&name, 111, 0);
 	if (res == 111)
@@ -502,7 +470,7 @@ void QTestWindow::testtService()
 		setOutput("Test service returned wrong result");
 }
 
-void QTestWindow::delService()
+void TestWindow::delService()
 {
 	int res = core->destroyServiceFunction(&name);
 	if (!res)
@@ -513,83 +481,3 @@ void QTestWindow::delService()
 		setOutput("Destroy service fail");
 }
 
-//-- Long test
-
-/*static QMap <QLatin1String, THook*> qmapHooks;
-static void* hookableEvent;
-
-int testFunction(void* ho, int val)
-{
-	THook* p;
-	p = (THook*)ho;
-	return val;
-}
-
-int testFunction2(const QLatin1String* name2, int val)
-{
-	THook* p;
-	qmapHooks[*name2] = (THook*)hookableEvent;
-	p = qmapHooks[*name2];
-	return val;
-}
-
-int testFunction3(const QLatin1String name2, int val)
-{
-	THook* p;
-	qmapHooks[name2] = (THook*)hookableEvent;
-	p = qmapHooks[name2];
-	return val;
-}
-
-void QTestWindow::testPointerCalls()
-{
-	QTime time;
-	time.start();
-	for (int i = 0; i < 1000000; i++) {
-		setBarValue(testFunction(hookableEvent, i));
-	}
-	setOutput(QString::number(time.elapsed()));
-}
-
-void QTestWindow::testNameCalls()
-{
-	QTime time;
-	time.start();
-	for (int i = 0; i < 1000000; i++) {
-		setBarValue(testFunction2(&name, i));
-	}
-	setOutput(QString::number(time.elapsed()));
-}
-
-void QTestWindow::testQStringCalls()
-{
-	QTime time;
-	time.start();
-	for (int i = 0; i < 1000000; i++) {
-		setBarValue(testFunction3(name, i));
-	}
-	setOutput(QString::number(time.elapsed()));
-}*/
-
-const QLatin1String	kCoreIsPluginLoaded	=	QLatin1String("Core/IsPluginLoaded");
-void QTestWindow::simpleTest()
-{
-	QUuid uuid = v1->text();
-	intptr_t id = reinterpret_cast<intptr_t>(&uuid);
-	if (core->callService(&kCoreIsPluginLoaded, id, 0))
-		setOutput("loaded");
-	else
-		setOutput("not loaded");
-}
-
-//-- Exit
-void QTestWindow::buttonExit()
-{
-	core->callService(&kShutdown_service, 0, 0);
-}
-
-void QTestWindow::setOutput(QString text)
-{
-	output->setText(text);
-	QApplication::processEvents();
-}

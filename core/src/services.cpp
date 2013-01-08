@@ -25,6 +25,7 @@ const QLatin1String	kChangeProfile_service	=	QLatin1String(__Core_ChangeProfile_
 const QLatin1String	kDBWriteSetting_service	=	QLatin1String(__DB_WriteSetting_service);
 const QLatin1String	kDBReadSetting_service	=	QLatin1String(__DB_ReadSetting_service);
 const QLatin1String	kDBDellSetting_service	=	QLatin1String(__DB_DellSetting_service);
+const QLatin1String	kClistShow_service	=	QLatin1String(__CList_Show_service);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //-- HOOKS --///////////////////////////////////////////////////////////////////////////////////////
@@ -164,8 +165,6 @@ int Core::unhookEvent(const QLatin1String* name, EliseHook hookProc)
 //int Core::createServiceFunction(const QLatin1String* name, EliseService serviceProc, int type = 0)
 int Core::createServiceFunction(const QLatin1String* name, EliseService serviceProc)
 {	
-	//if (name->isEmpty())
-	//	return -1;
 	if (name->size() < 1)
 		return -2;
 	qmutexServices_.lock();
@@ -177,18 +176,7 @@ int Core::createServiceFunction(const QLatin1String* name, EliseService serviceP
 
 	TService* newSer;
 
-	//newSer = (TService*)malloc(sizeof(TService));
 	newSer = new TService;
-	/*newSer->type = type;
-	switch (type)
-	{
-		case 1:
-			//newSer->pfnServiceWidg = (ELISESERVICEWIDG)serviceProc;
-			break;
-		default:
-			newSer->pfnService = serviceProc;
-			break;
-	}*/
 	newSer->type = 0;
 	newSer->pfnService = serviceProc;
 
@@ -197,20 +185,8 @@ int Core::createServiceFunction(const QLatin1String* name, EliseService serviceP
 	return 0;
 }
 
-//int createServiceFunction(const QLatin1String* name, EliseService serviceProc)
-//{
-//	return CreateServiceFunctionInt(name, serviceProc, 0);
-//}
-
-//int CreateServiceFunctionWidg(const QString *name, ELISESERVICEWIDG serviceProc)
-//{
-//	return CreateServiceFunctionInt(name, (ELISESERVICE)serviceProc, 1);
-//}
-
 int Core::serviceExists(const QLatin1String* name)
 {
-	//if (name->isEmpty())
-	//	return -1;
 	if (name->size() < 1)
 		return -2;
 
@@ -223,13 +199,11 @@ int Core::serviceExists(const QLatin1String* name)
 
 intptr_t Core::callService(const QLatin1String* name, uintptr_t wParam, uintptr_t lParam)
 {
-	//if (name->isEmpty())
-	//	return SERVICE_NOTFOUND;
 	if (name->size() < 1)
 		return -2;
 
 	qmutexServices_.lock();
-	//-- Check service. Return SERVICE_NOTFOUND if service with this name not exists
+	//-- Check service.
 	if (!qmapServices_.contains(*name)) {
 		qmutexServices_.unlock();
 		return -1;
@@ -242,8 +216,8 @@ intptr_t Core::callService(const QLatin1String* name, uintptr_t wParam, uintptr_
 	{
 		case 1:
 			//return ((ELISESERVICEWIDG)pfnServiceWidg)(wParam,lParam,fnParam);
-			//case 2:  return ((MIRANDASERVICEOBJ)pfnService)(object,wParam,lParam);
-			//case 3:  return ((MIRANDASERVICEOBJPARAM)pfnService)(object,wParam,lParam,fnParam);
+		//case 2:  return ((ELISESERVICEWIDGJ)pfnService)(object,wParam,lParam);
+		//case 3:  return ((ELISESERVICEWIDG)pfnService)(object,wParam,lParam,fnParam);
 		default:
 			return ser->pfnService(wParam,lParam);
 			//}
@@ -253,12 +227,10 @@ intptr_t Core::callService(const QLatin1String* name, uintptr_t wParam, uintptr_
 
 int Core::destroyServiceFunction(const QLatin1String* name)
 {
-	//if (name->isEmpty())
-	//	return -1;
 	if (name->size() < 1)
 		return -2;
 	qmutexServices_.lock();
-	//-- Return SERVICE_NOTFOUND if service with this name not exists.
+
 	if (!qmapServices_.contains(*name)) {
 		qmutexServices_.unlock();
 		return -1;
