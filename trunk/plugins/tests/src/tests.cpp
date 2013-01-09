@@ -56,7 +56,7 @@ int TestPlugin::Load(ICore* coreAPI)
 	core = coreAPI;
 	core->createServiceFunction(&kClistShow_service, &TestWindow::showCList);
 	core->createServiceFunction(&kClistHide_service, &TestWindow::hideCList);
-
+	TestWindow::showCList(0, 0);
 	return 0;
 }
 
@@ -66,6 +66,4 @@ int TestPlugin::Unload(void)
 	core->destroyServiceFunction(&kClistHide_service);
 	return 0;
 }
-
-//Q_EXPORT_PLUGIN2(newplugin, NewPlugin)
 

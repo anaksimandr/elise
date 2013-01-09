@@ -93,26 +93,22 @@ TestWindow::TestWindow() :
 	//-- Utils
 	QPushButton* button = new QPushButton(this);
 	button->setText("Create UUID");
-	//connect(button, SIGNAL(clicked()), this, SLOT(uuidCreate()));
 	connect(button, &QPushButton::clicked, this, &TestWindow::uuidCreate);
 	layoutUtil->addWidget(button);
 	button->setMinimumWidth(100);
 
 	button = new QPushButton(this);
 	button->setText("Options");
-	//connect(button, SIGNAL(clicked()), this, SLOT(showOptions()));
 	connect(button, &QPushButton::clicked, this, &TestWindow::showOptions);
 	layoutUtil->addWidget(button);
 
 	button = new QPushButton(this);
 	button->setText("Set icon");
-	//connect(button, &QPushButton::clicked, this, &QTestWindow::setTrayIcon);
 	connect(button, &QPushButton::clicked, this, &TestWindow::setTrayIcon);
 	layoutUtil->addWidget(button);
 
 	button = new QPushButton(this);
 	button->setText("Change account");
-	//connect(button, SIGNAL(clicked()), this, SLOT(changeAcc()));
 	connect(button, &QPushButton::clicked, this, &TestWindow::changeAcc);
 	layoutUtil->addWidget(button);
 
@@ -121,20 +117,17 @@ TestWindow::TestWindow() :
 	//-- Database
 	button = new QPushButton(this);
 	button->setText("Save setting");
-	//connect(button, SIGNAL(clicked()), this, SLOT(saveSetting()));
 	connect(button, &QPushButton::clicked, this, &TestWindow::saveSetting);
 	layoutDB->addWidget(button);
 	button->setMinimumWidth(100);
 
 	button = new QPushButton(this);
 	button->setText("Read setting");
-	//connect(button, SIGNAL(clicked()), this, SLOT(readSetting()));
 	connect(button, &QPushButton::clicked, this, &TestWindow::readSetting);
 	layoutDB->addWidget(button);
 
 	button = new QPushButton(this);
 	button->setText("Delete setting");
-	//connect(button, SIGNAL(clicked()), this, SLOT(delSetting()));
 	connect(button, &QPushButton::clicked, this, &TestWindow::delSetting);
 	layoutDB->addWidget(button);
 
@@ -143,26 +136,22 @@ TestWindow::TestWindow() :
 	//-- Services
 	button = new QPushButton(this);
 	button->setText("Add service");
-	//connect(button, SIGNAL(clicked()), this, SLOT(createService()));
 	connect(button, &QPushButton::clicked, this, &TestWindow::createService);
 	layoutServ->addWidget(button);
 	button->setMinimumWidth(100);
 
 	button = new QPushButton(this);
 	button->setText("Check service");
-	//connect(button, SIGNAL(clicked()), this, SLOT(checkService()));
 	connect(button, &QPushButton::clicked, this, &TestWindow::checkService);
 	layoutServ->addWidget(button);
 
 	button = new QPushButton(this);
 	button->setText("Test service");
-	//connect(button, SIGNAL(clicked()), this, SLOT(testtService()));
 	connect(button, &QPushButton::clicked, this, &TestWindow::testtService);
 	layoutServ->addWidget(button);
 
 	button = new QPushButton(this);
 	button->setText("Delete service");
-	//connect(button, SIGNAL(clicked()), this, SLOT(delService()));
 	connect(button, &QPushButton::clicked, this, &TestWindow::delService);
 	layoutServ->addWidget(button);
 
@@ -171,32 +160,27 @@ TestWindow::TestWindow() :
 	//-- Hooks
 	button = new QPushButton(this);
 	button->setText("Create hookable event");
-	//connect(button, SIGNAL(clicked()), this, SLOT(createHookblEvent()));
 	connect(button, &QPushButton::clicked, this, &TestWindow::createHookblEvent);
 	layoutHook->addWidget(button);
 	button->setMinimumWidth(100);
 
 	button = new QPushButton(this);
 	button->setText("Hook event");
-	//connect(button, SIGNAL(clicked()), this, SLOT(hookEvent()));
 	connect(button, &QPushButton::clicked, this, &TestWindow::hookEvent);
 	layoutHook->addWidget(button);
 
 	button = new QPushButton(this);
 	button->setText("Notify event hooks");
-	//connect(button, SIGNAL(clicked()), this, SLOT(notifyEventHooks()));
 	connect(button, &QPushButton::clicked, this, &TestWindow::notifyEventHooks);
 	layoutHook->addWidget(button);
 
 	button = new QPushButton(this);
 	button->setText("Unhook event");
-	//connect(button, SIGNAL(clicked()), this, SLOT(unhookEvent()));
 	connect(button, &QPushButton::clicked, this, &TestWindow::unhookEvent);
 	layoutHook->addWidget(button);
 
 	button = new QPushButton(this);
 	button->setText("Delete hookable event");
-	//connect(button, SIGNAL(clicked()), this, SLOT(deleteHokableEvent()));
 	connect(button, &QPushButton::clicked, this, &TestWindow::deleteHokableEvent);
 	layoutHook->addWidget(button);
 
@@ -205,7 +189,6 @@ TestWindow::TestWindow() :
 	//-- Exit
 	button = new QPushButton(this);
 	button->setText("Exit");
-	//connect(button, SIGNAL(clicked()), this, SLOT(buttonExit()));
 	connect(button, &QPushButton::clicked, this, &TestWindow::buttonExit);
 	layoutV->addWidget(button);
 	layoutV->setAlignment(button, Qt::AlignBottom);
@@ -217,7 +200,7 @@ TestWindow::TestWindow() :
 	vis = true;
 
 	QAction* action = new QAction("Exit", 0);
-	connect(action, SIGNAL(triggered()), this, SLOT(buttonExit()));
+	connect(action, &QAction::triggered, this, &TestWindow::buttonExit);
 	core->callService(&kTrayAddMenuItem_service, (uintptr_t)action, 0);
 }
 

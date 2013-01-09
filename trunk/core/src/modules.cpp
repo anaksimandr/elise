@@ -21,10 +21,6 @@
 #include "modules/tray.h"
 #include "modules/options/options.h"
 
-
-//-- Temporary module for tests
-//#include "tests.h"
-
 ICore* core = 0;
 
 int Core::loadCore()
@@ -39,7 +35,7 @@ int Core::loadCore()
 		return 1;
 	if (PluginLoader::loadPluginLoader())
 		return 1;
-	if (LoadTrayModule())
+	if (EliseTray::loadTrayModule())
 		return 1;
 
 	return 0;
@@ -47,7 +43,7 @@ int Core::loadCore()
 
 int Core::unloadCore()
 {
-	UnloadTrayModule();
+	EliseTray::unloadTrayModule();
 	PluginLoader::unloadPluginLoader();
 	OptionsDialog::unloadOptionsModule();
 	//-- This will be cleaned during the destruction of the core
@@ -57,16 +53,6 @@ int Core::unloadCore()
 	delete core;
 
 	return 0;
-}
-
-
-/*int Core::launchElise()
-{
-	if (Core::loadCore())
-		return 1;
-
-	//-- 'true' means that this is launch of the application
-	return Core::loadProfile(true);
 }
 
 /*int Core::unloadDefaultModules()
@@ -124,7 +110,6 @@ int Core::loadProfile(bool launchApp)
 			delete manager;
 			delete dbPlugins;
 			return 1;
-			//return shutDown(-1, 0);
 		}
 	}
 
@@ -136,10 +121,7 @@ int Core::loadProfile(bool launchApp)
 
 	if (result)
 		return 1;
-		//return shutDown(-1, 0);
 
-	//-- Call CList
-	core->callService(&kClistShow_service, 0, 0);
 	return 0;
 }
 

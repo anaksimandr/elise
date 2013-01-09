@@ -25,7 +25,7 @@ const QLatin1String	kChangeProfile_service	=	QLatin1String(__Core_ChangeProfile_
 const QLatin1String	kDBWriteSetting_service	=	QLatin1String(__DB_WriteSetting_service);
 const QLatin1String	kDBReadSetting_service	=	QLatin1String(__DB_ReadSetting_service);
 const QLatin1String	kDBDellSetting_service	=	QLatin1String(__DB_DellSetting_service);
-const QLatin1String	kClistShow_service	=	QLatin1String(__CList_Show_service);
+//const QLatin1String	kClistShow_service	=	QLatin1String(__CList_Show_service);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //-- HOOKS --///////////////////////////////////////////////////////////////////////////////////////
@@ -162,7 +162,6 @@ int Core::unhookEvent(const QLatin1String* name, EliseHook hookProc)
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //-- SERVICES --////////////////////////////////////////////////////////////////////////////////////
 
-//int Core::createServiceFunction(const QLatin1String* name, EliseService serviceProc, int type = 0)
 int Core::createServiceFunction(const QLatin1String* name, EliseService serviceProc)
 {	
 	if (name->size() < 1)

@@ -19,13 +19,18 @@
 #include "../core.h"
 
 
+/*
+ * TODO: create menu editor based on services, i.e. simple menu should get a list of service
+ * that it will call.
+ */
+
 const QLatin1String	kTrayAddMenuItem_service	=	QLatin1String(__Tray_AddMenuItem_service);
 const QLatin1String	kTraySetIcon_service		=	QLatin1String(__Tray_SetIcon_service);
 const QLatin1String	kTraySingleClick_event	=	QLatin1String(__Tray_SingleClick_event);
 const QLatin1String	kTrayDoubleClick_event	=	QLatin1String(__Tray_DoubleClick_event);
 const QLatin1String	kTrayMiddleClick_event	=	QLatin1String(__Tray_MiddleClick_event);
 
-EliseTray* trayElise;
+EliseTray* EliseTray::trayElise = NULL;
 
 void EliseTray::trayActivationNotify(QSystemTrayIcon::ActivationReason reason)
 {
@@ -52,14 +57,14 @@ void EliseTray::trayActivationNotify(QSystemTrayIcon::ActivationReason reason)
 	//return 0;
 }
 
-int addToContextMenu(intptr_t wParam,intptr_t)
+int EliseTray::addToContextMenu(intptr_t wParam,intptr_t)
 {
 	QAction* action = reinterpret_cast<QAction*>(wParam);
 	trayElise->addToMenu(action);
 	return 0;
 }
 
-int setTrayIcon(intptr_t wParam,intptr_t)
+int EliseTray::setTrayIcon(intptr_t wParam,intptr_t)
 {
 	QIcon* icon = (QIcon*)wParam;
 	trayElise->setIcon(*icon);
@@ -72,9 +77,10 @@ int EliseTray::addToMenu(QAction* action)
 	return 0;
 }
 
-int LoadTrayModule()
+int EliseTray::loadTrayModule()
 {
-	trayElise = new EliseTray();
+	if (!trayElise)
+		trayElise = new EliseTray();
 	trayElise->setIcon(QIcon(":/icons/img/main.png"));
 	trayElise->show();
 	core->createHookableEvent(&kTraySingleClick_event);
@@ -82,12 +88,12 @@ int LoadTrayModule()
 	core->createHookableEvent(&kTrayMiddleClick_event);
 	QObject::connect(trayElise, &EliseTray::activated, trayElise, &EliseTray::trayActivationNotify);
 	trayElise->setContextMenu(new QMenu());
-	core->createServiceFunction(&kTrayAddMenuItem_service, &addToContextMenu);
-	core->createServiceFunction(&kTraySetIcon_service, &setTrayIcon);
+	core->createServiceFunction(&kTrayAddMenuItem_service, &EliseTray::addToContextMenu);
+	core->createServiceFunction(&kTraySetIcon_service, &EliseTray::setTrayIcon);
 	return 0;
 }
 
-int UnloadTrayModule()
+int EliseTray::unloadTrayModule()
 {
 	trayElise->hide();
 	core->destroyHookableEvent(&kTraySingleClick_event);
@@ -96,6 +102,7 @@ int UnloadTrayModule()
 	core->destroyServiceFunction(&kTrayAddMenuItem_service);
 	core->destroyServiceFunction(&kTraySetIcon_service);
 	delete trayElise;
+	trayElise = NULL;
 	return 0;
 }
 
