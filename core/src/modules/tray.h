@@ -29,7 +29,6 @@ extern const QLatin1String	kTrayDoubleClick_event;
 extern const QLatin1String	kTrayMiddleClick_event;
 
 class EliseTray;
-extern EliseTray* trayElise;
 
 class EliseTray : public QSystemTrayIcon {
 	Q_OBJECT
@@ -38,14 +37,17 @@ public:
 	EliseTray();
 	~EliseTray();
 
+	static EliseTray*	trayElise;
+
+	static int	loadTrayModule();
+	static int	unloadTrayModule();
+	static int	addToContextMenu(intptr_t wParam,intptr_t);
+	static int	setTrayIcon(intptr_t wParam,intptr_t);
+
 	int		addToMenu(QAction* action);
 	int		delFromMenu(QAction* action);
 	void	trayActivationNotify(QSystemTrayIcon::ActivationReason reason);
-	//int	setIcon(QIcon* icon);
-	//int	addToContextMenu();
 };
 
-int LoadTrayModule();
-int UnloadTrayModule();
 
 #endif // ELISE_CORE_MODULES_TRAY_H_
