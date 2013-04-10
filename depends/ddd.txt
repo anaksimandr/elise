@@ -1,8 +1,0 @@
-1. libgsasl
-https://github.com/markpizz/gsasl
-1.1 libidn
-1.2 libntlm
-
-2. jreen
-
-3. zlib
