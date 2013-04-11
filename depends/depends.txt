@@ -1,9 +1,4 @@
-1. libgsasl
-https://github.com/markpizz/gsasl
-   1.1 libidn
-   1.2 libntlm
+1. qxmpp
+http://code.google.com/p/qxmpp/
 
-2. jreen
-jreen https://github.com/euroelessar/jreen
-
-3. zlib
+2. zlib
