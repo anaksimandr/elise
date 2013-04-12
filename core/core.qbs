@@ -1,7 +1,8 @@
 import qbs.base 1.0
 
 CppApplication {
-	name: "Elise"
+	name: "elise"
+	consoleApplication: false
 	Depends { name: "Qt"; submodules: ["widgets", "sql"] }
 	files: [
         "../api/e_pluginapi.h",
