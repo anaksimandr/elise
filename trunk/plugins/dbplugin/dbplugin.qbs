@@ -2,7 +2,7 @@ import qbs.base 1.0
 
 DynamicLibrary {
     name: "dbplugin"
-    Depends { name: "Qt"; submodules: ["widgets"] }
+    Depends { name: "Qt"; submodules: ["widgets","sql"] }
     files: [
         "../../api/version.h",
         "../../api/e_dbpluginapi.h",

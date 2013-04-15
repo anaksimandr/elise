@@ -3,7 +3,7 @@ import qbs.base 1.0
 CppApplication {
 	name: "elise"
 	consoleApplication: false
-	Depends { name: "Qt"; submodules: ["widgets", "sql"] }
+	Depends { name: "Qt"; submodules: ["widgets"] }
 	files: [
         "../api/e_pluginapi.h",
         "../api/e_dbpluginapi.h",

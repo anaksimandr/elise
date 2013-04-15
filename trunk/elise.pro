@@ -1,5 +1,10 @@
 TEMPLATE	=	subdirs
-SUBDIRS		=	core/core.pro \
+CONFIG	   +=	ordered
+SUBDIRS		=	core \
 				plugins/newplugin \
 				plugins/dbplugin \
-				plugins/tests
+				plugins/tests \
+				depends/qxmpp
+
+
+core.depends = qxmpp
