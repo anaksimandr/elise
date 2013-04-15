@@ -5,6 +5,7 @@ Project {
     references: [
         "core/core.qbs",
         "plugins/newplugin/newplugin.qbs",
-		//"plugins/dbplugin/dbplugin.qbs"
+		"plugins/dbplugin/dbplugin.qbs",
+		"plugins/tests/tests.qbs"
     ]
 }
