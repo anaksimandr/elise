@@ -1,4 +1,0 @@
-1. qxmpp
-http://code.google.com/p/qxmpp/
-
-2. zlib
