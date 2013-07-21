@@ -42,9 +42,9 @@ int Core::createHookableEvent(const QLatin1String* name)
 		return -1;
 	}
 
-	THookEvent* newEvent;
+	THookableEvent* newEvent;
 
-	newEvent = new THookEvent;
+	newEvent = new THookableEvent;
 	newEvent->qsetSubscribers = NULL;
 	newEvent->qmutexHook = new QMutex();
 	qmapHooks_[*name] = newEvent;
@@ -64,7 +64,7 @@ int Core::destroyHookableEvent(const QLatin1String* name)
 		return -1;
 	}
 
-	THookEvent* p;
+	THookableEvent* p;
 	p = qmapHooks_[*name];
 
 	//-- Destroy all hooks to this event
@@ -78,14 +78,14 @@ int Core::destroyHookableEvent(const QLatin1String* name)
 	return 0;
 }
 
-int Core::notifyEventHooks(const QLatin1String* name, uintptr_t wParam, uintptr_t lParam )
+int Core::notifyEventHooks(const QLatin1String* name, intptr_t wParam, intptr_t lParam )
 {
 	//qmutexHooks.lock();
 	if (!qmapHooks_.contains(*name))
 		return -1;
 
 	int returnErr = 0;
-	THookEvent* p = qmapHooks_[*name];
+	THookableEvent* p = qmapHooks_[*name];
 	//qmutexHooks.unlock();
 
 	p->qmutexHook->lock();
@@ -116,7 +116,7 @@ int Core::hookEvent(const QLatin1String* name, EliseHook hookProc)
 		return -1;
 	}
 
-	THookEvent* p = qmapHooks_[*name];
+	THookableEvent* p = qmapHooks_[*name];
 
 	//-- If this hook is first then create the Set
 	if (p->qsetSubscribers == NULL)
@@ -140,7 +140,7 @@ int Core::unhookEvent(const QLatin1String* name, EliseHook hookProc)
 		return -1;
 	}
 
-	THookEvent* p = qmapHooks_[*name];
+	THookableEvent* p = qmapHooks_[*name];
 	//-- If there is no subscribers or num is wrong - return
 	if (p->qsetSubscribers == NULL || !p->qsetSubscribers->contains(hookProc)) {
 		qmutexHooks_.unlock();
@@ -196,7 +196,7 @@ int Core::serviceExists(const QLatin1String* name)
 	return is;
 }
 
-intptr_t Core::callService(const QLatin1String* name, uintptr_t wParam, uintptr_t lParam)
+intptr_t Core::callService(const QLatin1String* name, intptr_t wParam, intptr_t lParam)
 {
 	if (name->size() < 1)
 		return -2;

@@ -29,7 +29,7 @@ QLabel* PluginLoaderOptions::author_ = 0;
 QLabel* PluginLoaderOptions::authorEmail_ = 0;
 QLabel* PluginLoaderOptions::copyright_ = 0;
 QLabel* PluginLoaderOptions::homepage_ = 0;
-QLabel*	PluginLoaderOptions::uuid_ = 0;
+QLabel*	PluginLoaderOptions::type_ = 0;
 QString	PluginLoaderOptions::pluginName_;
 
 void PluginLoaderOptions::saveLoaderOptions()
@@ -39,26 +39,29 @@ void PluginLoaderOptions::saveLoaderOptions()
 
 void PluginLoaderOptions::loadSelectedPluginInfo(const QModelIndex& current, const QModelIndex&)
 {
-	PluginInfo* pluginInfo;
 	PluginsTreeModel* model = dynamic_cast<PluginsTreeModel*>(treeView_->model());
-	pluginInfo = PluginLoader::getElisePluginInfo(model->data(model->index(current.row(), 1),
+	QJsonObject* pluginInfo = PluginLoader::getPluginInfo(model->data(model->index(current.row(), 1),
 															  Qt::DisplayRole).toString());
 	if (!pluginInfo)
 		return;
-	description_->setText(pluginInfo->description);
-	homepage_->setText("<a href=\"" + pluginInfo->homepage + "\">" + pluginInfo->homepage + "</a>");
-	author_->setText(pluginInfo->author);
-	authorEmail_->setText("<a href=mailto:\"" + pluginInfo->authorEmail + "\">"
-						 + pluginInfo->authorEmail + "</a>");
-	copyright_->setText(pluginInfo->copyright);
-	uuid_->setText(pluginInfo->uuid.toString());
-	pluginName_ = pluginInfo->name;
+
+	description_->setText(pluginInfo->value("description").toString());
+	homepage_->setText("<a href=\""
+					   + pluginInfo->value("homepage").toString() + "\">"
+					   + pluginInfo->value("homepage").toString() + "</a>");
+	author_->setText(pluginInfo->value("author").toString());
+	authorEmail_->setText("<a href=mailto:\""
+						 + pluginInfo->value("authorEmail").toString() + "\">"
+						 + pluginInfo->value("authorEmail").toString() + "</a>");
+	copyright_->setText(pluginInfo->value("copyright").toString());
+	type_->setText(pluginInfo->value("type").toString());
+	pluginName_ = pluginInfo->value("name").toString();
 	delete pluginInfo;
 }
 
-void PluginLoaderOptions::showPluginInterfaces()
+/*void PluginLoaderOptions::showPluginInterfaces()
 {
-	QUuid uuid = QUuid(uuid_->text());
+	QUuid uuid = QUuid(type_->text());
 	QSet<QUuid>* pluginInterfaces = reinterpret_cast<QSet<QUuid>*>(
 				core->callService(&kCoreGetPluginInterfaces, reinterpret_cast<intptr_t>(&uuid), 0)
 				);
@@ -85,7 +88,7 @@ void PluginLoaderOptions::showPluginInterfaces()
 	//-- Hmmm... contentsSize() is protected Oo
 	list->resize(list->sizeHintForColumn(0) + 4, list->sizeHintForRow(0) * list->count() + 4);
 	list->show();
-}
+}*/
 
 int PluginLoaderOptions::createLoaderOptionsPage(intptr_t pfnPageAdder, intptr_t)
 {
@@ -109,19 +112,17 @@ int PluginLoaderOptions::createLoaderOptionsPage(intptr_t pfnPageAdder, intptr_t
 	QObject::connect(treeView_->selectionModel(), &QItemSelectionModel::currentChanged,
 					 &PluginLoaderOptions::loadSelectedPluginInfo);
 
-	PluginInfo* pluginInfo;
+	QJsonObject* pluginInfo;
 	const QMap<QString, Plugin>* plugins = PluginLoader::getAvailablePlugins();
 	QMap<QString, Plugin>::const_iterator i = plugins->constBegin();
 	QMap<QString, Plugin>::const_iterator iEnd = plugins->constEnd();
 	while (i != iEnd) {
-		pluginInfo = PluginLoader::getElisePluginInfo(i.key());
+		pluginInfo = PluginLoader::getPluginInfo(i.key());
 		if (!pluginInfo)
 			continue;
-		model->insert(i.key(), pluginInfo->name,
-					  QString::number(pluginInfo->version[0]) + "."
-					+ QString::number(pluginInfo->version[1]) + "."
-					+ QString::number(pluginInfo->version[2]) + "."
-					+ QString::number(pluginInfo->version[3]));
+		model->insert(i.key(),
+					  pluginInfo->value("name").toString(),
+					  pluginInfo->value("version").toString());
 		delete pluginInfo;
 		++i;
 	}
@@ -197,24 +198,24 @@ int PluginLoaderOptions::createLoaderOptionsPage(intptr_t pfnPageAdder, intptr_t
 	copyright_->setAlignment(Qt::AlignTop);
 	copyright_->setTextInteractionFlags(Qt::TextSelectableByMouse);
 
-	//-- Unique plugin ID
+	//-- Plugin ID
 	label = new QLabel(box);
 	label->move(10, 163);
 	label->resize(95, 20);
 	label->setAlignment(Qt::AlignTop);
-	label->setText("Unique ID:");
-	uuid_ = new QLabel(box);
-	uuid_->move(110, 163);
-	uuid_->resize(350, 20);
-	uuid_->setAlignment(Qt::AlignTop);
-	uuid_->setTextInteractionFlags(Qt::TextSelectableByMouse);
+	label->setText("Plugin ID:");
+	type_ = new QLabel(box);
+	type_->move(110, 163);
+	type_->resize(350, 20);
+	type_->setAlignment(Qt::AlignTop);
+	type_->setTextInteractionFlags(Qt::TextSelectableByMouse);
 
-	//-- Button for list plugin interfaces
+	/*/-- Button for list plugin interfaces
 	QPushButton* btn = new QPushButton(box);
 	btn->resize(129, 22);
 	btn->move(340, 158);
 	btn->setText("Show interfaces");
-	QObject::connect(btn, &QPushButton::clicked, &PluginLoaderOptions::showPluginInterfaces);
+	QObject::connect(btn, &QPushButton::clicked, &PluginLoaderOptions::showPluginInterfaces);*/
 
 	widget->setToolTip("Plugins");
 

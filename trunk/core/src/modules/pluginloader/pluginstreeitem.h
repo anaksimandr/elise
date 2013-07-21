@@ -29,44 +29,44 @@ class PluginsTreeItem : public QObject
 {
 	Q_OBJECT
 private:
-	QString					pluginModuleName;
-	QString					pluginName;
-	QString					pluginVersion;
-	QList<PluginsTreeItem*>	childItems;
-	PluginsTreeItem*		parentItem;
-	PluginsTreeModel*		model;
-	QWidget*				loadControl;
+	QString					pluginModuleName_;
+	QString					pluginName_;
+	QString					pluginVersion_;
+	QList<PluginsTreeItem*>	childItems_;
+	PluginsTreeItem*		parentItem_;
+	PluginsTreeModel*		model_;
+	QWidget*				loadCheckBox_;
 public:
 	PluginsTreeItem(const QString& pluginModuleNameExt, const QString& pluginNameExt,
 					const QString& pluginVersionExt, PluginsTreeModel* modelExt,
 					PluginsTreeItem* parentExt = 0);
-	~PluginsTreeItem() { qDeleteAll(childItems); }
+	~PluginsTreeItem() { qDeleteAll(childItems_); }
 
-	inline QWidget*		getLoadControl() const { return loadControl; }
-	inline QString		getPluginModuleName() const { return pluginModuleName; }
-	inline QString		getPluginName() const { return pluginName; }
-	inline QString		getPluginVersion() const { return pluginVersion; }
+	inline QWidget*		getLoadControl() const { return loadCheckBox_; }
+	inline QString		getPluginModuleName() const { return pluginModuleName_; }
+	inline QString		getPluginName() const { return pluginName_; }
+	inline QString		getPluginVersion() const { return pluginVersion_; }
 	inline bool			isPluginLoaded()
 	{
-		bool loaded = PluginLoader::isPluginLoaded(pluginModuleName);
-		dynamic_cast<QCheckBox*>(loadControl)->setChecked(loaded);
+		bool loaded = PluginLoader::isPluginLoaded(pluginModuleName_);
+		dynamic_cast<QCheckBox*>(loadCheckBox_)->setChecked(loaded);
 		return loaded;
 	}
 	inline bool		isControlActive()
 	{
-		bool isActive = (isPluginLoaded() || PluginLoader::isPluginLoadable(pluginModuleName))
+		bool isActive = (isPluginLoaded() || PluginLoader::isPluginLoadable(pluginModuleName_))
 				//-- We must disable control if this plugin is not unloadable
-				&& PluginLoader::isPluginUnloadable(pluginModuleName);
-		dynamic_cast<QCheckBox*>(loadControl)->setEnabled(isActive);
+				&& PluginLoader::isPluginUnloadable(pluginModuleName_);
+		dynamic_cast<QCheckBox*>(loadCheckBox_)->setEnabled(isActive);
 		return isActive;
 	}
-	inline PluginsTreeItem*	parent() { return parentItem; }
-	inline PluginsTreeItem*	child(int number) { return childItems.value(number); }
-	inline int			childCount() const { return childItems.count(); }
+	inline PluginsTreeItem*	parent() { return parentItem_; }
+	inline PluginsTreeItem*	child(int number) { return childItems_.value(number); }
+	inline int			childCount() const { return childItems_.count(); }
 	inline int			childNumber() const
 	{
-		if (parentItem)
-			return parentItem->childItems.indexOf(const_cast<PluginsTreeItem*>(this));
+		if (parentItem_)
+			return parentItem_->childItems_.indexOf(const_cast<PluginsTreeItem*>(this));
 
 		return 0;
 	}

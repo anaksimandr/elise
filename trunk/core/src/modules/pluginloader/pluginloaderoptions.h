@@ -17,6 +17,10 @@
 #ifndef ELISE_CORE_MODULES_PLUGINLOADER_PLUGINLOADEROPTIONS_H_
 #define ELISE_CORE_MODULES_PLUGINLOADER_PLUGINLOADEROPTIONS_H_
 
+class QTreeView;
+class QLabel;
+class QString;
+
 class PluginLoaderOptions
 {
 private:
@@ -26,13 +30,13 @@ private:
 	static QLabel*	authorEmail_;
 	static QLabel*	copyright_;
 	static QLabel*	homepage_;
-	static QLabel*	uuid_;
+	static QLabel*	type_;
 	static QString	pluginName_;
 public:
 	static void	saveLoaderOptions();
 	static int	createLoaderOptionsPage(intptr_t pfnPageAdder, intptr_t);
 	static void	loadSelectedPluginInfo(const QModelIndex& current, const QModelIndex&);
-	static void	showPluginInterfaces();
+	//static void	showPluginInterfaces();
 };
 
 #endif // ELISE_CORE_MODULES_PLUGINLOADER_PLUGINLOADEROPTIONS_H_

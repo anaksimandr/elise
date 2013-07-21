@@ -35,9 +35,8 @@ class PluginsTreeModel : public QAbstractItemModel
 {
 	Q_OBJECT
 private:
-	PluginsTreeItem*		rootItem;
-	QTreeView*				treeView;
-	//QMap<QString, Plugin>*	plugins;
+	PluginsTreeItem*		rootItem_;
+	QTreeView*				treeView_;
 
 	inline PluginsTreeItem*	getItem(const QModelIndex& itemIndex) const
 	{
@@ -46,7 +45,7 @@ private:
 			if (item)
 				return item;
 		}
-		return rootItem;
+		return rootItem_;
 	}
 
 public:

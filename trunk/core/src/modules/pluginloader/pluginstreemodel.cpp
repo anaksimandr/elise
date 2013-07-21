@@ -21,14 +21,14 @@
 PluginsTreeModel::PluginsTreeModel(QTreeView* treeViewExt, QObject* parent)
 	: QAbstractItemModel(parent)
 {
-	treeView = treeViewExt;
+	treeView_ = treeViewExt;
 	QString str;
-	rootItem = new PluginsTreeItem(str, str, str, this);
+	rootItem_ = new PluginsTreeItem(str, str, str, this);
 }
 
 PluginsTreeModel::~PluginsTreeModel()
 {
-	delete rootItem;
+	delete rootItem_;
 }
 
 QModelIndex PluginsTreeModel::index(int row, int column, const QModelIndex& parentIndex) const
@@ -53,7 +53,7 @@ QModelIndex PluginsTreeModel::parent(const QModelIndex& itemIndex) const
 	PluginsTreeItem* child = getItem(itemIndex);
 	PluginsTreeItem* parent = child->parent();
 
-	if (parent == rootItem)
+	if (parent == rootItem_)
 		return QModelIndex();
 
 	return createIndex(parent->childNumber(), 0, parent);
@@ -134,7 +134,7 @@ void PluginsTreeModel::updateLoadControls(bool update) const
 			item->isControlActive();
 		else
 			//-- Insert control in model
-			treeView->setIndexWidget(itemIndex, item->getLoadControl());
+			treeView_->setIndexWidget(itemIndex, item->getLoadControl());
 
 	}
 }

@@ -41,7 +41,7 @@ typedef int (*EliseHook)(intptr_t,intptr_t);
 //-- Services functions
 typedef intptr_t (*EliseService)(intptr_t,intptr_t);
 
-typedef struct {
+/*typedef struct {
 	QString	name;				// [3] - major version,	[2] - minor version
 	unsigned char version[4];	// [1] - build num,	[0] - svn revision
 	QString	description;
@@ -50,7 +50,7 @@ typedef struct {
 	QString	authorEmail;
 	QString	copyright;
 	QUuid	uuid;
-} PluginInfo;
+} PluginInfo;*/
 
 class ICore
 {
@@ -60,12 +60,12 @@ public:
 	//-- See services.h for more details
 	virtual int			createHookableEvent(const QLatin1String*) = 0;
 	virtual int			destroyHookableEvent(const QLatin1String*) = 0;
-	virtual int			notifyEventHooks(const QLatin1String*, uintptr_t, uintptr_t) = 0;
+	virtual int			notifyEventHooks(const QLatin1String*, intptr_t, intptr_t) = 0;
 	virtual int			hookEvent(const QLatin1String*, EliseHook) = 0;
 	virtual int			unhookEvent(const QLatin1String*, EliseHook) = 0;
 	virtual int			createServiceFunction(const QLatin1String*, EliseService) = 0;
 	virtual int			destroyServiceFunction(const QLatin1String*) = 0;
-	virtual intptr_t	callService(const QLatin1String*, uintptr_t, uintptr_t) = 0;
+	virtual intptr_t	callService(const QLatin1String*, intptr_t, intptr_t) = 0;
 	virtual int			serviceExists(const QLatin1String*) = 0;
 };
 
@@ -75,10 +75,10 @@ public:
 	virtual						~IPlugin() {}
 
 	//-- If this function return not NULL then the plugin is valid and can be load
-	virtual	const PluginInfo*	ElisePluginInfo() = 0;
+	//virtual	const PluginInfo*	ElisePluginInfo() = 0;
 
 	//--
-	virtual	const QSet<QUuid>*	ElisePluginInterfaces(void) = 0;
+	//virtual	const QSet<QUuid>*	ElisePluginInterfaces(void) = 0;
 
 	//-- Load plugin
 	//-- Must be called after login function

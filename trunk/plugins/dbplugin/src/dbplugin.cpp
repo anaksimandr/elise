@@ -133,10 +133,10 @@ int DBPlugin::openSysDB()
 	return 0;
 }
 
-QMap<QString, Profile*>* DBPlugin::GetProfiles()
+QMap<QString, Profile>* DBPlugin::GetProfiles()
 {
-	QMap<QString, Profile*>* list = new QMap<QString, Profile*>();
-	Profile* item;
+	QMap<QString, Profile>* list = new QMap<QString, Profile>();
+	Profile item;
 	if (!QSqlDatabase::connectionNames().contains(qsDBSys)) {
 		//-- If some trubles is
 		if (openSysDB()) {

@@ -20,42 +20,33 @@
 #include <QtWidgets/QtWidgets>
 #include "core.h"
 
+bool Core::profileLoaded;
 
-//int InitialiseModularEngine(void);
-
-int Core::shutDown(intptr_t result, intptr_t)
+int Core::launch()
 {
-	//-- PreShut down stage
-	//SetEvent(hMirandaShutdown);
-	//NotifyEventHooks(hPreShutdownEvent, 0, 0);
+	profileLoaded = false;
 
-	//-- Kill all threads
-	//UnwindThreadWait();
+	if (loadCore())
+		return 1;
 
-	//-- Shut down stage
-	//NotifyEventHooks(hShutdownEvent, 0, 0);
+	if (loadProfile(0, 0))
+		return 1;
+
+	//-- Notify about success loading
+
+	return 0;
+}
+
+int Core::shutdown(intptr_t result, intptr_t)
+{
 	//-- If the hooks generated any messages, it'll get processed before exit()
 	QApplication::processEvents();
 
-	//UnloadNewPluginsModule();
-	//DestroyModularEngine();
-	//CloseHandle(hStackMutex);
-	//CloseHandle(hMirandaShutdown);
-	//CloseHandle(hThreadQueueEmpty);
-	//DestroyWindow(hAPCWindow);
-
-	//if (pTaskbarInterface)
-	//	pTaskbarInterface->Release();
-
-	//if (bufferedPaintUninit) bufferedPaintUninit();
-
-	//window->~QTestWindow();
 	unloadCore();
 
 	QApplication::exit(result);
 	return result;
 }
-
 
 #ifndef NDEBUG
 #include <QFile>
@@ -88,8 +79,7 @@ void messageOutput(QtMsgType type, const QMessageLogContext& context, const QStr
 int main(int argc, char* argv[])
 {
 #ifndef NDEBUG
-	qInstallMessageHandler(messageOutput); //Qt5 beta 2
-	//qInstallMsgHandler(messageOutput);
+	qInstallMessageHandler(messageOutput);
 #endif //NDEBUG
 	QApplication app(argc, argv);
 	app.setQuitOnLastWindowClosed(false);
@@ -101,33 +91,8 @@ int main(int argc, char* argv[])
 	//-- It looks like Qt doesn't always use srand as backend of qsrand
 	srand(uint(qrand()));
 
-	//-- Initialise modular engine
-	//InitialiseModularEngine();
-
-	//-- Load default modules; shut down if failed
-	if (Core::launchElise())
-		return Core::shutDown(-1, 0);
-
-	//CreateServiceFunction(&SHUTDOWN_SERVICE, (ELISESERVICE)shutDown);
-
-	//-- Notify about success loading
-	//NotifyEventHooks(hModulesLoadedEvent,0,0);
-
-	//-- Ensure that the kernel hooks the SystemShutdownProc() after all plugins
-	//HookEvent(ME_SYSTEM_SHUTDOWN,SystemShutdownProc);
-
-	//-- Idle system
-	//CreateServiceFunction(MS_SYSTEM_SETIDLECALLBACK,SystemSetIdleCallback);
-	//CreateServiceFunction(MS_SYSTEM_GETIDLE, SystemGetIdle);
-	//dwEventTime=GetTickCount();
-
-	//-- Remember process pid
-	//myPid=GetCurrentProcessId();
-
-	//-- For test
-	//QTestWindow* window = new QTestWindow();
-
-	//new QTestWindow();
+	if (Core::launch())
+		return Core::shutdown(-1, 0);
 
 	return app.exec();
 }
