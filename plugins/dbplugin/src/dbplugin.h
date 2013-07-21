@@ -29,7 +29,7 @@ class DBPlugin : public QObject, IPlugin, IDBPlugin
 	Q_OBJECT
 	Q_INTERFACES(IDBPlugin)
 	Q_INTERFACES(IPlugin)
-	Q_PLUGIN_METADATA(IID "elise.IDBPlugin")
+	Q_PLUGIN_METADATA(IID "elise.IDBPlugin" FILE "../metadata.json")
 private:
 	int							openSysDB();
 	QDir						getProfileDir();
@@ -41,7 +41,7 @@ public:
 	const QSet<QUuid>*			ElisePluginInterfaces(void);
 	int							Load(ICore* coreAPI);
 	int							Unload(void);
-	QMap<QString, Profile*>*	GetProfiles();
+	QMap<QString, Profile>*		GetProfiles();
 	int							Login(const QString& name, const QString& password,
 									  bool savePassword, bool loginDefault);
 	int							CreateProfile(const QString& name, const QString& password);

@@ -18,11 +18,23 @@
 #include "profilemanager.h"
 #include "pluginloader/pluginloader.h"
 
+#define DataSteamVer (QDataStream::Qt_5_1)
 
-ProfileManager::ProfileManager(const QMap<QString, IDBPlugin*>* availableDBPlugins)
+ProfileManager::ProfileManager()
 {
-	DBPlugins = availableDBPlugins;
-	profiles = 0;
+	//DBPlugins_ = PluginLoader::getDBPlugins();
+	/*const QMap<QString, IDBPlugin*>* dbPlugins = PluginLoader::getDBPlugins();
+
+	if (!DBPlugins) {
+		QMessageBox::critical(0,
+						QStringLiteral("getDBPlugins error"),
+						QStringLiteral("Failed to get DBPlugins or no one DBPlugin was found."),
+						QMessageBox::Cancel);
+		delete DBPlugins;
+		return 1;
+	}*/
+
+	profiles_ = 0;
 	this->setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowTitleHint);
 
 	this->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -46,33 +58,33 @@ ProfileManager::ProfileManager(const QMap<QString, IDBPlugin*>* availableDBPlugi
 	hboxMain->setAlignment(groupDB, Qt::AlignTop);
 
 	//-- Profile
-	cmbProfiles = new QComboBox(this);
-	cmbProfiles->setMinimumSize(120, 18);
-	cmbProfiles->setEditable(true);
-	vboxACC->addWidget(cmbProfiles);
-	connect(cmbProfiles,
+	cmbProfiles_ = new QComboBox(this);
+	cmbProfiles_->setMinimumSize(120, 18);
+	cmbProfiles_->setEditable(true);
+	vboxACC->addWidget(cmbProfiles_);
+	connect(cmbProfiles_,
 			static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged),
 			this,
 			&ProfileManager::loadProfileDetails);
 
 	//-- Password
-	lePassword = new QLineEdit(this);
-	lePassword->setPlaceholderText(QStringLiteral("password"));
-	lePassword->setEchoMode(QLineEdit::Password);
-	vboxACC->addWidget(lePassword);
-	connect (lePassword, &QLineEdit::returnPressed, this, &ProfileManager::ok);
+	lePassword_ = new QLineEdit(this);
+	lePassword_->setPlaceholderText(QStringLiteral("password"));
+	lePassword_->setEchoMode(QLineEdit::Password);
+	vboxACC->addWidget(lePassword_);
+	connect (lePassword_, &QLineEdit::returnPressed, this, &ProfileManager::ok);
 
 	//-- Checkboxes, don't ask password on login
-	cbSavePassword = new QCheckBox(this);
-	cbSavePassword->setText(QStringLiteral("Save password"));
-	vboxACC->addWidget(cbSavePassword);
-	connect(cbSavePassword, &QCheckBox::stateChanged, this, &ProfileManager::setCBEnable);
+	cbSavePassword_ = new QCheckBox(this);
+	cbSavePassword_->setText(QStringLiteral("Save password"));
+	vboxACC->addWidget(cbSavePassword_);
+	connect(cbSavePassword_, &QCheckBox::stateChanged, this, &ProfileManager::setCBEnable);
 
 	//-- Use as default profile
-	cbDefaultProfile = new QCheckBox(this);
-	cbDefaultProfile->setText("Default profile");
-	cbDefaultProfile->setEnabled(false);
-	vboxACC->addWidget(cbDefaultProfile);
+	cbDefaultProfile_ = new QCheckBox(this);
+	cbDefaultProfile_->setText("Default profile");
+	cbDefaultProfile_->setEnabled(false);
+	vboxACC->addWidget(cbDefaultProfile_);
 
 	//-- OK, load profile
 	QPushButton* button = new QPushButton(this);
@@ -81,18 +93,10 @@ ProfileManager::ProfileManager(const QMap<QString, IDBPlugin*>* availableDBPlugi
 	vboxACC->addWidget(button);
 
 	//-- Creating list of dbPlugins
-	cmbDBPlugins = new QComboBox(this);
-	cmbDBPlugins->setMinimumSize(120, 18);
-	vboxDB->addWidget(cmbDBPlugins);
-	QMapIterator<QString, IDBPlugin*> iter(*DBPlugins);
-	while (iter.hasNext()) {
-		iter.next();
-		cmbDBPlugins->addItem(iter.key());
-	}
-	connect(cmbDBPlugins,
-			static_cast<void (QComboBox::*)(const QString &)>(&QComboBox::currentIndexChanged),
-			this,
-			&ProfileManager::loadProfiles);
+	cmbDBPlugins_ = new QComboBox(this);
+	cmbDBPlugins_->setMinimumSize(120, 18);
+	vboxDB->addWidget(cmbDBPlugins_);
+	cmbDBPlugins_->addItems(PluginLoader::getDBPlugins());
 
 	//-- Create profile button
 	button = new QPushButton(this);
@@ -114,115 +118,190 @@ ProfileManager::ProfileManager(const QMap<QString, IDBPlugin*>* availableDBPlugi
 	button->resize(120, 23);
 	button->move(21, 132);
 
-	//cmbDBPlugins->setFocus();
-	lePassword->setFocus();
+	lePassword_->setFocus();
 
 	hboxMain->setSizeConstraint(QLayout::SetFixedSize);
 
-	//-- First time initialize cmbAccount programmatically
-	loadProfiles(cmbDBPlugins->currentText());
-	loadProfileDetails(cmbProfiles->currentText());
+	loadProfiles();
+	loadProfileDetails(cmbProfiles_->currentText());
 }
 
 ProfileManager::~ProfileManager()
 {
-	//delete DBPlugins;
-	//-- Destroy profiles list if exists
-	if (profiles != 0) {
-		QMapIterator<QString, Profile*> iter(*profiles);
-		while (iter.hasNext()) {
-			iter.next();
-			delete iter.value();
+	QFile file(getProfileDir().absoluteFilePath("profiles.dat"));
+	if (file.open(QIODevice::WriteOnly)) {
+		QDataStream out(&file);
+		out.setVersion(DataSteamVer);
+		Profile profile;
+		QMap<QString, Profile>::const_iterator i = profiles_->constBegin();
+		QMap<QString, Profile>::const_iterator iEnd = profiles_->constEnd();
+		while (i != iEnd) {
+			//-- Name -> Password -> DBPluginName -> save pass -> default profile
+			writeStrToFile(out, i.key());
+			profile = i.value();
+			writeStrToFile(out, profile.password);
+			writeBoolToFile(out, profile.savePassword);
+			writeBoolToFile(out, profile.defaultProfile);
+			i++;
 		}
-		delete profiles;
+		file.close();
 	}
+
+	delete profiles_;
 }
 
 void ProfileManager::setCBEnable(int state)
 {
 	if (!state) {
-		cbDefaultProfile->setEnabled(false);
-		cbDefaultProfile->setCheckState(Qt::Unchecked);
-	}
-	else
-		cbDefaultProfile->setEnabled(true);
+		cbDefaultProfile_->setEnabled(false);
+		cbDefaultProfile_->setCheckState(Qt::Unchecked);
+	} else
+		cbDefaultProfile_->setEnabled(true);
 }
 
-void ProfileManager::loadProfiles(const QString& text)
+QDir ProfileManager::getProfileDir()
 {
-	cmbProfiles->clear();
-	//-- Destroy old list if exists
-	if (profiles != 0) {
-		QMapIterator<QString, Profile*> iter(*profiles);
-		while (iter.hasNext()) {
-			iter.next();
-			delete iter.value();
+	//-- All profiles must be stored in "Profiles"
+	QDir curDir = QDir(qApp->applicationDirPath());
+	if (!curDir.exists("Profiles"))
+		curDir.mkdir("Profiles");
+	curDir.cd("Profiles");
+	return curDir;
+}
+
+QString ProfileManager::readStrFromFile(QDataStream& in)
+{
+	qint32 size;
+	QByteArray data;
+	in >> size;
+	data.resize(size);
+	in >> data;
+	return QString::fromLatin1(QByteArray::fromBase64(QByteArray::fromHex(data)));
+}
+
+void ProfileManager::writeStrToFile(QDataStream& out, const QString& text)
+{
+	QByteArray data;
+	QDataStream toDataBlock(&data, QIODevice::WriteOnly);
+
+	toDataBlock.setVersion(DataSteamVer);
+	toDataBlock << quint32(0) << text.toLatin1().toBase64().toHex();
+	toDataBlock.device()->seek(0);
+	toDataBlock << quint32(data.size() - sizeof(quint32));
+
+	out << data;
+}
+
+bool ProfileManager::readBoolFromFile(QDataStream& in)
+{
+	bool result;
+	in >> result;
+	return result;
+}
+
+void ProfileManager::writeBoolToFile(QDataStream& out, bool val)
+{
+	out << val;
+}
+
+
+void ProfileManager::loadProfiles()
+{
+	cmbProfiles_->clear();
+
+	Profile item;
+	QString name;
+
+	QFile file(getProfileDir().absoluteFilePath("profiles.dat"));
+	if (file.open(QIODevice::ReadOnly)) {
+		profiles_ = new QMap<QString, Profile>();
+		QDataStream in(&file);
+		in.setVersion(DataSteamVer);
+		while (!in.atEnd()) {
+			//-- Name -> Password -> DBPluginName -> save pass -> default profile
+			name = readStrFromFile(in);
+			item.password = readStrFromFile(in);
+			item.dbPluginName = readStrFromFile(in);
+			item.savePassword = readBoolFromFile(in);
+			item.defaultProfile = readBoolFromFile(in);
+
+			profiles_->insert(name, item);
+			cmbProfiles_->addItem(name);
+
+			if (item.defaultProfile)
+				qsDefaultProfile_ = name;
 		}
-		delete profiles;
+		file.close();
 	}
-	//-- Getting list of profiles from plugin
-	profiles = DBPlugins->value(text)->GetProfiles();
-	if (profiles != 0) {
-		if (profiles->count() != 0) {
-			QMapIterator<QString, Profile*> iter(*profiles);
-			while (iter.hasNext()) {
-				iter.next();
-				cmbProfiles->addItem(iter.key());
-				if (iter.value()->defaultProfile)
-					qsDefaultProfile = iter.key();
-			}
-		}
-		else
-			//-- No one profile was found
-			cmbProfiles->addItem(QStringLiteral("Create profile first"));
-	}
-	else
-		cmbProfiles->addItem(QStringLiteral("Internal plugin error"));
+	if (!profiles_ || profiles_->isEmpty())
+		cmbProfiles_->addItem(QStringLiteral("No profile"));
 }
 
 void ProfileManager::loadProfileDetails(const QString& name)
 {
-	if (profiles->contains(name)) {
-		Profile* p = profiles->value(name);
+	if (profiles_->contains(name)) {
+		Profile p = profiles_->value(name);
 		//QMessageBox::critical(0, QStringLiteral("Debug"), name, QMessageBox::Cancel);
 
-		if (p->savePassword) {
-			lePassword->setText(p->password);
-			cbSavePassword->setCheckState(Qt::Checked);
+		if (p.savePassword) {
+			lePassword_->setText(p.password);
+			cbSavePassword_->setCheckState(Qt::Checked);
+		} else {
+			lePassword_->setText("");
+			cbSavePassword_->setCheckState(Qt::Unchecked);
 		}
-		else {
-			lePassword->setText("");
-			cbSavePassword->setCheckState(Qt::Unchecked);
-		}
-		if (p->defaultProfile)
-			cbDefaultProfile->setCheckState(Qt::Checked);
+
+		if (p.defaultProfile)
+			cbDefaultProfile_->setCheckState(Qt::Checked);
 		else
-			cbDefaultProfile->setCheckState(Qt::Unchecked);
+			cbDefaultProfile_->setCheckState(Qt::Unchecked);
 		//delete p;
 	}
 }
 
 int ProfileManager::loadDefaultProfile()
 {
-	if (qsDefaultProfile.isEmpty())
+	if (qsDefaultProfile_.isEmpty())
 		//-- No default profile found
 		return 1;
 
-	cmbProfiles->setCurrentIndex(cmbProfiles->findText(qsDefaultProfile));
-	loadProfileDetails(qsDefaultProfile);
-
-	IDBPlugin* dbPlugin = DBPlugins->value(cmbDBPlugins->currentText());
-	//-- Try to login
-	if (dbPlugin->Login(cmbProfiles->currentText(), lePassword->text(),
-			cbSavePassword->isChecked(), cbDefaultProfile->isChecked()))
-	{
+	if (!cmbDBPlugins_->count()) {
 		QMessageBox::critical(0, QStringLiteral("Login error"),
-					QStringLiteral("Failed to default login.\nAccount does not exist or password does not match."),
-					QMessageBox::Cancel);
+							  QStringLiteral("Failed to login.\nThere is no one DB plugin."),
+							  QMessageBox::Cancel);
 		return 1;
 	}
 
-	return PluginLoader::loadDBPlugin(cmbDBPlugins->currentText(), DBPlugins);
+	Profile profile = profiles_->value(qsDefaultProfile_);
+
+	//-- Try to load DB plugin and login
+	if (cmbDBPlugins_->findText(profile.dbPluginName) == -1) {
+		QMessageBox::critical(0, QStringLiteral("Login error"),
+							  "Failed to login.\nCan't find DB plugin "
+							  + profile.dbPluginName
+							  + " .",
+							  QMessageBox::Cancel);
+		return 1;
+	}
+
+	IDBPlugin* plugin = dynamic_cast<IDBPlugin*>(PluginLoader::loadPlugin(profile.dbPluginName));
+
+	if (plugin) {
+		QMessageBox::critical(0, QStringLiteral("Login error"),
+			"Failed to login.\nCan't load DB plugin " + profile.dbPluginName + " .",
+			QMessageBox::Cancel);
+		return 1;
+	}
+
+	if (plugin->Login(qsDefaultProfile_, profile.password)) {
+		QMessageBox::critical(0, QStringLiteral("Login error"),
+			QStringLiteral("Failed to login.\nProfile does not exist or assword does not match."),
+			QMessageBox::Cancel);
+		PluginLoader::unloadPlugin(profile.dbPluginName);
+		return 1;
+	}
+
+	return 0;
 }
 
 void ProfileManager::abort()
@@ -231,36 +310,111 @@ void ProfileManager::abort()
 	done(1);
 }
 
+void ProfileManager::makeDefault(const QString& profile)
+{
+	QMap<QString, Profile>::iterator i = profiles_->begin();
+	QMap<QString, Profile>::iterator iEnd = profiles_->end();
+	while (i != iEnd) {
+		if (i.key() != profile)
+			i.value().defaultProfile = false;
+		else
+			i.value().defaultProfile = true;
+		i++;
+	}
+}
+
 void ProfileManager::ok()
 {
-	IDBPlugin* dbPlugin = DBPlugins->value(cmbDBPlugins->currentText());
-	//-- Try to login
-	if (dbPlugin->Login(cmbProfiles->currentText(), lePassword->text(),
-			cbSavePassword->isChecked(), cbDefaultProfile->isChecked()))
-	{
+	if (!cmbDBPlugins_->count()) {
 		QMessageBox::critical(0, QStringLiteral("Login error"),
-							  QStringLiteral("Failed to login.\nProfile does not exist or assword does not match."),
+							  QStringLiteral("Failed to login.\nThere is no one DB plugin."),
+							  QMessageBox::Cancel);
+		done(1);
+	}
+
+	QString dbPluginName = profiles_->value(cmbProfiles_->currentText()).dbPluginName;
+
+	//-- Try to load DB plugin and login
+	if (cmbDBPlugins_->findText(dbPluginName) == -1) {
+		QMessageBox::critical(0, QStringLiteral("Login error"),
+							  "Failed to login.\nCan't find DB plugin "
+							  + dbPluginName
+							  + " .",
 							  QMessageBox::Cancel);
 		return;
 	}
 
-	//-- if success then try fully load the plugin	
-	done(PluginLoader::loadDBPlugin(cmbDBPlugins->currentText(), DBPlugins));
+	IDBPlugin* plugin = dynamic_cast<IDBPlugin*>(PluginLoader::loadPlugin(dbPluginName));
+
+	if (plugin) {
+		QMessageBox::critical(0, QStringLiteral("Login error"),
+			"Failed to login.\nCan't load DB plugin " + dbPluginName + " .",
+			QMessageBox::Cancel);
+		return;
+	}
+
+	if (plugin->Login(cmbProfiles_->currentText(), lePassword_->text())) {
+		QMessageBox::critical(0, QStringLiteral("Login error"),
+			QStringLiteral("Failed to login.\nProfile does not exist or assword does not match."),
+			QMessageBox::Cancel);
+		PluginLoader::unloadPlugin(dbPluginName);
+		return;
+	}
+
+	if (cbDefaultProfile_)
+		makeDefault(cmbProfiles_->currentText());
+
+	done(0);
 }
 
 void ProfileManager::createProfile()
 {
-	IDBPlugin* dbPlugin = DBPlugins->value(cmbDBPlugins->currentText());
-	if (dbPlugin->CreateProfile(cmbProfiles->currentText(), lePassword->text()))
+	if (!cmbDBPlugins_->count()) {
 		QMessageBox::critical(0, QStringLiteral("Create profile error"),
-				QStringLiteral("Failed to create profile.\nProfile already exist or another internal plugin error."),
-				QMessageBox::Cancel);
-	else {
-		QMessageBox::information(0, QStringLiteral("Information"),
-								 QStringLiteral("Profile created successfully."),
-								 QMessageBox::Ok);
-		loadProfiles(cmbDBPlugins->currentText());
+							  QStringLiteral("Failed to create profile.\nThere is no one DB plugin."),
+							  QMessageBox::Cancel);
+		done(1);
 	}
+	QString dbPluginName = cmbDBPlugins_->currentText();
+	IDBPlugin* plugin = dynamic_cast<IDBPlugin*>(PluginLoader::loadPlugin(dbPluginName));
+	if (plugin) {
+		QMessageBox::critical(0, QStringLiteral("Create profile error"),
+			"Failed to create profile.\nCan't load DB plugin " + dbPluginName + " .",
+			QMessageBox::Cancel);
+		return;
+	}
+
+	bool ok;
+	QString pass = QInputDialog::getText(this, tr("Create profile"),
+										 tr("Enter the password again:"), QLineEdit::Password,
+										 QString(), &ok);
+	if (!ok || pass.isEmpty())
+		return;
+
+	if (pass != lePassword_->text())
+		QMessageBox::critical(0, QStringLiteral("Create profile error"),
+							  QStringLiteral("Failed to create profile.\nPassword does not match."),
+							  QMessageBox::Cancel);
+
+	QString name = cmbProfiles_->currentText();
+	if (plugin->CreateProfile(name, lePassword_->text())) {
+		QMessageBox::critical(0, QStringLiteral("Create profile error"),
+			QStringLiteral("Failed to create profile.\nProfile already exist or another internal plugin error."),
+			QMessageBox::Cancel);
+		PluginLoader::unloadPlugin(dbPluginName);
+		return;
+	}
+
+	Profile item;
+	item.password = lePassword_->text();
+	item.savePassword = cbSavePassword_;
+
+	profiles_->insert(name, item);
+
+	if (cbDefaultProfile_)
+		makeDefault(name);
+
+	done(0);
 }
 
 void ProfileManager::importProfile()

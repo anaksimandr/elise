@@ -23,15 +23,15 @@ PluginsTreeItem::PluginsTreeItem(const QString& pluginModuleNameExt, const QStri
 								 const QString& pluginVersionExt, PluginsTreeModel* modelExt,
 								 PluginsTreeItem* parentExt)
 {
-	pluginModuleName = pluginModuleNameExt;
-	pluginName = pluginNameExt;
-	pluginVersion = pluginVersionExt;
-	parentItem = parentExt;
-	model = modelExt;
-	if (pluginModuleName.isEmpty())
+	pluginModuleName_ = pluginModuleNameExt;
+	pluginName_ = pluginNameExt;
+	pluginVersion_ = pluginVersionExt;
+	parentItem_ = parentExt;
+	model_ = modelExt;
+	if (pluginModuleName_.isEmpty())
 		return;
 	QCheckBox* cb = new QCheckBox();
-	loadControl = cb;
+	loadCheckBox_ = cb;
 	if (isPluginLoaded())
 		cb->setChecked(true);
 	cb->setEnabled(isControlActive());
@@ -41,16 +41,16 @@ PluginsTreeItem::PluginsTreeItem(const QString& pluginModuleNameExt, const QStri
 
 void PluginsTreeItem::dataChange(bool checked)
 {
-	if (PluginLoader::savePluginStateOrDelete(pluginModuleName, !checked))
+	if (PluginLoader::updatePluginState(pluginModuleName_, !checked))
 		return;
 
 	if (checked)
-		PluginLoader::loadPlugin(pluginModuleName);
+		PluginLoader::loadPlugin(pluginModuleName_);
 	else
-		PluginLoader::unloadPlugin(pluginModuleName);
+		PluginLoader::unloadPlugin(pluginModuleName_);
 
 	//-- Param "true" means update of controls, not create
-	model->updateLoadControls(true);
+	model_->updateLoadControls(true);
 }
 
 bool PluginsTreeItem::insertChild(const QString& pluginModuleNameExt, const QString& pluginNameExt,
@@ -59,19 +59,19 @@ bool PluginsTreeItem::insertChild(const QString& pluginModuleNameExt, const QStr
 	PluginsTreeItem* item = new PluginsTreeItem(pluginModuleNameExt, pluginNameExt,
 												pluginVersionExt, modelExt, this);
 
-	if (childItems.count() == 0)
-		childItems.insert(0, item);
+	if (childItems_.count() == 0)
+		childItems_.insert(0, item);
 	else {
-		QList<PluginsTreeItem*>::iterator i = childItems.begin();
-		QList<PluginsTreeItem*>::iterator iEnd = childItems.end();
+		QList<PluginsTreeItem*>::iterator i = childItems_.begin();
+		QList<PluginsTreeItem*>::iterator iEnd = childItems_.end();
 		while (i != iEnd) {
 			if ((*i)->getPluginModuleName().toUpper() > pluginModuleNameExt.toUpper()) {
-				childItems.insert(i, item);
+				childItems_.insert(i, item);
 				break;
 			}
 			++i;
 		}
-		childItems.insert(i, item);
+		childItems_.insert(i, item);
 	}
 
 	return true;
@@ -79,84 +79,10 @@ bool PluginsTreeItem::insertChild(const QString& pluginModuleNameExt, const QStr
 
 bool PluginsTreeItem::removeChild(int position)
 {
-	if (position < 0 || position > childItems.size())
+	if (position < 0 || position > childItems_.size())
 		return false;
 
-	delete childItems.takeAt(position);
+	delete childItems_.takeAt(position);
 
 	return true;
 }
-
-
-/*PluginsTreeItem::~PluginsTreeItem()
-{
-	qDeleteAll(childItems);
-}
-
-PluginsTreeItem* PluginsTreeItem::parent()
-{
-	return parentItem;
-}
-
-PluginsTreeItem* PluginsTreeItem::child(int number)
-{
-	return childItems.value(number);
-}
-
-int PluginsTreeItem::childCount() const
-{
-	return childItems.count();
-}
-
-int PluginsTreeItem::childNumber() const
-{
-	if (parentItem)
-		return parentItem->childItems.indexOf(const_cast<PluginsTreeItem*>(this));
-
-	return 0;
-}*/
-
-/*QVariant PluginsTreeItem::getData(int column) const
-{
-	QVariant result;
-	switch (column) {
-		case 0:
-			result = pluginName;
-			break;
-		case 1:
-			result = pluginVersion;
-			break;
-#ifndef NDEBUG
-		default:
-			QMessageBox::critical(0, "Error", "Wrong item index!", QMessageBox::Cancel);
-			break;
-#endif
-	}
-
-	return result;
-}*/
-
-/*QString PluginsTreeItem::getPluginName() const
-{
-	return pluginName;
-}
-
-QString PluginsTreeItem::getPluginVersion() const
-{
-	return pluginVersion;
-}
-
-QString PluginsTreeItem::getPluginUuid() const
-{
-	return pluginUuid;
-}
-
-bool PluginsTreeItem::isPluginLoaded() const
-{
-	return pluginLoaded;
-}
-
-void PluginsTreeItem::setPluginLoaded(bool pluginLoadedExt)
-{
-	pluginLoaded = pluginLoadedExt;
-}*/

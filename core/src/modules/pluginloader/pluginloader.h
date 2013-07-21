@@ -21,16 +21,16 @@
 #include "../../../../api/e_pluginapi.h"
 
 extern const QLatin1String	kCoreIsPluginLoaded;
-extern const QLatin1String	kCoreGetPluginInterfaces;
+//extern const QLatin1String	kCoreGetPluginInterfaces;
 
 class IPlugin;
 class IDBPlugin;
 class CoreAPI;
+class QStringList;
 
 typedef struct {
-	bool		loaded;
+	int			type;
 	QObject*	instance;
-	QUuid*		uuid;
 } Plugin;
 
 class PluginLoader
@@ -38,36 +38,37 @@ class PluginLoader
 private:
 	static QDir						pluginsDir_;
 	static QMap<QString, Plugin>*	plugins_;
-	static QMap<QUuid, QString>*	interfaces_;
-	static QSet<QUuid>*				multiplyImplementingInterfaces_;
+	//static QMap<QUuid, QString>*	interfaces_;
+	static QSet<int>*				loadedPluginsTypes_;
 
-	static bool			isLoadingPluginDisabled(const QString& pluginModuleName);
+	static bool			isPluginDisabled(const QString& pluginModuleName);
 public:
 	static QDir			getPluginsDir();
-	static PluginInfo*	getElisePluginInfo(const QString& pluginModuleName);
-	static intptr_t		getElisePluginInterfaces(intptr_t id, intptr_t);
-	static int			loadDBPlugin(const QString& pluginModuleName,
-									 const QMap<QString, IDBPlugin*>* dbPlugins);
+	static QJsonObject*	getPluginInfo(const QString& pluginModuleName);
+	//static intptr_t		getElisePluginInterfaces(intptr_t id, intptr_t);
+	//static IDBPlugin*	loadDBPlugin(const QString& pluginModuleName);
 	static int			loadPlugins();
-	static int			loadPlugin(const QString& pluginModuleName);
+	static IPlugin*		loadPlugin(const QString& pluginModuleName);
 	static int			loadPluginLoader();
 	static int			unloadPluginLoader();
 	static int			unloadPlugin(const QString& pluginModuleName);
-	static int			unloadAllPlugins();
-	static int			savePluginStateOrDelete(const QString& pluginModuleName,
-												bool disableOrDelete);
+	static int			unloadPlugins();
+	static int			updatePluginState(const QString& pluginModuleName,
+												bool disable);
 	static bool			isPluginUnloadable(const QString& pluginModuleName);
 	static bool			isPluginLoadable(const QString& pluginModuleName);
 	static bool			isPluginLoaded(const QString& pluginModuleName);
-	static intptr_t		isPluginLoaded(intptr_t id, intptr_t);
-	static const QMap<QString, Plugin>*	getAvailablePlugins();
-	static const QMap<QString, IDBPlugin*>*	getDBPlugins();
+	static bool			isPluginLoaded(int id);
+	static intptr_t		isPluginLoaded(intptr_t name, intptr_t id);
+	static const QMap<QString, Plugin>*		getAvailablePlugins();
+	static const QStringList				getDBPlugins();
 
 	static inline int	confirmPluginModule(const QString &pluginModuleName)
 	{
 		if (!pluginsDir_.exists(pluginModuleName)) {
 			QMessageBox::critical(0, "Error",
-								  "Plugin module is not found.\nPerhaps it was deleted.",
+								  "Plugin module" + pluginModuleName
+								  + " is not found.\nPerhaps it was deleted.",
 								  QMessageBox::Ok);
 			return 0;
 		}

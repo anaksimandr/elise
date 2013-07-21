@@ -27,10 +27,9 @@ int Core::loadCore()
 {
 	core = dynamic_cast<ICore*>(new Core());
 
-	if (core->createServiceFunction(&kShutdown_service, &shutDown))
-		return 1;
-	if (core->createServiceFunction(&kChangeProfile_service, &changeProfile))
-		return 1;
+	core->createServiceFunction(&kShutdown_service, &shutdown);
+	core->createServiceFunction(&kChangeProfile_service, &loadProfile);
+
 	if (OptionsDialog::loadOptionsModule())
 		return 1;
 	if (PluginLoader::loadPluginLoader())
@@ -55,27 +54,15 @@ int Core::unloadCore()
 	return 0;
 }
 
-/*int Core::unloadDefaultModules()
-{
-
-	//-- Hide tray icon
-	UnloadTrayModule();
-
-	unloadCore();
-
-	return 0;
-}*/
-
-int Core::loadProfile(bool launchApp)
+int Core::loadProfile(intptr_t, intptr_t)
 {
 	//-- First, unload all plugins, if there is
-	PluginLoader::unloadAllPlugins();
+	PluginLoader::unloadPlugins();
 	//-- Clean hooks&services stack
 	unloadCore();
 	loadCore();
 
-	//-- Now we will load the profile, do it befor loading plugins, because we must know which
-	//-- plugins must be loaded for this profile.
+	//-- Load the profile, do it befor loading plugins.
 
 	if (!PluginLoader::getAvailablePlugins()) {
 		QMessageBox::critical(0,
@@ -85,43 +72,28 @@ int Core::loadProfile(bool launchApp)
 		return 1;
 	}
 
-	const QMap<QString, IDBPlugin*>* dbPlugins = PluginLoader::getDBPlugins();
-
-	if (!dbPlugins) {
-		QMessageBox::critical(0,
-						QStringLiteral("getDBPlugins error"),
-						QStringLiteral("Failed to get DBPlugins or no one DBPlugin was found."),
-						QMessageBox::Cancel);
-		delete dbPlugins;
-		return 1;
-	}
-
-	ProfileManager* manager =  new ProfileManager(dbPlugins);
+	ProfileManager* manager =  new ProfileManager();
 
 	int result = true;
 
-	//-- Try to load default profile
-	if (launchApp)
+	//-- Try to load default profile on start
+	if (!profileLoaded)
 		result = manager->loadDefaultProfile();
 
+	//-- Show login window on loadDefaultProfile() fail
 	if (result) {
-		//-- Show login window on loadDefaultProfile fail
 		if (manager->exec()) {
 			delete manager;
-			delete dbPlugins;
 			return 1;
 		}
 	}
 
-	//-- Loading plugins.
+	profileLoaded = true;
+
 	result = PluginLoader::loadPlugins();
 
 	delete manager;
-	delete dbPlugins;
 
-	if (result)
-		return 1;
-
-	return 0;
+	return result;
 }
 

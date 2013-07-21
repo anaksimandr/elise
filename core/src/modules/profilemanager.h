@@ -22,34 +22,48 @@
 //#include "../../../api/e_pluginapi.h"
 #include "../../../api/e_dbpluginapi.h"
 
+typedef struct {
+	QString	password;
+	QString	dbPluginName;
+	bool	savePassword;
+	bool	defaultProfile;
+} Profile;
 
 class ProfileManager : public QDialog
 {
 	Q_OBJECT
 private:
-	QComboBox*		cmbProfiles;
-	QComboBox*		cmbDBPlugins;
-	QLineEdit*		lePassword;
-	QCheckBox*		cbSavePassword;
-	QCheckBox*		cbDefaultProfile;
-	const QMap<QString, IDBPlugin*>* DBPlugins;
-	QMap<QString, Profile*>* profiles;
-	QString			qsDefaultProfile;
+	QComboBox*		cmbProfiles_;
+	QComboBox*		cmbDBPlugins_;
+	QLineEdit*		lePassword_;
+	QCheckBox*		cbSavePassword_;
+	QCheckBox*		cbDefaultProfile_;
+
+	//const QSet<QString>*				DBPlugins_;
+	QMap<QString, Profile>*				profiles_;
+	QString								qsDefaultProfile_;
 protected:
 
-private slots:
+private:
 	void			abort();
 	void			ok();
 	void			createProfile();
 	void			importProfile();
-	void			loadProfiles(const QString& text);
+	void			loadProfiles();
 	void			setCBEnable(int state);
+	void			makeDefault(const QString& profile);
+	QString			readStrFromFile(QDataStream& in);
+	bool			readBoolFromFile(QDataStream& in);
+	void			writeStrToFile(QDataStream& out, const QString& text);
+	void			writeBoolToFile(QDataStream& out, bool val);
 public slots:
 	void			loadProfileDetails(const QString& name);
 public:
-	ProfileManager(const QMap<QString, IDBPlugin*>* availableDBPlugins);
+	ProfileManager();
 	~ProfileManager();
+
 	int				loadDefaultProfile();
+	QDir			getProfileDir();
 };
 
 #endif // ELISE_CORE_MODULES_PROFILEMANAGER_H_
