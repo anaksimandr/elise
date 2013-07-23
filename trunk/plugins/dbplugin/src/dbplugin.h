@@ -18,7 +18,6 @@
 #ifndef ELISE_PLUGINS_DBPLUGIN_DBPLUGIN_H_
 #define ELISE_PLUGINS_DBPLUGIN_DBPLUGIN_H_
 
-//#include "commonheaders.h"
 #include <QtWidgets/QtWidgets>
 #include <QtSql>
 #include "../../../api/e_dbpluginapi.h"
@@ -31,19 +30,14 @@ class DBPlugin : public QObject, IPlugin, IDBPlugin
 	Q_INTERFACES(IPlugin)
 	Q_PLUGIN_METADATA(IID "elise.IDBPlugin" FILE "../metadata.json")
 private:
-	int							openSysDB();
-	QDir						getProfileDir();
-	QDir						getProfileDir(const QString& name);
+	//int							openSysDB();
+	//QDir						getProfileDir();
+	//QDir						getProfileDir(const QString& name);
 	int							loadProfile(const QString& name, const QString& passwd);
-	static QSet<QUuid>*			interfaces;
 public:
-	const PluginInfo*			ElisePluginInfo();
-	const QSet<QUuid>*			ElisePluginInterfaces(void);
 	int							Load(ICore* coreAPI);
 	int							Unload(void);
-	QMap<QString, Profile>*		GetProfiles();
-	int							Login(const QString& name, const QString& password,
-									  bool savePassword, bool loginDefault);
+	int							Login(const QString& name, const QString& password);
 	int							CreateProfile(const QString& name, const QString& password);
 };
 

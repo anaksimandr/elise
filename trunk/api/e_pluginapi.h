@@ -21,36 +21,14 @@
 #include <QtCore>
 #include "defines.h"
 
-/* Replaceable plugin interfaces.
-
-This is unique IDs for standart interfaces. If your plugin implements one of standart
-interfaces it must return this interface in IPlugin::ElisePluginInterfaces(void) method.
-But non standard interfaces must be returned too.
-
-Note: DBPlugin should not implements any other interfaces.
-	const QUuid UUID_DATABASE	=	"{4df3e270-fb8b-4654-9271-2f0f31e0eb84}";
-	const QUuid UUID_CLIST		=	"{88441947-8188-474e-ae18-bb2f3795d4fe}";
-	const QUuid UUID_CHATWINDOW	=	"{29fbc48a-bf3e-4fdd-a537-35ad427da091}";
-	const QUuid UUID_CHATLOG	=	"{d6f1dce9-2c88-495d-b89c-9fb147f4863d}";
-	const QUuid UUID_TESTPLUGIN	=	"{a3c43dc8-4bb0-454d-baca-7682f924115c}";
-*/
+class QObject;
 
 //-- Hook functions
 typedef int (*EliseHook)(intptr_t,intptr_t);
 
 //-- Services functions
-typedef intptr_t (*EliseService)(intptr_t,intptr_t);
-
-/*typedef struct {
-	QString	name;				// [3] - major version,	[2] - minor version
-	unsigned char version[4];	// [1] - build num,	[0] - svn revision
-	QString	description;
-	QString	homepage;
-	QString	author;
-	QString	authorEmail;
-	QString	copyright;
-	QUuid	uuid;
-} PluginInfo;*/
+typedef intptr_t (*EliseService)(intptr_t,intptr_t);	//-- type = 0
+//typedef QObject* (*QEliseService)();					//-- type = 1
 
 class ICore
 {
@@ -64,6 +42,7 @@ public:
 	virtual int			hookEvent(const QLatin1String*, EliseHook) = 0;
 	virtual int			unhookEvent(const QLatin1String*, EliseHook) = 0;
 	virtual int			createServiceFunction(const QLatin1String*, EliseService) = 0;
+	//virtual int			createServiceFunction(const QLatin1String*, QEliseService) = 0;
 	virtual int			destroyServiceFunction(const QLatin1String*) = 0;
 	virtual intptr_t	callService(const QLatin1String*, intptr_t, intptr_t) = 0;
 	virtual int			serviceExists(const QLatin1String*) = 0;
@@ -73,12 +52,6 @@ class IPlugin
 {
 public:
 	virtual						~IPlugin() {}
-
-	//-- If this function return not NULL then the plugin is valid and can be load
-	//virtual	const PluginInfo*	ElisePluginInfo() = 0;
-
-	//--
-	//virtual	const QSet<QUuid>*	ElisePluginInterfaces(void) = 0;
 
 	//-- Load plugin
 	//-- Must be called after login function

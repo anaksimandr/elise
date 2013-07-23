@@ -16,7 +16,6 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-//#include "commonheaders.h"
 #include "elisedb.h"
 #include "../../../api/e_database.h"
 
@@ -26,10 +25,6 @@
 //const unsigned char realType	=	1;	//-- double
 //const unsigned char textType	=	2;	//-- QString
 //const unsigned char blobType	=	3;	//-- QByteArray
-/*extern const unsigned char intType;
-extern const unsigned char realType;
-extern const unsigned char textType;
-extern const unsigned char blobType;*/
 
 QString qsProfile;
 

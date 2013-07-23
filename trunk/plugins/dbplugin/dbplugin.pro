@@ -8,6 +8,8 @@ CONFIG		+=	plugin
 
 DEFINES		+=	UNICODE
 
+VERSON		= 0.0.0.2
+
 SOURCES += \
 	src/dbplugin.cpp \
 	src/elsiedb.cpp
