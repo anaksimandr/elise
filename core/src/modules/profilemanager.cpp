@@ -169,6 +169,11 @@ QDir ProfileManager::getProfileDir()
 	return curDir;
 }
 
+intptr_t ProfileManager::getProfileDir(intptr_t, intptr_t)
+{
+	return reinterpretcast<intptr_t>();
+}
+
 QString ProfileManager::readStrFromFile(QDataStream& in)
 {
 	qint32 size;

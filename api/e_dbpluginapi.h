@@ -20,21 +20,10 @@
 
 #include "e_pluginapi.h"
 
-/*typedef struct {
-	bool	savePassword;
-	bool	defaultProfile;
-	QString	password;
-} Profile;*/
-
 class IDBPlugin
 {
 public:
 	virtual						~IDBPlugin() {}
-
-	//-- Return list of profiles names that already exists
-	//-- The key in returned QMap is a name of profile.
-	//-- NOTE: core will destroy list after loading it's elements
-	//virtual QMap<QString, Profile>*	GetProfiles() = 0;
 
 	//-- int Login(name, password);
 	//-- Login in profile with gived name and password.

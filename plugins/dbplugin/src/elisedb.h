@@ -18,7 +18,6 @@
 #ifndef ELISE_PLUGINS_DBPLUGIN_ELISEDB_H_
 #define ELISE_PLUGINS_DBPLUGIN_ELISEDB_H_
 
-//#include "commonheaders.h"
 #include <QtWidgets/QtWidgets>
 #include <QtSql>
 

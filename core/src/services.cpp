@@ -163,7 +163,7 @@ int Core::unhookEvent(const QLatin1String* name, EliseHook hookProc)
 //-- SERVICES --////////////////////////////////////////////////////////////////////////////////////
 
 int Core::createServiceFunction(const QLatin1String* name, EliseService serviceProc)
-{	
+{
 	if (name->size() < 1)
 		return -2;
 	qmutexServices_.lock();
@@ -173,16 +173,39 @@ int Core::createServiceFunction(const QLatin1String* name, EliseService serviceP
 		return -1;
 	}
 
-	TService* newSer;
+	TService* service = new TService;
+	service->type = 0;
+	service->pfnService = serviceProc;
 
-	newSer = new TService;
-	newSer->type = 0;
-	newSer->pfnService = serviceProc;
-
-	qmapServices_[*name] = newSer;
+	qmapServices_[*name] = service;
 	qmutexServices_.unlock();
 	return 0;
 }
+
+/*int Core::createServiceFunction(const QLatin1String* name, QEliseService serviceProc)
+{
+	TService* service;
+
+	service = new TService;
+	service->type = 1;
+	service->pfnQService = serviceProc;
+	return createService(name, service);
+}*/
+
+/*int Core::createService(const QLatin1String* name, TService* service)
+{
+	if (name->size() < 1)
+		return -2;
+	qmutexServices_.lock();
+	//-- Return 1 if service with this name already exists.
+	if (qmapServices_.contains(*name)) {
+		qmutexServices_.unlock();
+		return -1;
+	}
+	qmapServices_[*name] = service;
+	qmutexServices_.unlock();
+	return 0;
+}*/
 
 int Core::serviceExists(const QLatin1String* name)
 {
@@ -208,17 +231,18 @@ intptr_t Core::callService(const QLatin1String* name, intptr_t wParam, intptr_t 
 		return -1;
 	}
 
-	TService* ser = qmapServices_.value(*name);
+	TService* service = qmapServices_.value(*name);
 
 	qmutexServices_.unlock();
-	switch(ser->type)
+	switch(service->type)
 	{
 		case 1:
-			//return ((ELISESERVICEWIDG)pfnServiceWidg)(wParam,lParam,fnParam);
-		//case 2:  return ((ELISESERVICEWIDGJ)pfnService)(object,wParam,lParam);
-		//case 3:  return ((ELISESERVICEWIDG)pfnService)(object,wParam,lParam,fnParam);
+			//return service->pfnQService();
+			//break;
+			//case 2:  return ((ELISESERVICEWIDGJ)pfnService)(object,wParam,lParam);
+			//case 3:  return ((ELISESERVICEWIDG)pfnService)(object,wParam,lParam,fnParam);
 		default:
-			return ser->pfnService(wParam,lParam);
+			return service->pfnService(wParam,lParam);
 			//}
 	}
 	//return qmapServices.value(*name)->pfnService(wParam, lParam);

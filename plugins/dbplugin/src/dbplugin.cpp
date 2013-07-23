@@ -25,11 +25,9 @@ const QLatin1String	kDBWriteSetting_service	=	QLatin1String(__DB_WriteSetting_se
 const QLatin1String	kDBReadSetting_service	=	QLatin1String(__DB_ReadSetting_service);
 const QLatin1String	kDBDellSetting_service	=	QLatin1String(__DB_DellSetting_service);
 
-QSet<QUuid>* DBPlugin::interfaces = 0;
-
 ICore* core;
 
-const PluginInfo pluginInfo = {
+/*const PluginInfo pluginInfo = {
 	QLatin1String("DBPlugin"),
 	{__MAJOR_VERSION, __MINOR_VERSION, __BUILD_NUM, __SVN_REVISION},
 	"Basic DB plugin",
@@ -38,7 +36,7 @@ const PluginInfo pluginInfo = {
 	"s.andreenko@gmail.com",
 	"© 2012 Elise IM project",
 	"{708acd4b-bda3-45a0-b2c6-290f9c7cfce3}"
-};
+};*/
 
 QDir DBPlugin::getProfileDir()
 {
@@ -194,8 +192,7 @@ QMap<QString, Profile>* DBPlugin::GetProfiles()
 	return list;
 }
 
-int DBPlugin::Login(const QString& name, const QString& password,
-					bool savePassword, bool loginDefault)
+int DBPlugin::Login(const QString& name, const QString& password)
 {
 	//-- Try to load profile (check pass)
 	if (!loadProfile(name, password)) {

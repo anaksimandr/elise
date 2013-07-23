@@ -43,6 +43,7 @@ typedef struct
 	int type;
 	union {
 		EliseService pfnService;
+		//QEliseService pfnQService;
 	};
 } TService;
 
@@ -60,6 +61,8 @@ private:
 	//-- Arrays of hookable events and services
 	QMap <QLatin1String, THookableEvent*> qmapHooks_;
 	QMap <QLatin1String, TService*> qmapServices_;
+
+	//int	createService(const QLatin1String* name, TService* service);
 
 public:
 
@@ -143,6 +146,7 @@ public:
 	 * Returns 0 on success, -2 if name is empty and -1 if name has been already used.
 	 */
 	int createServiceFunction(const QLatin1String* name, EliseService serviceProc);
+	//int createServiceFunction(const QLatin1String* name, QEliseService serviceProc);
 
 	/* ServiceExists
 	 * Finds if a service with the given 'name' exists.

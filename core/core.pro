@@ -5,7 +5,7 @@ TARGET		=	Elise
 
 TEMPLATE	=	app
 
-VERSION		=	0.0.0.1
+#VERSION		=	0.0.0.1
 DEFINES		+=	UNICODE
 
 SOURCES += \
@@ -20,7 +20,8 @@ SOURCES += \
     src/modules/profilemanager.cpp \
     src/modules/pluginloader/pluginloaderoptions.cpp \
     src/modules/pluginloader/pluginstreeitem.cpp \
-    src/modules/pluginloader/pluginstreemodel.cpp
+    src/modules/pluginloader/pluginstreemodel.cpp \
+    src/modules/folders/folders.cpp
 
 
 HEADERS += \
@@ -39,7 +40,8 @@ HEADERS += \
     src/modules/pluginloader/pluginstreemodel.h \
     src/core.h \
     ../api/version.h \
-    ../api/defines.h
+    ../api/defines.h \
+    src/modules/folders/folders.h
 
 RESOURCES += \
 	res/resources.qrc
