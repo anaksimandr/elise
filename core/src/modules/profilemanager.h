@@ -63,7 +63,6 @@ public:
 	~ProfileManager();
 
 	int				loadDefaultProfile();
-	QDir			getProfileDir();
 };
 
 #endif // ELISE_CORE_MODULES_PROFILEMANAGER_H_

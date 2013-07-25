@@ -15,7 +15,8 @@
 #define __Core_Shutdown_service				"System/Shutdown"
 #define __Core_ChangeProfile_service		"System/ChangeAcc"
 #define __Core_IsPluginLoaded_service		"Core/IsPluginLoaded"
-//#define __Core_GetPluginInterfaces_service	"Core/GetPluginInterfaces"
+#define __Core_GetPluginsDir_service		"Core/GetPluginsDir"
+#define __Core_GetProfilesDir_service		"Core/GetProfilesDir"
 
 #define __Options_Show_service				"Options/Show"
 

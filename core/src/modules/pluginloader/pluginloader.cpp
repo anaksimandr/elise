@@ -23,18 +23,19 @@
 #include "pluginloader.h"
 #include "../../core.h"
 #include "pluginloaderoptions.h"
+#include "../folders/folders.h"
 
 const QLatin1String	kCoreIsPluginLoaded	=	QLatin1String(__Core_IsPluginLoaded_service);
 //const QLatin1String	kCoreGetPluginInterfaces = QLatin1String(__Core_GetPluginInterfaces_service);
 
-QDir						PluginLoader::pluginsDir_;
+QDir*						PluginLoader::pluginsDir_;
 QMap<QString, Plugin>*		PluginLoader::plugins_ = NULL;
 //QMap<QUuid, QString>*		PluginLoader::interfaces_ = NULL;
 QSet<int>*				PluginLoader::loadedPluginsTypes_ = NULL;
 
 int PluginLoader::loadPluginLoader()
 {
-	pluginsDir_ = getPluginsDir();
+	pluginsDir_ = Folders::getPluginsDir();
 	if (!loadedPluginsTypes_) {
 		loadedPluginsTypes_ = new QSet<int>();
 		//multiplyImplementingInterfaces_->insert(__UUID_TestPlugin);
@@ -49,6 +50,7 @@ int PluginLoader::loadPluginLoader()
 
 int PluginLoader::unloadPluginLoader()
 {
+	delete pluginsDir_;
 	delete loadedPluginsTypes_;
 	loadedPluginsTypes_ = NULL;
 	core->unhookEvent(&kOptionsShow_event, &PluginLoaderOptions::createLoaderOptionsPage);
@@ -58,27 +60,6 @@ int PluginLoader::unloadPluginLoader()
 	return 0;
 }
 
-QDir PluginLoader::getPluginsDir()
-{
-	QDir pluginsDir = QDir(qApp->applicationDirPath());
-
-	//-- Really not shure that this is needed
-	//#if defined(Q_OS_WIN)
-	//if (pluginsDir.dirName().toLower() == "debug" || pluginsDir.dirName().toLower() == "release")
-	//	pluginsDir.cdUp();
-	//#elif defined(Q_OS_MAC)
-	//if (pluginsDir.dirName() == "MacOS") {
-	//	pluginsDir.cdUp();
-	//	pluginsDir.cdUp();
-	//	pluginsDir.cdUp();
-	//}
-	//#endif
-
-	pluginsDir.cd("Plugins");
-
-	return pluginsDir;
-}
-
 QJsonObject* PluginLoader::getPluginInfo(const QString &pluginModuleName)
 {
 	if (!confirmPluginModule(pluginModuleName))
@@ -86,7 +67,7 @@ QJsonObject* PluginLoader::getPluginInfo(const QString &pluginModuleName)
 
 	QJsonObject* metaData = new QJsonObject();
 	QPluginLoader loader;
-	loader.setFileName(pluginsDir_.absoluteFilePath(pluginModuleName));
+	loader.setFileName(pluginsDir_->absoluteFilePath(pluginModuleName));
 	*metaData = loader.metaData();
 
 	if (metaData->empty())
@@ -152,19 +133,19 @@ const QMap<QString, Plugin>* PluginLoader::getAvailablePlugins()
 	QMap<QString, Plugin>::iterator iteratorPlugins = plugins_->begin();
 	QMap<QString, Plugin>::iterator pluginsEnd = plugins_->end();
 	while (iteratorPlugins != pluginsEnd) {
-		if (!pluginsDir_.exists(iteratorPlugins.key()))
+		if (!pluginsDir_->exists(iteratorPlugins.key()))
 			iteratorPlugins = plugins_->erase(iteratorPlugins);
 		else
 			++iteratorPlugins;
 	}
 
 	//-- Update the list of plugins
-	QStringList files = pluginsDir_.entryList(QDir::Files);
+	QStringList files = pluginsDir_->entryList(QDir::Files);
 	QStringList::const_iterator i = files.constBegin();
 	QStringList::const_iterator iEnd = files.constEnd();
 	while (i != iEnd) {
 		if (!plugins_->contains(*i)) {
-			loader.setFileName(pluginsDir_.absoluteFilePath(*i));
+			loader.setFileName(pluginsDir_->absoluteFilePath(*i));
 			QJsonObject metaData = loader.metaData();
 
 			if (!metaData.empty()) {
@@ -253,7 +234,7 @@ bool PluginLoader::isPluginLoaded(const QString& pluginModuleName)
 		return false;
 
 	QPluginLoader loader;
-	loader.setFileName(pluginsDir_.absoluteFilePath(pluginModuleName));
+	loader.setFileName(pluginsDir_->absoluteFilePath(pluginModuleName));
 
 	if (loader.isLoaded())
 		return true;
@@ -272,7 +253,7 @@ bool PluginLoader::isPluginLoaded(int id)
 bool PluginLoader::isPluginLoadable(const QString& pluginModuleName)
 {
 	QPluginLoader loader;
-	loader.setFileName(pluginsDir_.absoluteFilePath(pluginModuleName));
+	loader.setFileName(pluginsDir_->absoluteFilePath(pluginModuleName));
 	if (loader.isLoaded())
 		return false;
 
@@ -321,7 +302,7 @@ bool PluginLoader::isPluginUnloadable(const QString& pluginModuleName)
 IPlugin* PluginLoader::loadPlugin(const QString& pluginModuleName)
 {
 	QPluginLoader loader;
-	loader.setFileName(pluginsDir_.absoluteFilePath(pluginModuleName));
+	loader.setFileName(pluginsDir_->absoluteFilePath(pluginModuleName));
 
 	Plugin* plugin = &(*plugins_)[pluginModuleName];
 	plugin->instance = loader.instance();
@@ -344,7 +325,7 @@ IPlugin* PluginLoader::loadPlugin(const QString& pluginModuleName)
 int PluginLoader::unloadPlugin(const QString& pluginModuleName)
 {
 	QPluginLoader loader;
-	loader.setFileName(pluginsDir_.absoluteFilePath(pluginModuleName));
+	loader.setFileName(pluginsDir_->absoluteFilePath(pluginModuleName));
 	Plugin* plugin = &(*plugins_)[pluginModuleName];
 
 	if (!loader.isLoaded())
