@@ -30,9 +30,6 @@ class DBPlugin : public QObject, IPlugin, IDBPlugin
 	Q_INTERFACES(IPlugin)
 	Q_PLUGIN_METADATA(IID "elise.IDBPlugin" FILE "../metadata.json")
 private:
-	//int							openSysDB();
-	//QDir						getProfileDir();
-	//QDir						getProfileDir(const QString& name);
 	int							loadProfile(const QString& name, const QString& passwd);
 public:
 	int							Load(ICore* coreAPI);

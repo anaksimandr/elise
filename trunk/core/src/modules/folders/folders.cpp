@@ -22,18 +22,29 @@ int Folders::unloadFolders()
 	return 0;
 }
 
-QDir* Folders::getProfileDir()
+QDir* Folders::getProfileDir(const QString& name)
 {
 	QDir* curDir = new QDir(qApp->applicationDirPath());
 	if (!curDir->exists("Profiles"))
 		curDir->mkdir("Profiles");
 	curDir->cd("Profiles");
+
+	if (!name.isEmpty()) {
+		if (!curDir->exists(name))
+			curDir->mkdir(name);
+		curDir->cd(name);
+	}
+
 	return curDir;
 }
 
-intptr_t Folders::getProfileDir(intptr_t, intptr_t)
+intptr_t Folders::getProfileDir(intptr_t ptrName, intptr_t)
 {
-	return reinterpret_cast<intptr_t>(Folders::getProfileDir());
+	QString name;
+	if (ptrName)
+		name = *(reinterpret_cast<QString*>(ptrName));
+
+	return reinterpret_cast<intptr_t>(Folders::getProfileDir(name));
 }
 
 QDir* Folders::getPluginsDir()
