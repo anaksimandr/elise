@@ -36,17 +36,14 @@ typedef struct {
 class PluginLoader
 {
 private:
-	static QDir						pluginsDir_;
+	static QDir*					pluginsDir_;
 	static QMap<QString, Plugin>*	plugins_;
 	//static QMap<QUuid, QString>*	interfaces_;
 	static QSet<int>*				loadedPluginsTypes_;
 
 	static bool			isPluginDisabled(const QString& pluginModuleName);
 public:
-	static QDir			getPluginsDir();
 	static QJsonObject*	getPluginInfo(const QString& pluginModuleName);
-	//static intptr_t		getElisePluginInterfaces(intptr_t id, intptr_t);
-	//static IDBPlugin*	loadDBPlugin(const QString& pluginModuleName);
 	static int			loadPlugins();
 	static IPlugin*		loadPlugin(const QString& pluginModuleName);
 	static int			loadPluginLoader();
@@ -65,7 +62,7 @@ public:
 
 	static inline int	confirmPluginModule(const QString &pluginModuleName)
 	{
-		if (!pluginsDir_.exists(pluginModuleName)) {
+		if (!pluginsDir_->exists(pluginModuleName)) {
 			QMessageBox::critical(0, "Error",
 								  "Plugin module" + pluginModuleName
 								  + " is not found.\nPerhaps it was deleted.",

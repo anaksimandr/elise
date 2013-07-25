@@ -17,6 +17,7 @@
 
 #include "profilemanager.h"
 #include "pluginloader/pluginloader.h"
+#include "folders/folders.h"
 
 #define DataSteamVer (QDataStream::Qt_5_1)
 
@@ -128,7 +129,8 @@ ProfileManager::ProfileManager()
 
 ProfileManager::~ProfileManager()
 {
-	QFile file(getProfileDir().absoluteFilePath("profiles.dat"));
+	QDir* profilesDir = Folders::getProfileDir();
+	QFile file(profilesDir->absoluteFilePath("profiles.dat"));
 	if (file.open(QIODevice::WriteOnly)) {
 		QDataStream out(&file);
 		out.setVersion(DataSteamVer);
@@ -146,7 +148,7 @@ ProfileManager::~ProfileManager()
 		}
 		file.close();
 	}
-
+	delete profilesDir;
 	delete profiles_;
 }
 
@@ -157,21 +159,6 @@ void ProfileManager::setCBEnable(int state)
 		cbDefaultProfile_->setCheckState(Qt::Unchecked);
 	} else
 		cbDefaultProfile_->setEnabled(true);
-}
-
-QDir ProfileManager::getProfileDir()
-{
-	//-- All profiles must be stored in "Profiles"
-	QDir curDir = QDir(qApp->applicationDirPath());
-	if (!curDir.exists("Profiles"))
-		curDir.mkdir("Profiles");
-	curDir.cd("Profiles");
-	return curDir;
-}
-
-intptr_t ProfileManager::getProfileDir(intptr_t, intptr_t)
-{
-	return reinterpretcast<intptr_t>();
 }
 
 QString ProfileManager::readStrFromFile(QDataStream& in)
@@ -217,7 +204,8 @@ void ProfileManager::loadProfiles()
 	Profile item;
 	QString name;
 
-	QFile file(getProfileDir().absoluteFilePath("profiles.dat"));
+	QDir* profilesDir = Folders::getProfileDir();
+	QFile file(profilesDir->absoluteFilePath("profiles.dat"));
 	if (file.open(QIODevice::ReadOnly)) {
 		profiles_ = new QMap<QString, Profile>();
 		QDataStream in(&file);
@@ -240,6 +228,8 @@ void ProfileManager::loadProfiles()
 	}
 	if (!profiles_ || profiles_->isEmpty())
 		cmbProfiles_->addItem(QStringLiteral("No profile"));
+
+	delete profilesDir;
 }
 
 void ProfileManager::loadProfileDetails(const QString& name)
