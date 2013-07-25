@@ -27,18 +27,7 @@ const QLatin1String	kDBDellSetting_service	=	QLatin1String(__DB_DellSetting_serv
 
 ICore* core;
 
-/*const PluginInfo pluginInfo = {
-	QLatin1String("DBPlugin"),
-	{__MAJOR_VERSION, __MINOR_VERSION, __BUILD_NUM, __SVN_REVISION},
-	"Basic DB plugin",
-	"http://code.google.com/p/elise/",
-	"Sergey Andreenko",
-	"s.andreenko@gmail.com",
-	"© 2012 Elise IM project",
-	"{708acd4b-bda3-45a0-b2c6-290f9c7cfce3}"
-};*/
-
-QDir DBPlugin::getProfileDir()
+/*QDir DBPlugin::getProfileDir()
 {
 	//-- All profiles must be stored in "Profiles"
 	QDir curDir = QDir(qApp->applicationDirPath());
@@ -59,9 +48,9 @@ QDir DBPlugin::getProfileDir(const QString& name)
 		curDir.cd(name);
 	}
 	return curDir;
-}
+}*/
 
-int DBPlugin::openSysDB()
+/*int DBPlugin::openSysDB()
 {
 	//-- Save current path
 	QDir qdCurrent = QDir::current();
@@ -129,9 +118,9 @@ int DBPlugin::openSysDB()
 	//-- Restore current dir
 	QDir::setCurrent(qdCurrent.path());
 	return 0;
-}
+}*/
 
-QMap<QString, Profile>* DBPlugin::GetProfiles()
+/*QMap<QString, Profile>* DBPlugin::GetProfiles()
 {
 	QMap<QString, Profile>* list = new QMap<QString, Profile>();
 	Profile item;
@@ -190,7 +179,7 @@ QMap<QString, Profile>* DBPlugin::GetProfiles()
 	QDir::setCurrent(qdCurrent.path());
 
 	return list;
-}
+}*/
 
 int DBPlugin::Login(const QString& name, const QString& password)
 {
@@ -407,21 +396,6 @@ int DBPlugin::CreateProfile(const QString& name, const QString& password)
 	return 0;
 }
 
-const PluginInfo* DBPlugin::ElisePluginInfo()
-{
-	return &pluginInfo;
-}
-
-const QSet<QUuid>* DBPlugin::ElisePluginInterfaces(void)
-{
-	if (interfaces == 0) {
-		interfaces = new QSet<QUuid>();
-		interfaces->insert(__UUID_Database);
-	}
-
-	return interfaces;
-}
-
 int DBPlugin::Load(ICore* coreAPI)
 {
 	core = coreAPI;
@@ -447,5 +421,3 @@ int DBPlugin::Unload(void)
 
 	return 0;
 }
-
-//Q_EXPORT_PLUGIN2(dbplugin, DBPlugin)
