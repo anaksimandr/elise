@@ -25,6 +25,8 @@ const QLatin1String	kDBWriteSetting_service	=	QLatin1String(__DB_WriteSetting_se
 const QLatin1String	kDBReadSetting_service	=	QLatin1String(__DB_ReadSetting_service);
 const QLatin1String	kDBDellSetting_service	=	QLatin1String(__DB_DellSetting_service);
 
+const QLatin1String	kCoreGetProfilesDir	=	QLatin1String(__Core_GetProfilesDir_service);
+
 ICore* core;
 
 /*QDir DBPlugin::getProfileDir()
@@ -183,7 +185,7 @@ QDir DBPlugin::getProfileDir(const QString& name)
 
 int DBPlugin::Login(const QString& name, const QString& password)
 {
-	//-- Try to load profile (check pass)
+	//-- Try to load profile: check only DB, SQLite does not supports passwords.
 	if (!loadProfile(name, password)) {
 		//-- Need this brackets to disconnect from system DB at the end
 		{
@@ -223,11 +225,23 @@ int DBPlugin::Login(const QString& name, const QString& password)
 
 int DBPlugin::loadProfile(const QString& name, const QString& passwd)
 {
-	if (!getProfileDir().exists(name))
+	QDir* profileDir = reinterpret_cast<QDir*>(core->callService(&kCoreGetProfilesDir,
+																 reinterpret_cast<intptr_t>(&name),
+																 0));
+
+	if (!profileDir->exists(name + qsDBPref)) {
+		profileDir->cdUp();
+		profileDir->rmdir(name);
+		QMessageBox::critical(0,
+							  "Cannot open profile database",
+							  "Database doesn't exists.",
+							  QMessageBox::Cancel);
 		return 1;
+	}
+
 	//-- Save current path
 	QDir qdCurrent = QDir::current();
-	QDir::setCurrent(getProfileDir(name).path());
+	QDir::setCurrent(profileDir->path());
 	if (!QDir::current().exists(name + qsDBPref)) {
 		//-- Restore current dir
 		QDir::setCurrent(qdCurrent.path());
@@ -235,11 +249,8 @@ int DBPlugin::loadProfile(const QString& name, const QString& passwd)
 	}
 
 	QSqlDatabase profiledb;
-#ifdef USE_SQLCIPHER
-	profiledb = QSqlDatabase::addDatabase("QSQLCIPHER", name);
-#else
+
 	profiledb = QSqlDatabase::addDatabase("QSQLITE", name);
-#endif
 	profiledb.setDatabaseName(name + qsDBPref);
 
 	if (!profiledb.open()) {

@@ -251,6 +251,8 @@ void ProfileManager::loadProfileDetails(const QString& name)
 		else
 			cbDefaultProfile_->setCheckState(Qt::Unchecked);
 		//delete p;
+
+		cmbDBPlugins_->setCurrentIndex(cmbDBPlugins_->findText(p.dbPluginName));
 	}
 }
 
@@ -327,24 +329,31 @@ void ProfileManager::ok()
 		done(1);
 	}
 
-	QString dbPluginName = profiles_->value(cmbProfiles_->currentText()).dbPluginName;
+	Profile profile = profiles_->value(cmbProfiles_->currentText());
 
 	//-- Try to load DB plugin and login
-	if (cmbDBPlugins_->findText(dbPluginName) == -1) {
+	if (cmbDBPlugins_->findText(profile.dbPluginName) == -1) {
 		QMessageBox::critical(0, QStringLiteral("Login error"),
 							  "Failed to login.\nCan't find DB plugin "
-							  + dbPluginName
+							  + profile.dbPluginName
 							  + " .",
 							  QMessageBox::Cancel);
 		return;
 	}
 
-	IDBPlugin* plugin = dynamic_cast<IDBPlugin*>(PluginLoader::loadPlugin(dbPluginName));
+	IDBPlugin* plugin = dynamic_cast<IDBPlugin*>(PluginLoader::loadPlugin(profile.dbPluginName));
 
 	if (plugin) {
 		QMessageBox::critical(0, QStringLiteral("Login error"),
-			"Failed to login.\nCan't load DB plugin " + dbPluginName + " .",
+			"Failed to login.\nCan't load DB plugin " + profile.dbPluginName + " .",
 			QMessageBox::Cancel);
+		return;
+	}
+
+	if (lePassword_->text() != profile.password) {
+		QMessageBox::critical(0, QStringLiteral("Login error"),
+							  "Failed to login.\nWrong password.",
+							  QMessageBox::Cancel);
 		return;
 	}
 
@@ -352,7 +361,7 @@ void ProfileManager::ok()
 		QMessageBox::critical(0, QStringLiteral("Login error"),
 			QStringLiteral("Failed to login.\nProfile does not exist or assword does not match."),
 			QMessageBox::Cancel);
-		PluginLoader::unloadPlugin(dbPluginName);
+		PluginLoader::unloadPlugin(profile.dbPluginName);
 		return;
 	}
 
@@ -392,7 +401,7 @@ void ProfileManager::createProfile()
 							  QMessageBox::Cancel);
 
 	QString name = cmbProfiles_->currentText();
-	if (plugin->CreateProfile(name, lePassword_->text())) {
+	if (plugin->CreateProfile(name, pass)) {
 		QMessageBox::critical(0, QStringLiteral("Create profile error"),
 			QStringLiteral("Failed to create profile.\nProfile already exist or another internal plugin error."),
 			QMessageBox::Cancel);
@@ -401,7 +410,7 @@ void ProfileManager::createProfile()
 	}
 
 	Profile item;
-	item.password = lePassword_->text();
+	item.password = pass;
 	item.savePassword = cbSavePassword_;
 
 	profiles_->insert(name, item);
