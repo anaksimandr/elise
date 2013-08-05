@@ -19,7 +19,6 @@ HEADERS += \
 	../../api/e_dbpluginapi.h \
 	../../api/e_pluginapi.h \
 	src/dbplugin.h \
-    src/dbkey.h \
 	src/elisedb.h \
     ../../api/e_database.h
 

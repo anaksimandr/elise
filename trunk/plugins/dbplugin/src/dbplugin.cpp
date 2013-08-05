@@ -53,7 +53,7 @@ int DBPlugin::Login(const QString& name, const QString& password)
 	}
 
 	QSqlDatabase profiledb = QSqlDatabase::addDatabase("QSQLITE", name);
-	profiledb.setDatabaseName(name + qsDBPref);
+	profiledb.setDatabaseName(profileDir->absoluteFilePath(name + qsDBPref));
 	if (!profiledb.open()) {
 		QMessageBox::critical(0,
 							  "Cannot open profile database",
@@ -116,7 +116,7 @@ int DBPlugin::CreateProfile(const QString& name, const QString& password)
 	}
 
 	QSqlDatabase profiledb = QSqlDatabase::addDatabase("QSQLITE", name);
-	profiledb.setDatabaseName(name + qsDBPref);
+	profiledb.setDatabaseName(profileDir->absoluteFilePath(name + qsDBPref));
 
 	if (!profiledb.open()) {
 		QMessageBox::critical(0,
