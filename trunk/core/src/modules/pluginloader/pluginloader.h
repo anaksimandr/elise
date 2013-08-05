@@ -45,7 +45,7 @@ private:
 public:
 	static QJsonObject*	getPluginInfo(const QString& pluginModuleName);
 	static int			loadPlugins();
-	static IPlugin*		loadPlugin(const QString& pluginModuleName);
+	static QObject*		loadPlugin(const QString& pluginModuleName);
 	static int			loadPluginLoader();
 	static int			unloadPluginLoader();
 	static int			unloadPlugin(const QString& pluginModuleName);

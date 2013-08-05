@@ -28,7 +28,7 @@ class DBPlugin : public QObject, IPlugin, IDBPlugin
 	Q_OBJECT
 	Q_INTERFACES(IDBPlugin)
 	Q_INTERFACES(IPlugin)
-	Q_PLUGIN_METADATA(IID "elise.IDBPlugin" FILE "../metadata.json")
+	Q_PLUGIN_METADATA(IID "Elise.basicDBPluginInterface/1.0" FILE "../metadata.json")
 private:
 	int							loadProfile(const QString& name, const QString& passwd);
 public:
