@@ -20,6 +20,7 @@
 #include "modules/profilemanager.h"
 #include "modules/tray.h"
 #include "modules/options/options.h"
+#include "modules/folders/folders.h"
 
 ICore* core = 0;
 
@@ -30,6 +31,8 @@ int Core::loadCore()
 	core->createServiceFunction(&kShutdown_service, &shutdown);
 	core->createServiceFunction(&kChangeProfile_service, &loadProfile);
 
+	if (Folders::loadFolders())
+		return 1;
 	if (OptionsDialog::loadOptionsModule())
 		return 1;
 	if (PluginLoader::loadPluginLoader())
@@ -45,6 +48,7 @@ int Core::unloadCore()
 	EliseTray::unloadTrayModule();
 	PluginLoader::unloadPluginLoader();
 	OptionsDialog::unloadOptionsModule();
+	Folders::unloadFolders();
 	//-- This will be cleaned during the destruction of the core
 	//destroyServiceFunction(&kShutdown_service);
 	//destroyServiceFunction(&kChangeProfile_service);

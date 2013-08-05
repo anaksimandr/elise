@@ -25,11 +25,8 @@ class NewPlugin : public QObject, IPlugin
  {
 	Q_OBJECT
 	Q_INTERFACES(IPlugin)
-	Q_PLUGIN_METADATA(IID "elise.IPlugin")
-	static QSet<QUuid>*		interfaces;
+	Q_PLUGIN_METADATA(IID "elise.IPlugin" FILE "../metadata.json")
 public:
-	const PluginInfo*		ElisePluginInfo();
-	const QSet<QUuid>*		ElisePluginInterfaces(void);
 	int						Load(ICore* coreAPI);
 	int						Unload(void);
 };

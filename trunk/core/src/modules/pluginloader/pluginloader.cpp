@@ -68,7 +68,7 @@ QJsonObject* PluginLoader::getPluginInfo(const QString &pluginModuleName)
 	QJsonObject* metaData = new QJsonObject();
 	QPluginLoader loader;
 	loader.setFileName(pluginsDir_->absoluteFilePath(pluginModuleName));
-	*metaData = loader.metaData();
+	*metaData = loader.metaData().value("MetaData").toObject();
 
 	if (metaData->empty())
 		return 0;
@@ -83,40 +83,6 @@ QJsonObject* PluginLoader::getPluginInfo(const QString &pluginModuleName)
 
 	return metaData;
 }
-
-/*intptr_t PluginLoader::getElisePluginInterfaces(intptr_t id, intptr_t)
-{
-	//-- Note: We can get interfaces only for loaded plugins.
-
-	QUuid* pluginUuid = reinterpret_cast<QUuid*>(id);
-	IPlugin* pluginInterface;
-
-	QMap<QString, Plugin>::const_iterator iteratorPlugins = plugins_->constBegin();
-	QMap<QString, Plugin>::const_iterator pluginsEnd = plugins_->constEnd();
-
-	bool found = false;
-
-	while (iteratorPlugins != pluginsEnd)
-	{
-		if (iteratorPlugins.value().loaded == true
-				&& *(iteratorPlugins.value().uuid) == *pluginUuid)
-		{
-			pluginInterface = qobject_cast<IPlugin*>(iteratorPlugins.value().instance);
-			found = true;
-			break;
-		}
-		++iteratorPlugins;
-	}
-
-	if (!found)
-		return 0;
-
-	QSet<QUuid>* interfaces = new QSet<QUuid>();
-
-	*interfaces = *pluginInterface->ElisePluginInterfaces();
-
-	return reinterpret_cast<intptr_t>(interfaces);
-}*/
 
 const QMap<QString, Plugin>* PluginLoader::getAvailablePlugins()
 {
@@ -147,19 +113,12 @@ const QMap<QString, Plugin>* PluginLoader::getAvailablePlugins()
 		if (!plugins_->contains(*i)) {
 			loader.setFileName(pluginsDir_->absoluteFilePath(*i));
 			QJsonObject metaData = loader.metaData().value("MetaData").toObject();
-			QStringList list = metaData.keys();
 			if (!metaData.isEmpty()) {
 				QJsonValue val = metaData.value("name");
 				if (!val.isUndefined()) {
 					val = metaData.value("type");
 					if (!val.isUndefined()) {
 						//-- FIX ME: there is no method QJsonValue::toInt() now.
-						/*bool b1 = false;
-						bool b2 = false;
-						if (val.isString())
-							b1 = true;
-						if (val.isDouble())
-							b2 = true;*/
 						plugin.type = val.toDouble();
 						plugins_->insert(*i, plugin);
 					}
@@ -242,10 +201,7 @@ bool PluginLoader::isPluginLoaded(const QString& pluginModuleName)
 	QPluginLoader loader;
 	loader.setFileName(pluginsDir_->absoluteFilePath(pluginModuleName));
 
-	if (loader.isLoaded())
-		return true;
-
-	return false;
+	return loader.isLoaded();
 }
 
 bool PluginLoader::isPluginLoaded(int id)
@@ -284,26 +240,6 @@ bool PluginLoader::isPluginUnloadable(const QString& pluginModuleName)
 
 	return true;
 }
-
-/*IDBPlugin* PluginLoader::loadDBPlugin(const QString& pluginModuleName)
-{
-	QMap<QString, IDBPlugin*>::const_iterator iteratorPlugins = name->constBegin();
-	QMap<QString, IDBPlugin*>::const_iterator pluginsEnd = name->constEnd();
-	QPluginLoader loader;
-
-	while (iteratorPlugins != pluginsEnd) {
-		loader.setFileName(pluginsDir_.absoluteFilePath(pluginModuleName));
-
-		if (iteratorPlugins.key() == pluginModuleName)
-			loadPlugin(pluginModuleName);
-		else
-			loader.unload();
-
-		++iteratorPlugins;
-	}
-
-	return 0;
-}*/
 
 QObject* PluginLoader::loadPlugin(const QString& pluginModuleName)
 {
@@ -346,10 +282,14 @@ int PluginLoader::unloadPlugin(const QString& pluginModuleName)
 							  QMessageBox::Ok);
 
 	//-- Remove plugin type from the list
-	loadedPluginsTypes_->remove(plugin->type);
+	if (plugin->type)
+		loadedPluginsTypes_->remove(plugin->type);
 
 	//-- Free plugin
-	loader.unload();
+	if (!loader.unload())
+		QMessageBox::critical(0, QStringLiteral("unloadPlugin error"),
+							  QStringLiteral("Can't unload plugin ") + pluginModuleName,
+							  QMessageBox::Ok);
 
 	plugin->instance = 0;
 	return 0;
@@ -393,7 +333,7 @@ int PluginLoader::unloadPlugins()
 		unloadPlugin(iteratorPlugins.key());
 		++iteratorPlugins;
 	} //while
-	plugins_->clear();
+	//plugins_->clear();
 
 	return 0;
 }

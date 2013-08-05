@@ -1,8 +1,8 @@
 {
-	"type": 1,
-	"name": "DBPlugin",
+	"type": 3,
+	"name": "DeveloperPlugin",
 	"version": "0.0.1.100",
-    "description": "DB plugin based on QSLite driver",
+    "description": "Plugin for debug only",
 	"homepage": "http://code.google.com/p/elise/",
 	"author": "Sergey Andreenko",
 	"authorEmail": "s.andreenko@gmail.com",
