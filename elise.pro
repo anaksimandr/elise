@@ -1,6 +1,6 @@
 TEMPLATE	=	subdirs
 CONFIG	   +=	ordered
 SUBDIRS		=	core \
-				#plugins/newplugin \
+				plugins/newplugin \
 				plugins/dbplugin \
-				#plugins/tests
+				plugins/developer

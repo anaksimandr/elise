@@ -6,6 +6,8 @@
  */
 // 0 - any type of plugin which can be loaded more than one copy
 // 1 - DB plugins
+// 2 - simple plugin
+// 3 - developer plugin
 
 
 

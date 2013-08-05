@@ -17,41 +17,11 @@
 
 #include "../../../api/version.h"
 #include "testwindow.h"
-#include "tests.h"
+#include "developer.h"
 
 ICore* core;
-QSet<QUuid>* TestPlugin::interfaces = 0;
 
-const PluginInfo pluginInfo = {
-	"TestPlugin",
-	{__MAJOR_VERSION, __MINOR_VERSION, __BUILD_NUM, __SVN_REVISION},
-	"Plugin for testing (for developers only).",
-	"http://code.google.com/p/elise/",
-	"Sergey Andreenko",
-	"s.andreenko@gmail.com",
-	"© 2012 Elise IM project",
-	"{c8aa9219-6544-481a-8790-d0cd42831647}"
-};
-
-
-const PluginInfo* TestPlugin::ElisePluginInfo()
-{
-	return &pluginInfo;
-}
-
-const QSet<QUuid>* TestPlugin::ElisePluginInterfaces(void)
-{
-	if (interfaces == 0) {
-		interfaces = new QSet<QUuid>();
-		interfaces->insert(__UUID_Clist);
-		interfaces->insert(__UUID_TestPlugin);
-	}
-
-	return interfaces;
-}
-
-
-int TestPlugin::Load(ICore* coreAPI)
+int DeveloperPlugin::Load(ICore* coreAPI)
 {
 	core = coreAPI;
 	core->createServiceFunction(&kClistShow_service, &TestWindow::showCList);
@@ -60,7 +30,7 @@ int TestPlugin::Load(ICore* coreAPI)
 	return 0;
 }
 
-int TestPlugin::Unload(void)
+int DeveloperPlugin::Unload(void)
 {
 	core->destroyServiceFunction(&kClistShow_service);
 	core->destroyServiceFunction(&kClistHide_service);

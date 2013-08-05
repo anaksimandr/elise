@@ -1,0 +1,10 @@
+{
+	"type": 2,
+	"name": "NewPlugin",
+	"version": "0.0.1.100",
+    "description": "Simple plugin",
+	"homepage": "http://code.google.com/p/elise/",
+	"author": "somebody",
+	"authorEmail": "somebody@nomail.com",
+	"copyright": "© 2012 Elise IM project"
+}

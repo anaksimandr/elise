@@ -20,34 +20,6 @@
 
 const QLatin1String	kTestPlugin_service	=	QLatin1String(__Tests_TestService);
 ICore* core;
-QSet<QUuid>* NewPlugin::interfaces = 0;
-
-const PluginInfo pluginInfo = {
-	"NewPlugin",
-	{__MAJOR_VERSION, __MINOR_VERSION, __BUILD_NUM, __SVN_REVISION},
-	"Simple plugin",
-	"http://code.google.com/p/elise/",
-	"somebody",
-	"somebody@nomail.com",
-	"© 2012 Elise IM project",
-	"{792e2ede-6e43-4891-9ab1-a9eb8f88cc09}"
-};
-
-
-const PluginInfo* NewPlugin::ElisePluginInfo()
-{
-	return &pluginInfo;
-}
-
-const QSet<QUuid>* NewPlugin::ElisePluginInterfaces(void)
-{
-	if (interfaces == 0) {
-		interfaces = new QSet<QUuid>();
-		interfaces->insert(__UUID_TestPlugin);
-	}
-
-	return interfaces;
-}
 
 intptr_t testPluginFunction(intptr_t, intptr_t)
 {

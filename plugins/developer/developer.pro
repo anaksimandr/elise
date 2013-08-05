@@ -1,6 +1,6 @@
 QT			+=	widgets
 
-TARGET		=	TestPlugin
+TARGET		=	DeveloperPlugin
 
 TEMPLATE	=	lib
 
@@ -27,7 +27,7 @@ DEFINES		+=	UNICODE
 #DEFINES += "SVN_RC=$${NW_SVN}"
 
 SOURCES += \
-	src/tests.cpp \
+	src/developer.cpp \
     src/testwindow.cpp
 
 HEADERS += \
@@ -35,11 +35,11 @@ HEADERS += \
 	../../api/e_pluginapi.h \
 	../../api/e_database.h \
 	../../api/version.h \
-	src/tests.h \
+	src/developer.h \
     src/testwindow.h
 
-#OTHER_FILES += \
-#	plugin.json
+OTHER_FILES += \
+	metadata.json
 
 # install
 #target.path = $$[QT_INSTALL_EXAMPLES]/tools/echoplugin/plugin

@@ -5,7 +5,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QProgressBar>
-#include "tests.h"
+#include "developer.h"
 
 extern const QLatin1String	kShutdown_service;
 extern const QLatin1String	kClistShow_service;

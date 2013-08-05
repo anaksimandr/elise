@@ -143,6 +143,7 @@ ProfileManager::~ProfileManager()
 				writeStrToFile(out, i.key());
 				profile = i.value();
 				writeStrToFile(out, profile.password);
+				writeStrToFile(out, profile.dbPluginName);
 				writeBoolToFile(out, profile.savePassword);
 				writeBoolToFile(out, profile.defaultProfile);
 				i++;
@@ -285,9 +286,9 @@ int ProfileManager::loadDefaultProfile()
 		return 1;
 	}
 
-	IDBPlugin* plugin = dynamic_cast<IDBPlugin*>(PluginLoader::loadPlugin(profile.dbPluginName));
+	IDBPlugin* plugin = qobject_cast<IDBPlugin*>(PluginLoader::loadPlugin(profile.dbPluginName));
 
-	if (plugin) {
+	if (!plugin) {
 		QMessageBox::critical(0, QStringLiteral("Login error"),
 			"Failed to login.\nCan't load DB plugin " + profile.dbPluginName + " .",
 			QMessageBox::Cancel);
@@ -346,9 +347,9 @@ void ProfileManager::ok()
 		return;
 	}
 
-	IDBPlugin* plugin = dynamic_cast<IDBPlugin*>(PluginLoader::loadPlugin(profile.dbPluginName));
+	IDBPlugin* plugin = qobject_cast<IDBPlugin*>(PluginLoader::loadPlugin(profile.dbPluginName));
 
-	if (plugin) {
+	if (!plugin) {
 		QMessageBox::critical(0, QStringLiteral("Login error"),
 			"Failed to login.\nCan't load DB plugin " + profile.dbPluginName + " .",
 			QMessageBox::Cancel);
@@ -418,10 +419,11 @@ void ProfileManager::createProfile()
 	Profile item;
 	item.password = pass;
 	item.savePassword = cbSavePassword_;
+	item.dbPluginName = dbPluginName;
 
 	profiles_->insert(name, item);
 
-	if (cbDefaultProfile_)
+	if (cbDefaultProfile_->isChecked() || profiles_->count() == 1)
 		makeDefault(name);
 
 	done(0);
