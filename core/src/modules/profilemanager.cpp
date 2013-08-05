@@ -129,26 +129,29 @@ ProfileManager::ProfileManager()
 
 ProfileManager::~ProfileManager()
 {
-	QDir* profilesDir = Folders::getProfileDir();
-	QFile file(profilesDir->absoluteFilePath("profiles.dat"));
-	if (file.open(QIODevice::WriteOnly)) {
-		QDataStream out(&file);
-		out.setVersion(DataSteamVer);
-		Profile profile;
-		QMap<QString, Profile>::const_iterator i = profiles_->constBegin();
-		QMap<QString, Profile>::const_iterator iEnd = profiles_->constEnd();
-		while (i != iEnd) {
-			//-- Name -> Password -> DBPluginName -> save pass -> default profile
-			writeStrToFile(out, i.key());
-			profile = i.value();
-			writeStrToFile(out, profile.password);
-			writeBoolToFile(out, profile.savePassword);
-			writeBoolToFile(out, profile.defaultProfile);
-			i++;
+	if (profiles_) {
+		QDir* profilesDir = Folders::getProfileDir();
+		QFile file(profilesDir->absoluteFilePath("profiles.dat"));
+		if (file.open(QIODevice::WriteOnly)) {
+			QDataStream out(&file);
+			out.setVersion(DataSteamVer);
+			Profile profile;
+			QMap<QString, Profile>::const_iterator i = profiles_->constBegin();
+			QMap<QString, Profile>::const_iterator iEnd = profiles_->constEnd();
+			while (i != iEnd) {
+				//-- Name -> Password -> DBPluginName -> save pass -> default profile
+				writeStrToFile(out, i.key());
+				profile = i.value();
+				writeStrToFile(out, profile.password);
+				writeBoolToFile(out, profile.savePassword);
+				writeBoolToFile(out, profile.defaultProfile);
+				i++;
+			}
 		}
 		file.close();
+
+		delete profilesDir;
 	}
-	delete profilesDir;
 	delete profiles_;
 }
 
@@ -200,6 +203,8 @@ void ProfileManager::writeBoolToFile(QDataStream& out, bool val)
 void ProfileManager::loadProfiles()
 {
 	cmbProfiles_->clear();
+	if (!profiles_)
+		profiles_ = new QMap<QString, Profile>();
 
 	Profile item;
 	QString name;
@@ -207,7 +212,6 @@ void ProfileManager::loadProfiles()
 	QDir* profilesDir = Folders::getProfileDir();
 	QFile file(profilesDir->absoluteFilePath("profiles.dat"));
 	if (file.open(QIODevice::ReadOnly)) {
-		profiles_ = new QMap<QString, Profile>();
 		QDataStream in(&file);
 		in.setVersion(DataSteamVer);
 		while (!in.atEnd()) {
@@ -226,7 +230,7 @@ void ProfileManager::loadProfiles()
 		}
 		file.close();
 	}
-	if (!profiles_ || profiles_->isEmpty())
+	if (profiles_->isEmpty())
 		cmbProfiles_->addItem(QStringLiteral("No profile"));
 
 	delete profilesDir;
@@ -234,7 +238,7 @@ void ProfileManager::loadProfiles()
 
 void ProfileManager::loadProfileDetails(const QString& name)
 {
-	if (profiles_->contains(name)) {
+	if (profiles_ && profiles_->contains(name)) {
 		Profile p = profiles_->value(name);
 		//QMessageBox::critical(0, QStringLiteral("Debug"), name, QMessageBox::Cancel);
 
@@ -327,6 +331,7 @@ void ProfileManager::ok()
 							  QStringLiteral("Failed to login.\nThere is no one DB plugin."),
 							  QMessageBox::Cancel);
 		done(1);
+		return;
 	}
 
 	Profile profile = profiles_->value(cmbProfiles_->currentText());
@@ -378,10 +383,11 @@ void ProfileManager::createProfile()
 							  QStringLiteral("Failed to create profile.\nThere is no one DB plugin."),
 							  QMessageBox::Cancel);
 		done(1);
+		return;
 	}
 	QString dbPluginName = cmbDBPlugins_->currentText();
-	IDBPlugin* plugin = dynamic_cast<IDBPlugin*>(PluginLoader::loadPlugin(dbPluginName));
-	if (plugin) {
+	IDBPlugin* plugin = qobject_cast<IDBPlugin*>(PluginLoader::loadPlugin(dbPluginName));
+	if (!plugin) {
 		QMessageBox::critical(0, QStringLiteral("Create profile error"),
 			"Failed to create profile.\nCan't load DB plugin " + dbPluginName + " .",
 			QMessageBox::Cancel);
@@ -402,9 +408,9 @@ void ProfileManager::createProfile()
 
 	QString name = cmbProfiles_->currentText();
 	if (plugin->CreateProfile(name, pass)) {
-		QMessageBox::critical(0, QStringLiteral("Create profile error"),
-			QStringLiteral("Failed to create profile.\nProfile already exist or another internal plugin error."),
-			QMessageBox::Cancel);
+		//QMessageBox::critical(0, QStringLiteral("Create profile error"),
+		//	QStringLiteral("Failed to create profile.\nProfile already exist or another internal plugin error."),
+		//	QMessageBox::Cancel);
 		PluginLoader::unloadPlugin(dbPluginName);
 		return;
 	}

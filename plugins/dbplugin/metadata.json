@@ -1,5 +1,5 @@
-﻿{
-	"type": "1",
+{
+	"type": 1,
 	"name": "DBPlugin",
 	"version": "0.0.1.100",
     "description": "DB plugin based on QSLite driver",

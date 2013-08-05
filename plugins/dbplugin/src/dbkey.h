@@ -9,6 +9,6 @@ class QString;
 
 //-- DB name constants for internal use
 //const QString qsDBSys = "sys.edb";
-const QString qsDBPref = ".sqlite";
+//const QString qsDBPref = ".sqlite";
 
 #endif // ELISE_PLUGINS_DBPLUGIN_DBKEY_H_

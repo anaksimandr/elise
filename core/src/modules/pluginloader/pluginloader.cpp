@@ -146,15 +146,21 @@ const QMap<QString, Plugin>* PluginLoader::getAvailablePlugins()
 	while (i != iEnd) {
 		if (!plugins_->contains(*i)) {
 			loader.setFileName(pluginsDir_->absoluteFilePath(*i));
-			QJsonObject metaData = loader.metaData();
-
-			if (!metaData.empty()) {
+			QJsonObject metaData = loader.metaData().value("MetaData").toObject();
+			QStringList list = metaData.keys();
+			if (!metaData.isEmpty()) {
 				QJsonValue val = metaData.value("name");
 				if (!val.isUndefined()) {
-					val = metaData.value("id");
+					val = metaData.value("type");
 					if (!val.isUndefined()) {
 						//-- FIX ME: there is no method QJsonValue::toInt() now.
-						plugin.type = metaData.value("type").toDouble();
+						/*bool b1 = false;
+						bool b2 = false;
+						if (val.isString())
+							b1 = true;
+						if (val.isDouble())
+							b2 = true;*/
+						plugin.type = val.toDouble();
 						plugins_->insert(*i, plugin);
 					}
 				}
@@ -299,7 +305,7 @@ bool PluginLoader::isPluginUnloadable(const QString& pluginModuleName)
 	return 0;
 }*/
 
-IPlugin* PluginLoader::loadPlugin(const QString& pluginModuleName)
+QObject* PluginLoader::loadPlugin(const QString& pluginModuleName)
 {
 	QPluginLoader loader;
 	loader.setFileName(pluginsDir_->absoluteFilePath(pluginModuleName));
@@ -319,7 +325,7 @@ IPlugin* PluginLoader::loadPlugin(const QString& pluginModuleName)
 	if (plugin->type)
 		loadedPluginsTypes_->insert(plugin->type);
 
-	return pluginInterface;
+	return plugin->instance;
 }
 
 int PluginLoader::unloadPlugin(const QString& pluginModuleName)
