@@ -1,0 +1,10 @@
+{
+	"type": 1,
+	"name": "DBPlugin",
+	"version": "0.0.1.100",
+    "description": "DB plugin based on QSLite driver",
+	"homepage": "http://code.google.com/p/elise/",
+	"author": "Sergey Andreenko",
+	"authorEmail": "s.andreenko@gmail.com",
+	"copyright": "© 2012 Elise IM project"
+}
