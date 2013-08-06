@@ -29,8 +29,8 @@ class CoreAPI;
 class QStringList;
 
 typedef struct {
-	int			type;
-	QObject*	instance;
+	int				type;
+	QPluginLoader*	loader;
 } Plugin;
 
 class PluginLoader
@@ -38,7 +38,6 @@ class PluginLoader
 private:
 	static QDir*					pluginsDir_;
 	static QMap<QString, Plugin>*	plugins_;
-	//static QMap<QUuid, QString>*	interfaces_;
 	static QSet<int>*				loadedPluginsTypes_;
 
 	static bool			isPluginDisabled(const QString& pluginModuleName);
@@ -55,8 +54,8 @@ public:
 	static bool			isPluginUnloadable(const QString& pluginModuleName);
 	static bool			isPluginLoadable(const QString& pluginModuleName);
 	static bool			isPluginLoaded(const QString& pluginModuleName);
-	static bool			isPluginLoaded(int id);
-	static intptr_t		isPluginLoaded(intptr_t name, intptr_t id);
+	static inline bool	isPluginLoaded(int id) { return loadedPluginsTypes_->contains(id); }
+	static intptr_t		isPluginLoaded(intptr_t name, intptr_t type);
 	static const QMap<QString, Plugin>*		getAvailablePlugins();
 	static const QStringList				getDBPlugins();
 
