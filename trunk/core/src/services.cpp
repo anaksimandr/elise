@@ -218,7 +218,7 @@ int Core::serviceExists(const QLatin1String* name)
 	//-- If found then return 1, else 0
 	return is;
 }
-
+#include <QMessageBox>
 intptr_t Core::callService(const QLatin1String* name, intptr_t wParam, intptr_t lParam)
 {
 	if (name->size() < 1)
@@ -230,6 +230,10 @@ intptr_t Core::callService(const QLatin1String* name, intptr_t wParam, intptr_t 
 		qmutexServices_.unlock();
 		return -1;
 	}
+
+	//QMessageBox::critical(0, QStringLiteral("Debug"),
+	//					  QString::fromLatin1(name->latin1()),
+	//					  QMessageBox::Ok);
 
 	TService* service = qmapServices_.value(*name);
 
