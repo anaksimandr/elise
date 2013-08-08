@@ -48,6 +48,7 @@ public:
 	static int			loadPluginLoader();
 	static int			unloadPluginLoader();
 	static int			unloadPlugin(const QString& pluginModuleName);
+	static int			unloadPlugin(int pluginType);
 	static int			unloadPlugins();
 	static int			updatePluginState(const QString& pluginModuleName,
 												bool disable);

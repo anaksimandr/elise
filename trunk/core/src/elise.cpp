@@ -29,6 +29,10 @@ int Core::launch()
 	if (loadCore())
 		return 1;
 
+	core->createHookableEvent(&kCorePluginsLoaded);
+	core->createHookableEvent(&kCorePluginsUnloaded);
+	core->createHookableEvent(&kPreshutdown);
+
 	if (loadProfile(0, 0))
 		return 1;
 
@@ -39,8 +43,8 @@ int Core::launch()
 
 int Core::shutdown(intptr_t result, intptr_t)
 {
-	//-- If the hooks generated any messages, it'll get processed before exit()
-	QApplication::processEvents();
+	core->notifyEventHooks(&kPreshutdown, 0, 0);
+	//QApplication::processEvents();
 
 	unloadCore();
 
@@ -50,7 +54,6 @@ int Core::shutdown(intptr_t result, intptr_t)
 
 #ifndef NDEBUG
 #include <QFile>
-//void messageOutput(QtMsgType type, const char* msg) //for Qt5 beta 2
 void messageOutput(QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
 	QFile file("log.txt");
@@ -61,7 +64,10 @@ void messageOutput(QtMsgType type, const QMessageLogContext& context, const QStr
 			log << "Debug: " << msg << "\n";
 			break;
 		case QtWarningMsg:
-			log << "Warning: " << msg << "\n";
+		{
+			if (msg.indexOf("QLayout: Attempting to add QLayout") == -1)
+				log << "Warning: " << msg << "\n";
+		}
 			break;
 		case QtCriticalMsg:
 			log << "Critical: " << msg << "\n";

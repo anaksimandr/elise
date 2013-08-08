@@ -30,6 +30,9 @@ extern const QLatin1String	kChangeProfile_service;
 extern const QLatin1String	kDBWriteSetting_service;
 extern const QLatin1String	kDBReadSetting_service;
 extern const QLatin1String	kDBDellSetting_service;
+extern const QLatin1String	kCorePluginsLoaded;
+extern const QLatin1String	kCorePluginsUnloaded;
+extern const QLatin1String	kPreshutdown;
 //extern const QLatin1String	kClistShow_service;
 
 typedef struct

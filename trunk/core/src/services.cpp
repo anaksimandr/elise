@@ -25,7 +25,9 @@ const QLatin1String	kChangeProfile_service	=	QLatin1String(__Core_ChangeProfile_
 const QLatin1String	kDBWriteSetting_service	=	QLatin1String(__DB_WriteSetting_service);
 const QLatin1String	kDBReadSetting_service	=	QLatin1String(__DB_ReadSetting_service);
 const QLatin1String	kDBDellSetting_service	=	QLatin1String(__DB_DellSetting_service);
-//const QLatin1String	kClistShow_service	=	QLatin1String(__CList_Show_service);
+const QLatin1String	kCorePluginsLoaded		=	QLatin1String(__Core_PluginsLoaded);
+const QLatin1String	kCorePluginsUnloaded	=	QLatin1String(__Core_PluginsUnloaded);
+const QLatin1String	kPreshutdown			=	QLatin1String(__Core_Preshutdown);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //-- HOOKS --///////////////////////////////////////////////////////////////////////////////////////

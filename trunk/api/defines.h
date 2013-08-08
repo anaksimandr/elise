@@ -4,11 +4,10 @@
 /*
  * Plugin types
  */
-// 0 - any type of plugin which can be loaded more than one copy
-// 1 - DB plugins
-// 2 - simple plugin
-// 3 - developer plugin
-
+#define __Plugins_NoType			0 // any type of plugin which can be loaded more than one copy
+#define __Plugins_DBPlugin			1 // DB plugins
+#define __Plugins_SimplePlugin		2 // simple plugin
+#define __Plugins_DeveloperPlugin	3 // developer plugin
 
 
 /*
@@ -37,6 +36,10 @@
 /*
  * Names of the known hookable events
  */
+#define __Core_PluginsLoaded			"Core/PluginsLoaded"
+#define __Core_PluginsUnloaded			"Core/PluginsUnloaded"
+#define __Core_Preshutdown				"Core/Preshutdown"
+
 #define __Options_Show_event			__Options_Show_service
 #define __Options_Save_event			"Options/Save"
 #define __Options_Close_event			"Options/Close"
