@@ -25,7 +25,7 @@
 #include "pluginloaderoptions.h"
 #include "../folders/folders.h"
 
-const QLatin1String	kCoreIsPluginLoaded	=	QLatin1String(__Core_IsPluginLoaded_service);
+const QLatin1String	kCoreIsPluginLoaded		=	QLatin1String(__Core_IsPluginLoaded_service);
 
 QDir*						PluginLoader::pluginsDir_;
 QMap<QString, Plugin>*		PluginLoader::plugins_ = NULL;
@@ -46,6 +46,8 @@ int PluginLoader::loadPluginLoader()
 
 int PluginLoader::unloadPluginLoader()
 {
+	unloadPlugins();
+
 	delete pluginsDir_;
 	delete loadedPluginsTypes_;
 	loadedPluginsTypes_ = NULL;
@@ -226,7 +228,7 @@ bool PluginLoader::isPluginLoadable(const QString& pluginModuleName)
 bool PluginLoader::isPluginUnloadable(const QString& pluginModuleName)
 {
 	//-- We can't unload the DBPlugin
-	if (plugins_->value(pluginModuleName).type == 1)
+	if (plugins_->value(pluginModuleName).type == __Plugins_DBPlugin)
 		return false;
 
 	return true;
@@ -281,6 +283,19 @@ int PluginLoader::unloadPlugin(const QString& pluginModuleName)
 	return 0;
 }
 
+int PluginLoader::unloadPlugin(int pluginType)
+{
+	QMap<QString, Plugin>::iterator iteratorPlugins = plugins_->begin();
+	QMap<QString, Plugin>::iterator pluginsEnd = plugins_->end();
+	while (iteratorPlugins != pluginsEnd) {
+		if (iteratorPlugins.value().type == pluginType)
+			return unloadPlugin(iteratorPlugins.key());
+		++iteratorPlugins;
+	}
+
+	return 1;
+}
+
 int PluginLoader::loadPlugins()
 {
 	if (plugins_ == 0)
@@ -302,6 +317,9 @@ int PluginLoader::loadPlugins()
 		}
 		++iteratorPlugins;
 	}
+
+	core->notifyEventHooks(&kCorePluginsLoaded, 0, 0);
+
 	return 0;
 }
 
@@ -316,10 +334,12 @@ int PluginLoader::unloadPlugins()
 	QMap<QString, Plugin>::iterator iteratorPlugins = plugins_->begin();
 	QMap<QString, Plugin>::iterator pluginsEnd = plugins_->end();
 	while (iteratorPlugins != pluginsEnd) {
-		unloadPlugin(iteratorPlugins.key());
+		if (iteratorPlugins.value().type != __Plugins_DBPlugin)
+			unloadPlugin(iteratorPlugins.key());
 		++iteratorPlugins;
 	} //while
-	//plugins_->clear();
+
+	core->notifyEventHooks(&kCorePluginsUnloaded, 0, 0);
 
 	return 0;
 }
@@ -330,7 +350,7 @@ const QStringList PluginLoader::getDBPlugins()
 	QMap<QString, Plugin>::iterator iteratorPlugins = plugins_->begin();
 	QMap<QString, Plugin>::iterator pluginsEnd = plugins_->end();
 	while (iteratorPlugins != pluginsEnd) {
-		if (iteratorPlugins.value().type == 1)
+		if (iteratorPlugins.value().type == __Plugins_DBPlugin)
 			result.insert(result.size(), iteratorPlugins.key());
 		++iteratorPlugins;
 	}
