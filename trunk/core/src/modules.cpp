@@ -28,8 +28,9 @@ int Core::loadCore()
 {
 	core = dynamic_cast<ICore*>(new Core());
 
-	core->createServiceFunction(&kShutdown_service, &shutdown);
-	core->createServiceFunction(&kChangeProfile_service, &loadProfile);
+	core->createServiceFunction(&kCoreShutdown_service, &shutdown);
+	core->createServiceFunction(&kCoreChangeProfile_service, &loadProfile);
+	core->createHookableEvent(&kCorePreshutdown);
 
 	if (Folders::loadFolders())
 		return 1;
@@ -45,13 +46,18 @@ int Core::loadCore()
 
 int Core::unloadCore()
 {
+	core->notifyEventHooks(&kCorePreshutdown, 0, 0);
+
+	QApplication::processEvents();
+
+	//-- First, unload all plugins, if there is
+	PluginLoader::unloadPlugins();
+
+	//-- Unload core modules
 	EliseTray::unloadTrayModule();
 	PluginLoader::unloadPluginLoader();
 	OptionsDialog::unloadOptionsModule();
 	Folders::unloadFolders();
-	//-- This will be cleaned during the destruction of the core
-	//destroyServiceFunction(&kShutdown_service);
-	//destroyServiceFunction(&kChangeProfile_service);
 
 	delete core;
 
@@ -60,8 +66,6 @@ int Core::unloadCore()
 
 int Core::loadProfile(intptr_t, intptr_t)
 {
-	//-- First, unload all plugins, if there is
-	PluginLoader::unloadPlugins();
 	//-- Clean hooks&services stack
 	unloadCore();
 	loadCore();

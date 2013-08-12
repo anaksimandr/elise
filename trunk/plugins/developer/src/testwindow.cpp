@@ -4,8 +4,8 @@
 #include <QPushButton>
 #include "../../../api/e_database.h"
 
-const QLatin1String	kShutdown_service		=	QLatin1String(__Core_Shutdown_service);
-const QLatin1String	kChangeProfile_service	=	QLatin1String(__Core_ChangeProfile_service);
+const QLatin1String	kCoreShutdown_service		=	QLatin1String(__Core_Shutdown_service);
+const QLatin1String	kCoreChangeProfile_service	=	QLatin1String(__Core_ChangeProfile_service);
 const QLatin1String	kTrayAddMenuItem_service	=	QLatin1String(__Tray_AddMenuItem_service);
 const QLatin1String	kTraySetIcon_service		=	QLatin1String(__Tray_SetIcon_service);
 const QLatin1String	kTraySingleClick_event	=	QLatin1String(__Tray_SingleClick_event);
@@ -248,7 +248,7 @@ void TestWindow::changeAcc()
 {
 	delete this;
 	mainWindow = NULL;
-	if (core->callService(&kChangeProfile_service, 0, 0) == -2)
+	if (core->callService(&kCoreChangeProfile_service, 0, 0) == -2)
 		QMessageBox::critical(this, "Error", "Service not found.", QMessageBox::Ok);
 }
 

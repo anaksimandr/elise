@@ -20,8 +20,11 @@
 #include <QtWidgets/QtWidgets>
 #include "../../../../api/e_pluginapi.h"
 
-extern const QLatin1String	kCoreIsPluginLoaded;
-//extern const QLatin1String	kCoreGetPluginInterfaces;
+extern const QLatin1String	kPluginLoaderPluginLoaded;
+extern const QLatin1String	kPluginLoaderPluginUnloaded;
+extern const QLatin1String	kPluginLoaderPluginsLoaded;
+//extern const QLatin1String	kPluginLoaderPluginsUnloaded;
+extern const QLatin1String	kPluginLoaderIsPluginLoaded;
 
 class IPlugin;
 class IDBPlugin;
@@ -44,10 +47,10 @@ private:
 public:
 	static QJsonObject*	getPluginInfo(const QString& pluginModuleName);
 	static int			loadPlugins();
-	static QObject*		loadPlugin(const QString& pluginModuleName);
+	static QObject*		loadPlugin(const QString& pluginModuleName, bool manualyLoad = false);
 	static int			loadPluginLoader();
 	static int			unloadPluginLoader();
-	static int			unloadPlugin(const QString& pluginModuleName);
+	static int			unloadPlugin(const QString& pluginModuleName, bool manualyUnload = false);
 	static int			unloadPlugin(int pluginType);
 	static int			unloadPlugins();
 	static int			updatePluginState(const QString& pluginModuleName,

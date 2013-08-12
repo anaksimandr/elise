@@ -13,11 +13,13 @@
 /*
  *Names of the known services and hookable events
  */
-#define __Core_Shutdown_service				"System/Shutdown"
-#define __Core_ChangeProfile_service		"System/ChangeAcc"
-#define __Core_IsPluginLoaded_service		"Core/IsPluginLoaded"
-#define __Core_GetPluginsDir_service		"Core/GetPluginsDir"
-#define __Core_GetProfilesDir_service		"Core/GetProfilesDir"
+#define __Core_Shutdown_service				"Core/Shutdown"
+#define __Core_ChangeProfile_service		"Core/ChangeAcc"
+
+#define __Folders_GetPluginsDir_service		"Folders/GetPluginsDir"
+#define __Folders_GetProfilesDir_service	"Folders/GetProfilesDir"
+
+#define __PluginLoader_IsPluginLoaded_service		"PluginLoader/IsPluginLoaded"
 
 #define __Options_Show_service				"Options/Show"
 
@@ -36,9 +38,12 @@
 /*
  * Names of the known hookable events
  */
-#define __Core_PluginsLoaded			"Core/PluginsLoaded"
-#define __Core_PluginsUnloaded			"Core/PluginsUnloaded"
 #define __Core_Preshutdown				"Core/Preshutdown"
+
+#define __PluginLoader_PluginLoaded		"PluginLoader/PluginLoaded"
+#define __PluginLoader_PluginUnloaded	"PluginLoader/PluginUnloaded"
+#define __PluginLoader_PluginsLoaded	"PluginLoader/PluginsLoaded"
+//#define __PluginLoader_PluginsUnloaded	"PluginLoader/PluginsUnloaded"
 
 #define __Options_Show_event			__Options_Show_service
 #define __Options_Save_event			"Options/Save"
