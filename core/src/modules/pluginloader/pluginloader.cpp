@@ -25,7 +25,11 @@
 #include "pluginloaderoptions.h"
 #include "../folders/folders.h"
 
-const QLatin1String	kCoreIsPluginLoaded		=	QLatin1String(__Core_IsPluginLoaded_service);
+const QLatin1String	kPluginLoaderPluginLoaded		= QLatin1String(__PluginLoader_PluginLoaded);
+const QLatin1String	kPluginLoaderPluginUnloaded		= QLatin1String(__PluginLoader_PluginUnloaded);
+const QLatin1String	kPluginLoaderPluginsLoaded		= QLatin1String(__PluginLoader_PluginsLoaded);
+//const QLatin1String	kPluginLoaderPluginsUnloaded	= QLatin1String(__PluginLoader_PluginsUnloaded);
+const QLatin1String	kPluginLoaderIsPluginLoaded		= QLatin1String(__PluginLoader_IsPluginLoaded_service);
 
 QDir*						PluginLoader::pluginsDir_;
 QMap<QString, Plugin>*		PluginLoader::plugins_ = NULL;
@@ -39,7 +43,11 @@ int PluginLoader::loadPluginLoader()
 	}
 
 	core->hookEvent(&kOptionsShow_event, &PluginLoaderOptions::createLoaderOptionsPage);
-	core->createServiceFunction(&kCoreIsPluginLoaded, &PluginLoader::isPluginLoaded);
+	core->createServiceFunction(&kPluginLoaderIsPluginLoaded, &PluginLoader::isPluginLoaded);
+	core->createHookableEvent(&kPluginLoaderPluginLoaded);
+	core->createHookableEvent(&kPluginLoaderPluginUnloaded);
+	core->createHookableEvent(&kPluginLoaderPluginsLoaded);
+	//core->createHookableEvent(&kPluginLoaderPluginsUnloaded);
 
 	return 0;
 }
@@ -52,7 +60,11 @@ int PluginLoader::unloadPluginLoader()
 	delete loadedPluginsTypes_;
 	loadedPluginsTypes_ = NULL;
 	core->unhookEvent(&kOptionsShow_event, &PluginLoaderOptions::createLoaderOptionsPage);
-	core->destroyServiceFunction(&kCoreIsPluginLoaded);
+	core->destroyServiceFunction(&kPluginLoaderIsPluginLoaded);
+	core->destroyHookableEvent(&kPluginLoaderPluginLoaded);
+	core->destroyHookableEvent(&kPluginLoaderPluginUnloaded);
+	core->destroyHookableEvent(&kPluginLoaderPluginsLoaded);
+	//core->destroyHookableEvent(&kPluginLoaderPluginsUnloaded);
 
 	return 0;
 }
@@ -234,7 +246,7 @@ bool PluginLoader::isPluginUnloadable(const QString& pluginModuleName)
 	return true;
 }
 
-QObject* PluginLoader::loadPlugin(const QString& pluginModuleName)
+QObject* PluginLoader::loadPlugin(const QString& pluginModuleName, bool manualyLoad)
 {
 	Plugin* plugin = &(*plugins_)[pluginModuleName];
 
@@ -253,10 +265,14 @@ QObject* PluginLoader::loadPlugin(const QString& pluginModuleName)
 	if (plugin->type)
 		loadedPluginsTypes_->insert(plugin->type);
 
+	if (manualyLoad)
+		core->notifyEventHooks(&kPluginLoaderPluginLoaded,
+							   reinterpret_cast<intptr_t>(&pluginModuleName), 0);
+
 	return plugin->loader->instance();
 }
 
-int PluginLoader::unloadPlugin(const QString& pluginModuleName)
+int PluginLoader::unloadPlugin(const QString& pluginModuleName, bool manualyUnload)
 {
 	Plugin* plugin = &(*plugins_)[pluginModuleName];
 
@@ -280,6 +296,11 @@ int PluginLoader::unloadPlugin(const QString& pluginModuleName)
 		QMessageBox::critical(0, QStringLiteral("unloadPlugin error"),
 							  QStringLiteral("Can't unload plugin ") + pluginModuleName,
 							  QMessageBox::Ok);
+
+	if (manualyUnload)
+		core->notifyEventHooks(&kPluginLoaderPluginUnloaded,
+							   reinterpret_cast<intptr_t>(&pluginModuleName), 0);
+
 	return 0;
 }
 
@@ -289,7 +310,7 @@ int PluginLoader::unloadPlugin(int pluginType)
 	QMap<QString, Plugin>::iterator pluginsEnd = plugins_->end();
 	while (iteratorPlugins != pluginsEnd) {
 		if (iteratorPlugins.value().type == pluginType)
-			return unloadPlugin(iteratorPlugins.key());
+			return unloadPlugin(iteratorPlugins.key(), true);
 		++iteratorPlugins;
 	}
 
@@ -318,7 +339,7 @@ int PluginLoader::loadPlugins()
 		++iteratorPlugins;
 	}
 
-	core->notifyEventHooks(&kCorePluginsLoaded, 0, 0);
+	core->notifyEventHooks(&kPluginLoaderPluginsLoaded, 0, 0);
 
 	return 0;
 }
@@ -339,7 +360,7 @@ int PluginLoader::unloadPlugins()
 		++iteratorPlugins;
 	} //while
 
-	core->notifyEventHooks(&kCorePluginsUnloaded, 0, 0);
+	//core->notifyEventHooks(&kPluginLoaderPluginsUnloaded, 0, 0);
 
 	return 0;
 }

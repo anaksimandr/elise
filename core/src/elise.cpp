@@ -19,6 +19,7 @@
 #include <ctime>
 #include <QtWidgets/QtWidgets>
 #include "core.h"
+#include "modules/pluginloader/pluginloader.h"
 
 bool Core::profileLoaded;
 
@@ -28,10 +29,6 @@ int Core::launch()
 
 	if (loadCore())
 		return 1;
-
-	core->createHookableEvent(&kCorePluginsLoaded);
-	core->createHookableEvent(&kCorePluginsUnloaded);
-	core->createHookableEvent(&kPreshutdown);
 
 	if (loadProfile(0, 0))
 		return 1;
@@ -43,9 +40,6 @@ int Core::launch()
 
 int Core::shutdown(intptr_t result, intptr_t)
 {
-	core->notifyEventHooks(&kPreshutdown, 0, 0);
-	//QApplication::processEvents();
-
 	unloadCore();
 
 	QApplication::exit(result);

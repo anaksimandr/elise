@@ -3,8 +3,8 @@
 #include "../../core.h"
 //#include <QtCore>
 
-const QLatin1String	kCoreGetPluginsDir	=	QLatin1String(__Core_GetPluginsDir_service);
-const QLatin1String	kCoreGetProfilesDir	=	QLatin1String(__Core_GetProfilesDir_service);
+const QLatin1String	kCoreGetPluginsDir	=	QLatin1String(__Folders_GetPluginsDir_service);
+const QLatin1String	kCoreGetProfilesDir	=	QLatin1String(__Folders_GetProfilesDir_service);
 
 int Folders::loadFolders()
 {

@@ -27,7 +27,7 @@ const QLatin1String	kDBWriteSetting_service	=	QLatin1String(__DB_WriteSetting_se
 const QLatin1String	kDBReadSetting_service	=	QLatin1String(__DB_ReadSetting_service);
 const QLatin1String	kDBDellSetting_service	=	QLatin1String(__DB_DellSetting_service);
 
-const QLatin1String	kCoreGetProfilesDir	=	QLatin1String(__Core_GetProfilesDir_service);
+const QLatin1String	kCoreGetProfilesDir	=	QLatin1String(__Folders_GetProfilesDir_service);
 
 //-- DB name constants for internal use
 const QString qsDBPref = ".sqlite";

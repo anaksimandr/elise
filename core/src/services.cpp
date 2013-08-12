@@ -20,14 +20,12 @@
 #include <QLatin1String>
 #include "core.h"
 
-const QLatin1String	kShutdown_service		=	QLatin1String(__Core_Shutdown_service);
-const QLatin1String	kChangeProfile_service	=	QLatin1String(__Core_ChangeProfile_service);
-const QLatin1String	kDBWriteSetting_service	=	QLatin1String(__DB_WriteSetting_service);
-const QLatin1String	kDBReadSetting_service	=	QLatin1String(__DB_ReadSetting_service);
-const QLatin1String	kDBDellSetting_service	=	QLatin1String(__DB_DellSetting_service);
-const QLatin1String	kCorePluginsLoaded		=	QLatin1String(__Core_PluginsLoaded);
-const QLatin1String	kCorePluginsUnloaded	=	QLatin1String(__Core_PluginsUnloaded);
-const QLatin1String	kPreshutdown			=	QLatin1String(__Core_Preshutdown);
+const QLatin1String	kCoreShutdown_service			= QLatin1String(__Core_Shutdown_service);
+const QLatin1String	kCoreChangeProfile_service		= QLatin1String(__Core_ChangeProfile_service);
+const QLatin1String	kCorePreshutdown				= QLatin1String(__Core_Preshutdown);
+const QLatin1String	kDBWriteSetting_service			= QLatin1String(__DB_WriteSetting_service);
+const QLatin1String	kDBReadSetting_service			= QLatin1String(__DB_ReadSetting_service);
+const QLatin1String	kDBDellSetting_service			= QLatin1String(__DB_DellSetting_service);
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //-- HOOKS --///////////////////////////////////////////////////////////////////////////////////////
