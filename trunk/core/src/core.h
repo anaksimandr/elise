@@ -18,20 +18,21 @@
 #ifndef ELISE_CORE_CORE_H_
 #define ELISE_CORE_CORE_H_
 
-#include <stdint.h>
+#include "events.h"
 #include "../../api/e_pluginapi.h"
 
 class QLatin1String;
 class QMutex;
 
 //-- Services
-extern const QLatin1String	kCoreShutdown_service;
-extern const QLatin1String	kCoreChangeProfile_service;
-extern const QLatin1String	kCorePreshutdown;
-extern const QLatin1String	kDBWriteSetting_service;
-extern const QLatin1String	kDBReadSetting_service;
-extern const QLatin1String	kDBDellSetting_service;
-//extern const QLatin1String	kClistShow_service;
+extern const QLatin1String	g_kCoreShutdown_service;
+extern const QLatin1String	g_kCoreChangeProfile_service;
+extern const QLatin1String	g_kCorePreshutdown;
+extern const QLatin1String	g_kDBWriteSetting_service;
+extern const QLatin1String	g_kDBReadSetting_service;
+extern const QLatin1String	g_kDBDellSetting_service;
+
+extern ICore*	g_core;
 
 typedef struct
 {
@@ -48,36 +49,37 @@ typedef struct
 	};
 } TService;
 
-extern ICore* core;
+//-- Here was a singleton but i really don't know why.
+/*class CoreDestroyer : public QObject
+{
+	Q_OBJECT
+public:
+	~CoreDestroyer() { delete core_; }
+	void initialize(Core* core) { core_ = core; }
+
+private:
+	Core*	core_;
+};*/
 
 class Core : public ICore
 {
-private:
-	static bool	profileLoaded;
-
-	//-- Critical sections
-	QMutex qmutexHooks_;
-	QMutex qmutexServices_;
-
-	//-- Arrays of hookable events and services
-	QMap <QLatin1String, THookableEvent*> qmapHooks_;
-	QMap <QLatin1String, TService*> qmapServices_;
-
-	//int	createService(const QLatin1String* name, TService* service);
-
+	Q_OBJECT
 public:
-
-	Core() {}
+	Core() { profileLoaded_ = false; }
 	~Core() {}
 
-	static int		loadCore();
-	static int		unloadCore();
+	static void	initialize();
+	/*static inline ICore* getInstance()
+	{
+		if (!core_)
+			initialize();
 
-	static int		launch();
-	static int		shutdown(intptr_t result, intptr_t);
+		return core_;
+	}*/
 
-	//-- This function unloads already loaded profile if exist.
-	static int		loadProfile(intptr_t, intptr_t);
+	//-- Services through QEvents
+	static int		changeProfileService(intptr_t, intptr_t);
+	static int		shutdownService(intptr_t, intptr_t);
 
 	//-- Hook functions --//////////////////////////////////////////////////////////////////////////
 
@@ -171,6 +173,34 @@ public:
 	 * Returns 0 on success, -2 if name is empty and -1 if name not found in services list.
 	 */
 	int destroyServiceFunction(const QLatin1String* name);
+
+//protected:
+	//Core() {}
+	//~Core() {}
+	//friend class CoreDestroyer;
+
+private:
+	//static ICore*			core_;
+	//static CoreDestroyer	destroyer_;
+	bool					profileLoaded_;
+
+	//-- Critical sections
+	QMutex qmutexHooks_;
+	QMutex qmutexServices_;
+
+	//-- Arrays of hookable events and services
+	QMap <QLatin1String, THookableEvent*> qmapHooks_;
+	QMap <QLatin1String, TService*> qmapServices_;
+
+	void	customEvent(QEvent* event);
+
+	//static void	initialize();
+
+	int		loadCore();
+	int		unloadCore();
+
+	int		loadProfile(); //-- This function unloads already loaded profile if exist.
+	void	shutdown(int result = 0);
 };
 
 #endif // ELISE_CORE_CORE_H_

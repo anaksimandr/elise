@@ -4,14 +4,14 @@
 #include <QPushButton>
 #include "../../../api/e_database.h"
 
-const QLatin1String	kCoreShutdown_service		=	QLatin1String(__Core_Shutdown_service);
-const QLatin1String	kCoreChangeProfile_service	=	QLatin1String(__Core_ChangeProfile_service);
+const QLatin1String	g_kCoreShutdown_service		=	QLatin1String(__Core_Shutdown_service);
+const QLatin1String	g_kCoreChangeProfile_service	=	QLatin1String(__Core_ChangeProfile_service);
 const QLatin1String	kTrayAddMenuItem_service	=	QLatin1String(__Tray_AddMenuItem_service);
 const QLatin1String	kTraySetIcon_service		=	QLatin1String(__Tray_SetIcon_service);
 const QLatin1String	kTraySingleClick_event	=	QLatin1String(__Tray_SingleClick_event);
-const QLatin1String	kDBWriteSetting_service	=	QLatin1String(__DB_WriteSetting_service);
-const QLatin1String	kDBReadSetting_service	=	QLatin1String(__DB_ReadSetting_service);
-const QLatin1String	kDBDellSetting_service	=	QLatin1String(__DB_DellSetting_service);
+const QLatin1String	g_kDBWriteSetting_service	=	QLatin1String(__DB_WriteSetting_service);
+const QLatin1String	g_kDBReadSetting_service	=	QLatin1String(__DB_ReadSetting_service);
+const QLatin1String	g_kDBDellSetting_service	=	QLatin1String(__DB_DellSetting_service);
 const QLatin1String	kOptionsShow_service	=	QLatin1String(__Options_Show_service);
 const QLatin1String	kClistShow_service	=	QLatin1String(__CList_Show_service);
 const QLatin1String	kClistHide_service	=	QLatin1String(__CList_Hide_service);
@@ -194,14 +194,14 @@ TestWindow::TestWindow() :
 	layoutV->setAlignment(button, Qt::AlignBottom);
 
 	//-- Work with tray
-	core->hookEvent(&kTraySingleClick_event, &TestWindow::hideMainWindow);
+	g_core->hookEvent(&kTraySingleClick_event, &TestWindow::hideMainWindow);
 
 	this->show();
 	vis = true;
 
 	QAction* action = new QAction("Exit", 0);
 	connect(action, &QAction::triggered, this, &TestWindow::buttonExit);
-	core->callService(&kTrayAddMenuItem_service, (uintptr_t)action, 0);
+	g_core->callService(&kTrayAddMenuItem_service, (uintptr_t)action, 0);
 }
 
 intptr_t TestWindow::showCList(intptr_t, intptr_t)
@@ -214,7 +214,7 @@ intptr_t TestWindow::showCList(intptr_t, intptr_t)
 intptr_t TestWindow::hideCList(intptr_t, intptr_t)
 {
 	delete mainWindow;
-	mainWindow = NULL;
+	mainWindow = 0;
 	return 0;
 }
 
@@ -234,7 +234,7 @@ int TestWindow::hideMainWindow(intptr_t, intptr_t)
 
 TestWindow::~TestWindow()
 {
-	core->unhookEvent(&kTraySingleClick_event, &TestWindow::hideMainWindow);
+	g_core->unhookEvent(&kTraySingleClick_event, &TestWindow::hideMainWindow);
 }
 
 //-- Utils
@@ -246,15 +246,15 @@ void TestWindow::uuidCreate()
 
 void TestWindow::changeAcc()
 {
-	delete this;
-	mainWindow = NULL;
-	if (core->callService(&kCoreChangeProfile_service, 0, 0) == -2)
+	if (g_core->callService(&g_kCoreChangeProfile_service, 0, 0) == -2)
 		QMessageBox::critical(this, "Error", "Service not found.", QMessageBox::Ok);
+	delete mainWindow;
+	mainWindow = 0;
 }
 
 void TestWindow::showOptions()
 {
-	core->callService(&kOptionsShow_service, 0, 0);
+	g_core->callService(&kOptionsShow_service, 0, 0);
 }
 
 void TestWindow::setTrayIcon()
@@ -262,7 +262,7 @@ void TestWindow::setTrayIcon()
 	QString filename = QFileDialog::getOpenFileName(this, "Open file", "", "SVG (*.svg);; Files (*.*)");
 	//QMessageBox::critical(this, "Debug", "2", QMessageBox::Ok);
 	QIcon* icon = new QIcon(filename);
-	core->callService(&kTraySetIcon_service, (uintptr_t)icon, 0);
+	g_core->callService(&kTraySetIcon_service, (uintptr_t)icon, 0);
 	delete icon;
 }
 
@@ -300,7 +300,7 @@ void TestWindow::saveSetting()
 			break;
 	}
 
-	core->callService(&kDBWriteSetting_service, reinterpret_cast<intptr_t>(set), 0);
+	g_core->callService(&g_kDBWriteSetting_service, reinterpret_cast<intptr_t>(set), 0);
 
 	delete set->var;
 	delete set;
@@ -320,7 +320,7 @@ void TestWindow::readSetting()
 		set->var->textValue = new QString;
 	else if (set->var->type == __Blob_Type)
 		set->var->blobValue = new QByteArray;
-	if (!core->callService(&kDBReadSetting_service, reinterpret_cast<intptr_t>(set), 0)) {
+	if (!g_core->callService(&g_kDBReadSetting_service, reinterpret_cast<intptr_t>(set), 0)) {
 		switch (set->var->type) {
 			case __Int_Type:
 				setOutput(QString::number(set->var->intValue));
@@ -356,7 +356,7 @@ void TestWindow::delSetting()
 	set->var = new DBVariant;
 	set->var->type = (unsigned char)v4->text().toInt();
 
-	if (!core->callService(&kDBDellSetting_service, reinterpret_cast<intptr_t>(set), 0))
+	if (!g_core->callService(&g_kDBDellSetting_service, reinterpret_cast<intptr_t>(set), 0))
 		setOutput("Setting deleted");
 	else
 		setOutput("Error");
@@ -380,7 +380,7 @@ int testHook(intptr_t, intptr_t lParam)
 
 void TestWindow::createHookblEvent()
 {
-	if (!core->createHookableEvent(&hkevName))
+	if (!g_core->createHookableEvent(&hkevName))
 		setOutput("Hookable event created");
 	else
 		setOutput("Create hookable event FAIL!");
@@ -388,7 +388,7 @@ void TestWindow::createHookblEvent()
 
 void TestWindow::hookEvent()
 {
-	if (!core->hookEvent(&hkevName, &testHook))
+	if (!g_core->hookEvent(&hkevName, &testHook))
 		setOutput("Hook event success");
 	else
 		setOutput("Hook event FAILED!");
@@ -396,7 +396,7 @@ void TestWindow::hookEvent()
 
 void TestWindow::notifyEventHooks()
 {
-	int ret = core->notifyEventHooks(&hkevName, 0, 137);
+	int ret = g_core->notifyEventHooks(&hkevName, 0, 137);
 	if (ret)
 		setOutput("Notify event FAILED!");
 	else
@@ -405,7 +405,7 @@ void TestWindow::notifyEventHooks()
 
 void TestWindow::unhookEvent()
 {
-	if (!core->unhookEvent(&hkevName, &testHook))
+	if (!g_core->unhookEvent(&hkevName, &testHook))
 		setOutput("Unhook event success");
 	else
 		setOutput("Unhook event FAILED!");
@@ -413,7 +413,7 @@ void TestWindow::unhookEvent()
 
 void TestWindow::deleteHokableEvent()
 {
-	if (!core->destroyHookableEvent(&hkevName))
+	if (!g_core->destroyHookableEvent(&hkevName))
 		setOutput("Hookable event destroed");
 	else
 		setOutput("Destroy hookable event FAIL!");
@@ -430,7 +430,7 @@ int testService(intptr_t wParam, intptr_t)
 
 void TestWindow::createService()
 {
-	if (!core->createServiceFunction(&name, &testService))
+	if (!g_core->createServiceFunction(&name, &testService))
 		setOutput("Service created");
 	else
 		setOutput("Create service FAIL!");
@@ -438,7 +438,7 @@ void TestWindow::createService()
 
 void TestWindow::checkService()
 {
-	if (core->serviceExists(&name))
+	if (g_core->serviceExists(&name))
 		setOutput("Test service exists");
 	else
 		setOutput("Test service not found");
@@ -446,7 +446,7 @@ void TestWindow::checkService()
 
 void TestWindow::testtService()
 {
-	int res = core->callService(&name, 111, 0);
+	int res = g_core->callService(&name, 111, 0);
 	if (res == 111)
 		setOutput("Test service returned valid result");
 	else if (res == -2 || res == -1)
@@ -457,7 +457,7 @@ void TestWindow::testtService()
 
 void TestWindow::delService()
 {
-	int res = core->destroyServiceFunction(&name);
+	int res = g_core->destroyServiceFunction(&name);
 	if (!res)
 		setOutput("Test service destroed");
 	else if (res == -2)

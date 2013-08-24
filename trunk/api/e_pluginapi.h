@@ -30,12 +30,12 @@ typedef int (*EliseHook)(intptr_t,intptr_t);
 typedef intptr_t (*EliseService)(intptr_t,intptr_t);	//-- type = 0
 //typedef QObject* (*QEliseService)();					//-- type = 1
 
-class ICore
+class ICore : public QObject
 {
 public:
 	virtual				~ICore() {}
 
-	//-- See services.h for more details
+	//-- See servicesengine.h for more details
 	virtual int			createHookableEvent(const QLatin1String*) = 0;
 	virtual int			destroyHookableEvent(const QLatin1String*) = 0;
 	virtual int			notifyEventHooks(const QLatin1String*, intptr_t, intptr_t) = 0;

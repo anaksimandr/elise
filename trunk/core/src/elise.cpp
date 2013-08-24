@@ -15,41 +15,19 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-#include <cstdlib>
+//#include <cstdlib>
 #include <ctime>
 #include <QtWidgets/QtWidgets>
+
 #include "core.h"
-#include "modules/pluginloader/pluginloader.h"
-
-bool Core::profileLoaded;
-
-int Core::launch()
-{
-	profileLoaded = false;
-
-	if (loadCore())
-		return 1;
-
-	if (loadProfile(0, 0))
-		return 1;
-
-	//-- Notify about success loading
-
-	return 0;
-}
-
-int Core::shutdown(intptr_t result, intptr_t)
-{
-	unloadCore();
-
-	QApplication::exit(result);
-	return result;
-}
 
 #ifndef NDEBUG
 #include <QFile>
 void messageOutput(QtMsgType type, const QMessageLogContext& context, const QString& msg)
 {
+	if (msg.indexOf("QLayout: Attempting to add QLayout") != -1)
+		return;
+
 	QFile file("log.txt");
 	file.open(QIODevice::Append | QIODevice::Text);
 	QTextStream log(&file);
@@ -59,8 +37,7 @@ void messageOutput(QtMsgType type, const QMessageLogContext& context, const QStr
 			break;
 		case QtWarningMsg:
 		{
-			if (msg.indexOf("QLayout: Attempting to add QLayout") == -1)
-				log << "Warning: " << msg << "\n";
+			log << "Warning: " << msg << "\n";
 		}
 			break;
 		case QtCriticalMsg:
@@ -91,8 +68,7 @@ int main(int argc, char* argv[])
 	//-- It looks like Qt doesn't always use srand as backend of qsrand
 	srand(uint(qrand()));
 
-	if (Core::launch())
-		return Core::shutdown(-1, 0);
-
+	//Core::getInstance();
+	Core::initialize();
 	return app.exec();
 }

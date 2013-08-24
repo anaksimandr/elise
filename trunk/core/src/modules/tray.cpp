@@ -30,7 +30,7 @@ const QLatin1String	kTraySingleClick_event	=	QLatin1String(__Tray_SingleClick_ev
 const QLatin1String	kTrayDoubleClick_event	=	QLatin1String(__Tray_DoubleClick_event);
 const QLatin1String	kTrayMiddleClick_event	=	QLatin1String(__Tray_MiddleClick_event);
 
-EliseTray* EliseTray::trayElise = NULL;
+EliseTray* EliseTray::trayElise = 0;
 
 void EliseTray::trayActivationNotify(QSystemTrayIcon::ActivationReason reason)
 {
@@ -38,17 +38,17 @@ void EliseTray::trayActivationNotify(QSystemTrayIcon::ActivationReason reason)
 	{
 		case QSystemTrayIcon::Trigger:
 		{
-			core->notifyEventHooks(&kTraySingleClick_event, 0, 0);
+			g_core->notifyEventHooks(&kTraySingleClick_event, 0, 0);
 			break;
 		}
 		case QSystemTrayIcon::DoubleClick:
 		{
-			core->notifyEventHooks(&kTrayDoubleClick_event, 0, 0);
+			g_core->notifyEventHooks(&kTrayDoubleClick_event, 0, 0);
 			break;
 		}
 		case QSystemTrayIcon::MiddleClick:
 		{
-			core->notifyEventHooks(&kTrayMiddleClick_event, 0, 0);
+			g_core->notifyEventHooks(&kTrayMiddleClick_event, 0, 0);
 			break;
 		}
 		default:
@@ -83,26 +83,26 @@ int EliseTray::loadTrayModule()
 		trayElise = new EliseTray();
 	trayElise->setIcon(QIcon(":/icons/img/main.png"));
 	trayElise->show();
-	core->createHookableEvent(&kTraySingleClick_event);
-	core->createHookableEvent(&kTrayDoubleClick_event);
-	core->createHookableEvent(&kTrayMiddleClick_event);
+	g_core->createHookableEvent(&kTraySingleClick_event);
+	g_core->createHookableEvent(&kTrayDoubleClick_event);
+	g_core->createHookableEvent(&kTrayMiddleClick_event);
 	QObject::connect(trayElise, &EliseTray::activated, trayElise, &EliseTray::trayActivationNotify);
 	trayElise->setContextMenu(new QMenu());
-	core->createServiceFunction(&kTrayAddMenuItem_service, &EliseTray::addToContextMenu);
-	core->createServiceFunction(&kTraySetIcon_service, &EliseTray::setTrayIcon);
+	g_core->createServiceFunction(&kTrayAddMenuItem_service, &EliseTray::addToContextMenu);
+	g_core->createServiceFunction(&kTraySetIcon_service, &EliseTray::setTrayIcon);
 	return 0;
 }
 
 int EliseTray::unloadTrayModule()
 {
 	trayElise->hide();
-	core->destroyHookableEvent(&kTraySingleClick_event);
-	core->destroyHookableEvent(&kTrayDoubleClick_event);
-	core->destroyHookableEvent(&kTrayMiddleClick_event);
-	core->destroyServiceFunction(&kTrayAddMenuItem_service);
-	core->destroyServiceFunction(&kTraySetIcon_service);
+	g_core->destroyHookableEvent(&kTraySingleClick_event);
+	g_core->destroyHookableEvent(&kTrayDoubleClick_event);
+	g_core->destroyHookableEvent(&kTrayMiddleClick_event);
+	g_core->destroyServiceFunction(&kTrayAddMenuItem_service);
+	g_core->destroyServiceFunction(&kTraySetIcon_service);
 	delete trayElise;
-	trayElise = NULL;
+	trayElise = 0;
 	return 0;
 }
 

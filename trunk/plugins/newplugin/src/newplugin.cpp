@@ -19,7 +19,7 @@
 #include "newplugin.h"
 
 const QLatin1String	kTestPlugin_service	=	QLatin1String(__Tests_TestService);
-ICore* core;
+ICore* g_core;
 
 intptr_t testPluginFunction(intptr_t, intptr_t)
 {
@@ -31,14 +31,14 @@ intptr_t testPluginFunction(intptr_t, intptr_t)
 
 int NewPlugin::Load(ICore* coreAPI)
 {
-	core = coreAPI;
-	core->createServiceFunction(&kTestPlugin_service, &testPluginFunction);
+	g_core = coreAPI;
+	g_core->createServiceFunction(&kTestPlugin_service, &testPluginFunction);
 	return 0;
 }
 
 int NewPlugin::Unload(void)
 {
-	core->destroyServiceFunction(&kTestPlugin_service);
+	g_core->destroyServiceFunction(&kTestPlugin_service);
 	return 0;
 }
 
