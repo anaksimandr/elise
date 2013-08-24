@@ -23,18 +23,6 @@
 
 ProfileManager::ProfileManager()
 {
-	//DBPlugins_ = PluginLoader::getDBPlugins();
-	/*const QMap<QString, IDBPlugin*>* dbPlugins = PluginLoader::getDBPlugins();
-
-	if (!DBPlugins) {
-		QMessageBox::critical(0,
-						QStringLiteral("getDBPlugins error"),
-						QStringLiteral("Failed to get DBPlugins or no one DBPlugin was found."),
-						QMessageBox::Cancel);
-		delete DBPlugins;
-		return 1;
-	}*/
-
 	profiles_ = 0;
 	this->setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowTitleHint);
 
@@ -192,11 +180,32 @@ bool ProfileManager::readBoolFromFile(QDataStream& in)
 {
 	bool result;
 	in >> result;
+
+/*#ifndef NDEBUG
+	QString str;
+	if (result)
+		str = "read true";
+	else
+		str = "read false";
+
+	qDebug(str.toLatin1());
+#endif*/
+
 	return result;
 }
 
 void ProfileManager::writeBoolToFile(QDataStream& out, bool val)
 {
+/*#ifndef NDEBUG
+	QString str;
+	if (val)
+		str = "write true";
+	else
+		str = "write false";
+
+	qDebug(str.toLatin1());
+#endif*/
+
 	out << val;
 }
 
@@ -371,8 +380,16 @@ void ProfileManager::ok()
 		return;
 	}
 
-	if (cbDefaultProfile_)
+	Profile* p = &(*profiles_)[cmbProfiles_->currentText()];
+	if (cbSavePassword_->isChecked())
+		p->savePassword = true;
+	else
+		p->savePassword = false;
+
+	if (cbDefaultProfile_->isChecked())
 		makeDefault(cmbProfiles_->currentText());
+	else
+		p->defaultProfile = false;
 
 	done(0);
 }
@@ -418,12 +435,14 @@ void ProfileManager::createProfile()
 
 	Profile item;
 	item.password = pass;
-	item.savePassword = cbSavePassword_;
+	item.savePassword = cbSavePassword_->isChecked();
+	item.defaultProfile = false;
 	item.dbPluginName = dbPluginName;
 
 	profiles_->insert(name, item);
 
-	if (cbDefaultProfile_->isChecked() || profiles_->count() == 1)
+	bool isDefault = (cbDefaultProfile_->isChecked() || profiles_->count() == 1);
+	if (item.savePassword && isDefault)
 		makeDefault(name);
 
 	done(0);

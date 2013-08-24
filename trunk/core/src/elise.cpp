@@ -15,7 +15,6 @@
 	along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-//#include <cstdlib>
 #include <ctime>
 #include <QtWidgets/QtWidgets>
 
@@ -68,7 +67,6 @@ int main(int argc, char* argv[])
 	//-- It looks like Qt doesn't always use srand as backend of qsrand
 	srand(uint(qrand()));
 
-	//Core::getInstance();
 	Core::initialize();
 	return app.exec();
 }

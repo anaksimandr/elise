@@ -49,18 +49,6 @@ typedef struct
 	};
 } TService;
 
-//-- Here was a singleton but i really don't know why.
-/*class CoreDestroyer : public QObject
-{
-	Q_OBJECT
-public:
-	~CoreDestroyer() { delete core_; }
-	void initialize(Core* core) { core_ = core; }
-
-private:
-	Core*	core_;
-};*/
-
 class Core : public ICore
 {
 	Q_OBJECT
@@ -69,13 +57,6 @@ public:
 	~Core() {}
 
 	static void	initialize();
-	/*static inline ICore* getInstance()
-	{
-		if (!core_)
-			initialize();
-
-		return core_;
-	}*/
 
 	//-- Services through QEvents
 	static int		changeProfileService(intptr_t, intptr_t);
@@ -174,14 +155,7 @@ public:
 	 */
 	int destroyServiceFunction(const QLatin1String* name);
 
-//protected:
-	//Core() {}
-	//~Core() {}
-	//friend class CoreDestroyer;
-
 private:
-	//static ICore*			core_;
-	//static CoreDestroyer	destroyer_;
 	bool					profileLoaded_;
 
 	//-- Critical sections
@@ -193,8 +167,6 @@ private:
 	QMap <QLatin1String, TService*> qmapServices_;
 
 	void	customEvent(QEvent* event);
-
-	//static void	initialize();
 
 	int		loadCore();
 	int		unloadCore();
