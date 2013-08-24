@@ -29,8 +29,6 @@ const QLatin1String	g_kDBWriteSetting_service		= QLatin1String(__DB_WriteSetting
 const QLatin1String	g_kDBReadSetting_service		= QLatin1String(__DB_ReadSetting_service);
 const QLatin1String	g_kDBDellSetting_service		= QLatin1String(__DB_DellSetting_service);
 
-//ICore*	Core::core_ = 0;
-//CoreDestroyer Core::destroyer_;
 ICore*		g_core = 0;
 
 QEvent::Type g_shutdownEventType = static_cast<QEvent::Type>(QEvent::registerEventType());
@@ -152,7 +150,8 @@ int Core::shutdownService(intptr_t, intptr_t)
 void Core::customEvent(QEvent* event)
 {
 	if (event->type() == g_changeProfileEventType) {
-		loadProfile();
+		if (loadProfile())
+			shutdown();
 	}
 	else if (event->type() == g_shutdownEventType) {
 		shutdown();
