@@ -16,21 +16,47 @@
  */
 
 #include "core.h"
-#include "modules/pluginloader/pluginloader.h"
 #include "modules/profilemanager.h"
 #include "modules/tray.h"
-#include "modules/options/options.h"
 #include "modules/folders/folders.h"
+#include "modules/options/options.h"
+#include "modules/pluginloader/pluginloader.h"
 
-ICore* core = 0;
+const QLatin1String	g_kCoreShutdown_service			= QLatin1String(__Core_Shutdown_service);
+const QLatin1String	g_kCoreChangeProfile_service	= QLatin1String(__Core_ChangeProfile_service);
+const QLatin1String	g_kCorePreshutdown				= QLatin1String(__Core_Preshutdown);
+const QLatin1String	g_kDBWriteSetting_service		= QLatin1String(__DB_WriteSetting_service);
+const QLatin1String	g_kDBReadSetting_service		= QLatin1String(__DB_ReadSetting_service);
+const QLatin1String	g_kDBDellSetting_service		= QLatin1String(__DB_DellSetting_service);
+
+//ICore*	Core::core_ = 0;
+//CoreDestroyer Core::destroyer_;
+ICore*		g_core = 0;
+
+QEvent::Type g_shutdownEventType = static_cast<QEvent::Type>(QEvent::registerEventType());
+QEvent::Type g_changeProfileEventType = static_cast<QEvent::Type>(QEvent::registerEventType());
+
+void Core::initialize()
+{
+	Core* core = new Core();
+	g_core = dynamic_cast<ICore*>(core);
+
+	if (core->loadProfile())
+		core->shutdown(1);
+}
+
+void Core::shutdown(int result)
+{
+	unloadCore();
+
+	QApplication::exit(result);
+}
 
 int Core::loadCore()
 {
-	core = dynamic_cast<ICore*>(new Core());
-
-	core->createServiceFunction(&kCoreShutdown_service, &shutdown);
-	core->createServiceFunction(&kCoreChangeProfile_service, &loadProfile);
-	core->createHookableEvent(&kCorePreshutdown);
+	createServiceFunction(&g_kCoreShutdown_service, &shutdownService);
+	createServiceFunction(&g_kCoreChangeProfile_service, &changeProfileService);
+	createHookableEvent(&g_kCorePreshutdown);
 
 	if (Folders::loadFolders())
 		return 1;
@@ -46,7 +72,7 @@ int Core::loadCore()
 
 int Core::unloadCore()
 {
-	core->notifyEventHooks(&kCorePreshutdown, 0, 0);
+	notifyEventHooks(&g_kCorePreshutdown, 0, 0);
 
 	QApplication::processEvents();
 
@@ -59,16 +85,20 @@ int Core::unloadCore()
 	OptionsDialog::unloadOptionsModule();
 	Folders::unloadFolders();
 
-	delete core;
+	qmapHooks_.clear();
+	qmapServices_.clear();
 
 	return 0;
 }
 
-int Core::loadProfile(intptr_t, intptr_t)
+int Core::loadProfile()
 {
 	//-- Clean hooks&services stack
-	unloadCore();
-	loadCore();
+	if (profileLoaded_)
+		unloadCore();
+
+	if (loadCore())
+		return 1;
 
 	//-- Load the profile, do it befor loading plugins.
 
@@ -85,7 +115,7 @@ int Core::loadProfile(intptr_t, intptr_t)
 	int result = true;
 
 	//-- Try to load default profile on start
-	if (!profileLoaded)
+	if (!profileLoaded_)
 		result = manager->loadDefaultProfile();
 
 	//-- Show login window on loadDefaultProfile() fail
@@ -96,12 +126,36 @@ int Core::loadProfile(intptr_t, intptr_t)
 		}
 	}
 
-	profileLoaded = true;
+	profileLoaded_ = true;
 
 	result = PluginLoader::loadPlugins();
 
 	delete manager;
 
 	return result;
+}
+
+int Core::changeProfileService(intptr_t, intptr_t)
+{
+	QApplication::postEvent(g_core, new QChangeProfileEvent());
+
+	return 0;
+}
+
+int Core::shutdownService(intptr_t, intptr_t)
+{
+	QApplication::postEvent(g_core, new QShutdownEvent());
+
+	return 0;
+}
+
+void Core::customEvent(QEvent* event)
+{
+	if (event->type() == g_changeProfileEventType) {
+		loadProfile();
+	}
+	else if (event->type() == g_shutdownEventType) {
+		shutdown();
+	}
 }
 

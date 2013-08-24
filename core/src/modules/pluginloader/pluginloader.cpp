@@ -32,8 +32,8 @@ const QLatin1String	kPluginLoaderPluginsLoaded		= QLatin1String(__PluginLoader_P
 const QLatin1String	kPluginLoaderIsPluginLoaded		= QLatin1String(__PluginLoader_IsPluginLoaded_service);
 
 QDir*						PluginLoader::pluginsDir_;
-QMap<QString, Plugin>*		PluginLoader::plugins_ = NULL;
-QSet<int>*					PluginLoader::loadedPluginsTypes_ = NULL;
+QMap<QString, Plugin>*		PluginLoader::plugins_ = 0;
+QSet<int>*					PluginLoader::loadedPluginsTypes_ = 0;
 
 int PluginLoader::loadPluginLoader()
 {
@@ -42,11 +42,11 @@ int PluginLoader::loadPluginLoader()
 		loadedPluginsTypes_ = new QSet<int>();
 	}
 
-	core->hookEvent(&kOptionsShow_event, &PluginLoaderOptions::createLoaderOptionsPage);
-	core->createServiceFunction(&kPluginLoaderIsPluginLoaded, &PluginLoader::isPluginLoaded);
-	core->createHookableEvent(&kPluginLoaderPluginLoaded);
-	core->createHookableEvent(&kPluginLoaderPluginUnloaded);
-	core->createHookableEvent(&kPluginLoaderPluginsLoaded);
+	g_core->hookEvent(&kOptionsShow_event, &PluginLoaderOptions::createLoaderOptionsPage);
+	g_core->createServiceFunction(&kPluginLoaderIsPluginLoaded, &PluginLoader::isPluginLoaded);
+	g_core->createHookableEvent(&kPluginLoaderPluginLoaded);
+	g_core->createHookableEvent(&kPluginLoaderPluginUnloaded);
+	g_core->createHookableEvent(&kPluginLoaderPluginsLoaded);
 	//core->createHookableEvent(&kPluginLoaderPluginsUnloaded);
 
 	return 0;
@@ -58,12 +58,12 @@ int PluginLoader::unloadPluginLoader()
 
 	delete pluginsDir_;
 	delete loadedPluginsTypes_;
-	loadedPluginsTypes_ = NULL;
-	core->unhookEvent(&kOptionsShow_event, &PluginLoaderOptions::createLoaderOptionsPage);
-	core->destroyServiceFunction(&kPluginLoaderIsPluginLoaded);
-	core->destroyHookableEvent(&kPluginLoaderPluginLoaded);
-	core->destroyHookableEvent(&kPluginLoaderPluginUnloaded);
-	core->destroyHookableEvent(&kPluginLoaderPluginsLoaded);
+	loadedPluginsTypes_ = 0;
+	g_core->unhookEvent(&kOptionsShow_event, &PluginLoaderOptions::createLoaderOptionsPage);
+	g_core->destroyServiceFunction(&kPluginLoaderIsPluginLoaded);
+	g_core->destroyHookableEvent(&kPluginLoaderPluginLoaded);
+	g_core->destroyHookableEvent(&kPluginLoaderPluginUnloaded);
+	g_core->destroyHookableEvent(&kPluginLoaderPluginsLoaded);
 	//core->destroyHookableEvent(&kPluginLoaderPluginsUnloaded);
 
 	return 0;
@@ -168,10 +168,10 @@ int PluginLoader::updatePluginState(const QString &pluginModuleName, bool disabl
 	if (disable) {
 		//-- Disable plugin
 		set->var->intValue = 1;
-		result = core->callService(&kDBWriteSetting_service, reinterpret_cast<intptr_t>(set), 0);
+		result = g_core->callService(&g_kDBWriteSetting_service, reinterpret_cast<intptr_t>(set), 0);
 	} else {
 		//-- Remove breaker from the profile
-		result = core->callService(&kDBDellSetting_service, reinterpret_cast<intptr_t>(set), 0);
+		result = g_core->callService(&g_kDBDellSetting_service, reinterpret_cast<intptr_t>(set), 0);
 	}
 
 	delete set->var;
@@ -190,7 +190,7 @@ bool PluginLoader::isPluginDisabled(const QString& pluginModuleName)
 	set->qsSetting = &setting;
 	set->var = new DBVariant;
 	set->var->type = __Int_Type;
-	if (!core->callService(&kDBReadSetting_service, reinterpret_cast<intptr_t>(set), 0)) {
+	if (!g_core->callService(&g_kDBReadSetting_service, reinterpret_cast<intptr_t>(set), 0)) {
 		result = static_cast<bool>(set->var->intValue);
 	}
 	delete set->var;
@@ -257,7 +257,7 @@ QObject* PluginLoader::loadPlugin(const QString& pluginModuleName, bool manualyL
 	}
 
 	//-- Load Elise plugin
-	if (pluginInterface->Load(core)) {
+	if (pluginInterface->Load(g_core)) {
 		plugin->loader->unload();
 		return 0;
 	}
@@ -266,8 +266,8 @@ QObject* PluginLoader::loadPlugin(const QString& pluginModuleName, bool manualyL
 		loadedPluginsTypes_->insert(plugin->type);
 
 	if (manualyLoad)
-		core->notifyEventHooks(&kPluginLoaderPluginLoaded,
-							   reinterpret_cast<intptr_t>(&pluginModuleName), 0);
+		g_core->notifyEventHooks(&kPluginLoaderPluginLoaded,
+								 reinterpret_cast<intptr_t>(&pluginModuleName), 0);
 
 	return plugin->loader->instance();
 }
@@ -298,8 +298,8 @@ int PluginLoader::unloadPlugin(const QString& pluginModuleName, bool manualyUnlo
 							  QMessageBox::Ok);
 
 	if (manualyUnload)
-		core->notifyEventHooks(&kPluginLoaderPluginUnloaded,
-							   reinterpret_cast<intptr_t>(&pluginModuleName), 0);
+		g_core->notifyEventHooks(&kPluginLoaderPluginUnloaded,
+								 reinterpret_cast<intptr_t>(&pluginModuleName), 0);
 
 	return 0;
 }
@@ -339,7 +339,7 @@ int PluginLoader::loadPlugins()
 		++iteratorPlugins;
 	}
 
-	core->notifyEventHooks(&kPluginLoaderPluginsLoaded, 0, 0);
+	g_core->notifyEventHooks(&kPluginLoaderPluginsLoaded, 0, 0);
 
 	return 0;
 }

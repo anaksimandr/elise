@@ -23,21 +23,21 @@
 
 //Q_PLUGIN_METADATA(IID "Elise.basicDBPluginInterface/1.0" FILE "../metadata.json")
 
-const QLatin1String	kDBWriteSetting_service	=	QLatin1String(__DB_WriteSetting_service);
-const QLatin1String	kDBReadSetting_service	=	QLatin1String(__DB_ReadSetting_service);
-const QLatin1String	kDBDellSetting_service	=	QLatin1String(__DB_DellSetting_service);
+const QLatin1String	g_kDBWriteSetting_service	=	QLatin1String(__DB_WriteSetting_service);
+const QLatin1String	g_kDBReadSetting_service	=	QLatin1String(__DB_ReadSetting_service);
+const QLatin1String	g_kDBDellSetting_service	=	QLatin1String(__DB_DellSetting_service);
 
 const QLatin1String	kCoreGetProfilesDir	=	QLatin1String(__Folders_GetProfilesDir_service);
 
 //-- DB name constants for internal use
 const QString qsDBPref = ".sqlite";
 
-ICore* core;
+ICore* g_core;
 
 int DBPlugin::Login(const QString& name, const QString& password)
 {
 	//-- Try to load profile: check DB, pass.
-	QDir* profileDir = reinterpret_cast<QDir*>(core->callService(&kCoreGetProfilesDir,
+	QDir* profileDir = reinterpret_cast<QDir*>(g_core->callService(&kCoreGetProfilesDir,
 																 reinterpret_cast<intptr_t>(&name),
 																 0));
 
@@ -100,7 +100,7 @@ int DBPlugin::Login(const QString& name, const QString& password)
 int DBPlugin::CreateProfile(const QString& name, const QString& password)
 {
 	//-- Get/Create profile dir
-	QDir* profileDir = reinterpret_cast<QDir*>(core->callService(&kCoreGetProfilesDir,
+	QDir* profileDir = reinterpret_cast<QDir*>(g_core->callService(&kCoreGetProfilesDir,
 																 reinterpret_cast<intptr_t>(&name),
 																 0));
 
@@ -192,11 +192,11 @@ int DBPlugin::CreateProfile(const QString& name, const QString& password)
 
 int DBPlugin::Load(ICore* coreAPI)
 {
-	core = coreAPI;
+	g_core = coreAPI;
 
-	core->createServiceFunction(&kDBWriteSetting_service, &WriteSettingToBase);
-	core->createServiceFunction(&kDBReadSetting_service, &ReadSettingFromBase);
-	core->createServiceFunction(&kDBDellSetting_service, &DelteSettingFromBase);
+	g_core->createServiceFunction(&g_kDBWriteSetting_service, &WriteSettingToBase);
+	g_core->createServiceFunction(&g_kDBReadSetting_service, &ReadSettingFromBase);
+	g_core->createServiceFunction(&g_kDBDellSetting_service, &DelteSettingFromBase);
 
 	return 0;
 }
@@ -209,9 +209,9 @@ int DBPlugin::Unload(void)
 		QSqlDatabase::removeDatabase(qsProfile);
 	}
 
-	core->destroyServiceFunction(&kDBWriteSetting_service);
-	core->destroyServiceFunction(&kDBReadSetting_service);
-	core->destroyServiceFunction(&kDBDellSetting_service);
+	g_core->destroyServiceFunction(&g_kDBWriteSetting_service);
+	g_core->destroyServiceFunction(&g_kDBReadSetting_service);
+	g_core->destroyServiceFunction(&g_kDBDellSetting_service);
 
 	return 0;
 }

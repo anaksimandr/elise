@@ -7,7 +7,7 @@
 #include <QProgressBar>
 #include "developer.h"
 
-extern const QLatin1String	kCoreShutdown_service;
+extern const QLatin1String	g_kCoreShutdown_service;
 extern const QLatin1String	kClistShow_service;
 extern const QLatin1String	kClistHide_service;
 
@@ -68,7 +68,7 @@ public:
 
 	inline void buttonExit()
 	{
-		core->callService(&kCoreShutdown_service, 0, 0);
+		g_core->callService(&g_kCoreShutdown_service, 0, 0);
 	}
 };
 

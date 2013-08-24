@@ -8,16 +8,16 @@ const QLatin1String	kCoreGetProfilesDir	=	QLatin1String(__Folders_GetProfilesDir
 
 int Folders::loadFolders()
 {
-	core->createServiceFunction(&kCoreGetPluginsDir, &Folders::getPluginsDir);
-	core->createServiceFunction(&kCoreGetProfilesDir, &Folders::getProfileDir);
+	g_core->createServiceFunction(&kCoreGetPluginsDir, &Folders::getPluginsDir);
+	g_core->createServiceFunction(&kCoreGetProfilesDir, &Folders::getProfileDir);
 
 	return 0;
 }
 
 int Folders::unloadFolders()
 {
-	core->destroyServiceFunction(&kCoreGetPluginsDir);
-	core->destroyServiceFunction(&kCoreGetProfilesDir);
+	g_core->destroyServiceFunction(&kCoreGetPluginsDir);
+	g_core->destroyServiceFunction(&kCoreGetProfilesDir);
 
 	return 0;
 }

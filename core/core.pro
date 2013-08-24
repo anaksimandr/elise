@@ -10,8 +10,6 @@ DEFINES		+=	UNICODE
 
 SOURCES += \
 	src/elise.cpp \
-	src/services.cpp \
-	src/modules.cpp \
 	src/modules/tray.cpp \
 	src/modules/options/options.cpp \
     src/modules/options/treeitem.cpp \
@@ -21,7 +19,9 @@ SOURCES += \
     src/modules/pluginloader/pluginloaderoptions.cpp \
     src/modules/pluginloader/pluginstreeitem.cpp \
     src/modules/pluginloader/pluginstreemodel.cpp \
-    src/modules/folders/folders.cpp
+    src/modules/folders/folders.cpp \
+    src/core.cpp \
+    src/services.cpp
 
 
 HEADERS += \
@@ -41,7 +41,8 @@ HEADERS += \
     src/core.h \
     ../api/version.h \
     ../api/defines.h \
-    src/modules/folders/folders.h
+    src/modules/folders/folders.h \
+    src/events.h
 
 RESOURCES += \
 	res/resources.qrc

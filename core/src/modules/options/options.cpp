@@ -30,7 +30,7 @@ int OptionsDialog::showOptions(intptr_t, intptr_t)
 	if (OptionsDialog::options_ == 0) {
 		OptionsDialog::options_ = new OptionsDialog();
 		//OptionsDialog::addDefaultPages();
-		core->notifyEventHooks(&kOptionsShow_event,
+		g_core->notifyEventHooks(&kOptionsShow_event,
 							   reinterpret_cast<intptr_t>(&OptionsDialog::addPage), 0);
 	}
 
@@ -42,8 +42,8 @@ int OptionsDialog::showOptions(intptr_t, intptr_t)
 int OptionsDialog::loadOptionsModule()
 {
 	OptionsDialog::options_ = 0;
-	core->createHookableEvent(&kOptionsShow_event);
-	core->createServiceFunction(&kOptionsShow_service, &showOptions);
+	g_core->createHookableEvent(&kOptionsShow_event);
+	g_core->createServiceFunction(&kOptionsShow_service, &showOptions);
 	return 0;
 }
 
@@ -51,8 +51,8 @@ int OptionsDialog::unloadOptionsModule()
 {
 	if (OptionsDialog::options_ != 0)
 		OptionsDialog::options_->~OptionsDialog();
-	core->destroyHookableEvent(&kOptionsShow_event);
-	core->destroyServiceFunction(&kOptionsShow_service);
+	g_core->destroyHookableEvent(&kOptionsShow_event);
+	g_core->destroyServiceFunction(&kOptionsShow_service);
 	return 0;
 }
 
@@ -159,15 +159,15 @@ OptionsDialog::OptionsDialog()
 	connect(btn, &QPushButton::clicked, this, &OptionsDialog::applay);
 
 	//core::CreateServiceFunction(&OPTIONS_ADD_PAGE, &AddPage);
-	core->createHookableEvent(&kOptionsClose_event);
+	g_core->createHookableEvent(&kOptionsClose_event);
 }
 
 OptionsDialog::~OptionsDialog()
 {
 	saveFunctions_.clear();
-	core->notifyEventHooks(&kOptionsClose_event, 0, 0);
+	g_core->notifyEventHooks(&kOptionsClose_event, 0, 0);
 	OptionsDialog::options_ = 0;
-	core->destroyHookableEvent(&kOptionsClose_event);
+	g_core->destroyHookableEvent(&kOptionsClose_event);
 	//core::DestroyServiceFunction(&OPTIONS_ADD_PAGE);
 }
 

@@ -19,21 +19,24 @@
 #include "testwindow.h"
 #include "developer.h"
 
-ICore* core;
+ICore* g_core;
 
 int DeveloperPlugin::Load(ICore* coreAPI)
 {
-	core = coreAPI;
-	core->createServiceFunction(&kClistShow_service, &TestWindow::showCList);
-	core->createServiceFunction(&kClistHide_service, &TestWindow::hideCList);
+	g_core = coreAPI;
+	g_core->createServiceFunction(&kClistShow_service, &TestWindow::showCList);
+	g_core->createServiceFunction(&kClistHide_service, &TestWindow::hideCList);
 	TestWindow::showCList(0, 0);
 	return 0;
 }
 
 int DeveloperPlugin::Unload(void)
 {
-	core->destroyServiceFunction(&kClistShow_service);
-	core->destroyServiceFunction(&kClistHide_service);
+	g_core->destroyServiceFunction(&kClistShow_service);
+	g_core->destroyServiceFunction(&kClistHide_service);
+
+	TestWindow::hideCList(0, 0);
+
 	return 0;
 }
 

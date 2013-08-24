@@ -21,7 +21,7 @@
 #include <QtWidgets/QtWidgets>
 #include "../../../api/e_pluginapi.h"
 
-extern ICore* core;
+extern ICore* g_core;
 
 class DeveloperPlugin : public QObject, IPlugin
  {
