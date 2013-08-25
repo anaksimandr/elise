@@ -5,6 +5,7 @@
 #include <QLabel>
 #include <QLineEdit>
 #include <QProgressBar>
+#include <QTextEdit>
 #include "developer.h"
 
 extern const QLatin1String	g_kCoreShutdown_service;
@@ -22,6 +23,7 @@ private:
 	QLineEdit*		v3;
 	QLineEdit*		v4;
 	QLineEdit*		v5;
+	QTextEdit*		debugOutput_;
 public:
 	bool			vis;
 	

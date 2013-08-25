@@ -23,6 +23,11 @@ TestWindow::TestWindow() :
 {
 	this->setWindowFlags(Qt::CustomizeWindowHint | Qt::WindowTitleHint);
 	QVBoxLayout* layoutV = new QVBoxLayout(this);
+	debugOutput_ = new QTextEdit(this);
+	layoutV->addWidget(debugOutput_);
+	debugOutput_->setMinimumHeight(200);
+	debugOutput_->setReadOnly(true);
+
 	QHBoxLayout* layoutH = new QHBoxLayout(this);
 	QVBoxLayout* layoutUtil = new QVBoxLayout(this);
 	QVBoxLayout* layoutDB = new QVBoxLayout(this);
@@ -198,10 +203,6 @@ TestWindow::TestWindow() :
 
 	this->show();
 	vis = true;
-
-	QAction* action = new QAction("Exit", 0);
-	connect(action, &QAction::triggered, this, &TestWindow::buttonExit);
-	g_core->callService(&kTrayAddMenuItem_service, (uintptr_t)action, 0);
 }
 
 intptr_t TestWindow::showCList(intptr_t, intptr_t)

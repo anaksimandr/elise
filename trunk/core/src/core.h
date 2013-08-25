@@ -64,12 +64,19 @@ public:
 
 	//-- Hook functions --//////////////////////////////////////////////////////////////////////////
 
+	/* GetAvailableEventsList
+	 * Returns the pointer to list of available hookable events on success.
+	 * Returns pointer to QList<QLatin1String> which should be deleted after use
+	 * and -1 if there is no one events.
+	 */
+	intptr_t getAvailableEventsList();
+
 	/* CreateHookableEvent
 	 * Adds an named event to the list. The event will be automatically destroyed on exit, or can be
 	 * removed from the list earlier using
 	 *		DestroyHookableEvent();
 	 * Will fail if the given name has already been used.
-	 * Return 0 on success, -2 if the name is empty and -1 if the name has been already used.
+	 * Returns 0 on success, -2 if the name is empty and -1 if the name has been already used.
 	 */
 	int createHookableEvent(const QLatin1String* name);
 
@@ -78,7 +85,7 @@ public:
 	 * unhooked.
 	 *	  NotifyEventHooks(...);
 	 * will fail if called with this name again.
-	 * Return 0 on success, -2 if the name is empty and -1 if the 'name' not found in events list.
+	 * Returns 0 on success, -2 if the name is empty and -1 if the 'name' not found in events list.
 	 */
 	int destroyHookableEvent(const QLatin1String* name);
 
@@ -117,6 +124,13 @@ public:
 	int unhookEvent(const QLatin1String* name, EliseHook hookProc);
 
 	//-- Service functions --///////////////////////////////////////////////////////////////////////
+
+	/* GetAvailableServicesList
+	 * Returns the pointer to list of available services on success.
+	 * Returns pointer to QList<QLatin1String> which should be deleted after use
+	 * and -1 if there is no one services.
+	 */
+	intptr_t getAvailableServicesList();
 
 	/* CreateServiceFunction
 	 * Adds a new service function called 'name' to the global list. Service function pointers are

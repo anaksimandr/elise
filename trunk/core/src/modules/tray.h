@@ -46,6 +46,7 @@ public:
 
 	int		addToMenu(QAction* action);
 	int		delFromMenu(QAction* action);
+	void	shutdown();
 	void	trayActivationNotify(QSystemTrayIcon::ActivationReason reason);
 };
 
