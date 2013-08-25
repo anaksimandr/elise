@@ -24,6 +24,22 @@
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //-- HOOKS --///////////////////////////////////////////////////////////////////////////////////////
 
+intptr_t Core::getAvailableEventsList()
+{
+	intptr_t result = -1;
+
+	qmutexHooks_.lock();
+	QList<QLatin1String>* list = new QList<QLatin1String>(qmapHooks_.keys());
+	qmutexHooks_.unlock();
+
+	if (list->count() > 0)
+		result = reinterpret_cast<intptr_t>(list);
+	else
+		delete list;
+
+	return result;
+}
+
 int Core::createHookableEvent(const QLatin1String* name)
 {
 	if (name->size() < 1)
@@ -36,12 +52,11 @@ int Core::createHookableEvent(const QLatin1String* name)
 		return -1;
 	}
 
-	THookableEvent* newEvent;
+	THookableEvent* newEvent = new THookableEvent;
 
-	newEvent = new THookableEvent;
-	newEvent->qsetSubscribers = NULL;
+	newEvent->qsetSubscribers = 0;
 	newEvent->qmutexHook = new QMutex();
-	qmapHooks_[*name] = newEvent;
+	qmapHooks_.insert(*name, newEvent);
 
 	qmutexHooks_.unlock();
 	return 0;
@@ -58,11 +73,10 @@ int Core::destroyHookableEvent(const QLatin1String* name)
 		return -1;
 	}
 
-	THookableEvent* p;
-	p = qmapHooks_[*name];
+	THookableEvent* p = qmapHooks_.value(*name);
 
 	//-- Destroy all hooks to this event
-	if (p->qsetSubscribers != NULL)
+	if (p->qsetSubscribers != 0)
 		delete p->qsetSubscribers;
 
 	delete p->qmutexHook;
@@ -79,13 +93,13 @@ int Core::notifyEventHooks(const QLatin1String* name, intptr_t wParam, intptr_t 
 		return -1;
 
 	int returnErr = 0;
-	THookableEvent* p = qmapHooks_[*name];
+	THookableEvent* p = qmapHooks_.value(*name);
 	//qmutexHooks.unlock();
 
 	p->qmutexHook->lock();
 
 	//-- NOTE: We've got the critical section while all this lot are called.
-	if (p->qsetSubscribers != NULL) {
+	if (p->qsetSubscribers != 0) {
 		QSet<EliseHook>::const_iterator iterSubs = p->qsetSubscribers->constBegin();
 		QSet<EliseHook>::const_iterator iterEnd = p->qsetSubscribers->constEnd();
 		while (iterSubs != iterEnd) {
@@ -110,10 +124,10 @@ int Core::hookEvent(const QLatin1String* name, EliseHook hookProc)
 		return -1;
 	}
 
-	THookableEvent* p = qmapHooks_[*name];
+	THookableEvent* p = qmapHooks_.value(*name);
 
 	//-- If this hook is first then create the Set
-	if (p->qsetSubscribers == NULL)
+	if (p->qsetSubscribers == 0)
 		p->qsetSubscribers = new QSet<EliseHook>();
 
 	p->qsetSubscribers->insert(hookProc);
@@ -124,7 +138,7 @@ int Core::hookEvent(const QLatin1String* name, EliseHook hookProc)
 
 int Core::unhookEvent(const QLatin1String* name, EliseHook hookProc)
 {
-	if (name == NULL || name->size() < 1)
+	if (name == 0 || name->size() < 1)
 		return -2;
 
 	qmutexHooks_.lock();
@@ -134,9 +148,9 @@ int Core::unhookEvent(const QLatin1String* name, EliseHook hookProc)
 		return -1;
 	}
 
-	THookableEvent* p = qmapHooks_[*name];
+	THookableEvent* p = qmapHooks_.value(*name);
 	//-- If there is no subscribers or num is wrong - return
-	if (p->qsetSubscribers == NULL || !p->qsetSubscribers->contains(hookProc)) {
+	if (p->qsetSubscribers == 0 || !p->qsetSubscribers->contains(hookProc)) {
 		qmutexHooks_.unlock();
 		return -3;
 	}
@@ -145,7 +159,7 @@ int Core::unhookEvent(const QLatin1String* name, EliseHook hookProc)
 	//-- If there is no more subscribers - destroy map and reset subscriberCount
 	if (p->qsetSubscribers->isEmpty()) {
 		delete p->qsetSubscribers;
-		p->qsetSubscribers = NULL;
+		p->qsetSubscribers = 0;
 	}
 
 	qmutexHooks_.unlock();
@@ -155,6 +169,22 @@ int Core::unhookEvent(const QLatin1String* name, EliseHook hookProc)
 
 ////////////////////////////////////////////////////////////////////////////////////////////////////
 //-- SERVICES --////////////////////////////////////////////////////////////////////////////////////
+
+intptr_t Core::getAvailableServicesList()
+{
+	intptr_t result = -1;
+
+	qmutexServices_.lock();
+	QList<QLatin1String>* list = new QList<QLatin1String>(qmapServices_.keys());
+	qmutexServices_.unlock();
+
+	if (list->count() > 0)
+		result = reinterpret_cast<intptr_t>(list);
+	else
+		delete list;
+
+	return result;
+}
 
 int Core::createServiceFunction(const QLatin1String* name, EliseService serviceProc)
 {
@@ -171,7 +201,7 @@ int Core::createServiceFunction(const QLatin1String* name, EliseService serviceP
 	service->type = 0;
 	service->pfnService = serviceProc;
 
-	qmapServices_[*name] = service;
+	qmapServices_.insert(*name, service);
 	qmutexServices_.unlock();
 	return 0;
 }
@@ -196,7 +226,7 @@ int Core::createServiceFunction(const QLatin1String* name, EliseService serviceP
 		qmutexServices_.unlock();
 		return -1;
 	}
-	qmapServices_[*name] = service;
+	qmapServices_.insert(*name, service);
 	qmutexServices_.unlock();
 	return 0;
 }*/
@@ -260,7 +290,7 @@ int Core::destroyServiceFunction(const QLatin1String* name)
 		case 1:
 			break;
 		default:
-			ser->pfnService = NULL;
+			ser->pfnService = 0;
 	}
 	delete ser;
 	qmapServices_.remove(*name);

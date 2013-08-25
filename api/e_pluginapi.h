@@ -36,13 +36,14 @@ public:
 	virtual				~ICore() {}
 
 	//-- See servicesengine.h for more details
+	virtual intptr_t	getAvailableEventsList() = 0;
 	virtual int			createHookableEvent(const QLatin1String*) = 0;
 	virtual int			destroyHookableEvent(const QLatin1String*) = 0;
 	virtual int			notifyEventHooks(const QLatin1String*, intptr_t, intptr_t) = 0;
 	virtual int			hookEvent(const QLatin1String*, EliseHook) = 0;
 	virtual int			unhookEvent(const QLatin1String*, EliseHook) = 0;
+	virtual intptr_t	getAvailableServicesList() = 0;
 	virtual int			createServiceFunction(const QLatin1String*, EliseService) = 0;
-	//virtual int			createServiceFunction(const QLatin1String*, QEliseService) = 0;
 	virtual int			destroyServiceFunction(const QLatin1String*) = 0;
 	virtual intptr_t	callService(const QLatin1String*, intptr_t, intptr_t) = 0;
 	virtual int			serviceExists(const QLatin1String*) = 0;

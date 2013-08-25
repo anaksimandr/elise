@@ -60,8 +60,7 @@ void EliseTray::trayActivationNotify(QSystemTrayIcon::ActivationReason reason)
 int EliseTray::addToContextMenu(intptr_t wParam,intptr_t)
 {
 	QAction* action = reinterpret_cast<QAction*>(wParam);
-	trayElise->addToMenu(action);
-	return 0;
+	return trayElise->addToMenu(action);
 }
 
 int EliseTray::setTrayIcon(intptr_t wParam,intptr_t)
@@ -77,6 +76,11 @@ int EliseTray::addToMenu(QAction* action)
 	return 0;
 }
 
+void EliseTray::shutdown()
+{
+	Core::shutdownService(0, 0);
+}
+
 int EliseTray::loadTrayModule()
 {
 	if (!trayElise)
@@ -90,6 +94,11 @@ int EliseTray::loadTrayModule()
 	trayElise->setContextMenu(new QMenu());
 	g_core->createServiceFunction(&kTrayAddMenuItem_service, &EliseTray::addToContextMenu);
 	g_core->createServiceFunction(&kTraySetIcon_service, &EliseTray::setTrayIcon);
+
+	QAction* action = new QAction("Exit", 0);
+	connect(action, &QAction::triggered, trayElise, &EliseTray::shutdown);
+	trayElise->addToMenu(action);
+
 	return 0;
 }
 
