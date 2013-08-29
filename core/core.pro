@@ -21,7 +21,8 @@ SOURCES += \
     src/modules/pluginloader/pluginstreemodel.cpp \
     src/modules/folders/folders.cpp \
     src/core.cpp \
-    src/services.cpp
+    src/services.cpp \
+    src/modules/pluginloader/qelisepluginloader.cpp
 
 
 HEADERS += \
@@ -42,7 +43,8 @@ HEADERS += \
     ../api/version.h \
     ../api/defines.h \
     src/modules/folders/folders.h \
-    src/events.h
+    src/events.h \
+    src/modules/pluginloader/qelisepluginloader.h
 
 RESOURCES += \
 	res/resources.qrc
