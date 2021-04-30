@@ -3,4 +3,4 @@ CONFIG	   +=	ordered
 SUBDIRS		=	core \
 				plugins/newplugin \
 				plugins/dbplugin \
-				plugins/developer
+				plugins/developer qwe
